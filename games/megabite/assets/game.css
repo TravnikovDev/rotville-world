@@ -1,0 +1,222 @@
+/* Megabite - the game under the town. The gate's tokens, sets and buttons (../../assets/gate.css), plus this. */
+
+[hidden] { display: none !important; }
+
+.mb-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  width: min(760px, 100% - 24px);
+  margin: 0 auto;
+  padding: max(14px, env(safe-area-inset-top)) 0 10px;
+}
+.mb-back {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px 8px 11px;
+  border-radius: 8px;
+  background: var(--sign);
+  color: var(--sign-ink);
+  font: 800 1rem/1 var(--f-sign);
+  text-decoration: none;
+  box-shadow: inset 0 0 0 3px var(--sign), inset 0 0 0 5px var(--sign-ink), 0 5px 0 -2px var(--sign-deep);
+}
+.mb-back:hover { background: var(--sign-hi); }
+.mb-back svg { width: 16px; height: 16px; fill: currentColor; transform: rotate(180deg); }
+#sound { justify-self: end; font-size: 1.15rem; padding: 8px 12px 7px; }
+
+/* his name in the banner's letters, in iron: the blocks step up one after another, and the i is his lamp */
+.mb-title { margin: 0; font: 400 clamp(1.9rem, 8.4vw, 3.1rem)/1 var(--f-toy); }
+.mbt { display: inline-flex; gap: .012em; }
+.mbt > span {
+  --i: 0;
+  position: relative;
+  display: inline-block;
+  color: #8e919e;
+  text-shadow:
+    -.015em -.015em 0 #cfd2dc,
+    .01em .02em 0 #2b2c35, .02em .04em 0 #2b2c35, .03em .06em 0 #2b2c35, .04em .08em 0 #2b2c35,
+    .06em .15em .1em rgba(6, 3, 18, .65);
+  animation: mb-step 2.6s steps(1) infinite;
+  animation-delay: calc(var(--i) * .12s);
+}
+.mbt > span:nth-child(2) { --i: 1; }
+.mbt > span:nth-child(3) { --i: 2; }
+.mbt > span:nth-child(4) { --i: 3; }
+.mbt > span:nth-child(5) { --i: 4; }
+.mbt > span:nth-child(6) { --i: 5; }
+.mbt > span:nth-child(7) { --i: 6; }
+.mbt > span:nth-child(8) { --i: 7; }
+.mbt-i::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: .02em;
+  width: .19em;
+  height: .19em;
+  margin-left: -.1em;
+  border-radius: 50%;
+  background: #ff3f3f;
+  box-shadow: 0 0 .12em #ff3f3f, 0 0 .38em rgba(255, 63, 63, .7);
+  animation: mb-lamp 1.4s steps(1) infinite;
+}
+@keyframes mb-step { 0%, 12% { transform: none; } 4% { transform: translateY(-.07em); } }
+@keyframes mb-lamp { 55% { background: #6b1616; box-shadow: none; } }
+
+/* the set */
+.mb-main {
+  display: grid;
+  justify-items: center;
+  width: min(760px, 100% - 24px);
+  margin: 0 auto;
+  padding-bottom: 20px;
+}
+.mb-set { width: min(628px, 100%); padding: 14px 14px 46px; }
+.mb-screen {
+  aspect-ratio: 300 / 264;
+  border-radius: 14px / 16px;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.mb-screen canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
+.mb-ch { top: 10px; left: 12px; }
+.mb-len { top: 10px; right: 12px; transition: transform .12s; }
+.mb-len.bump { transform: scale(1.18); }
+.mb-pause { left: 0; right: 0; top: 44%; text-align: center; font-size: 1.9rem; }
+.mb-sub {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 9%;
+  z-index: 3;
+  margin: 0;
+  text-align: center;
+  font: 400 clamp(1.2rem, 4.2vw, 1.6rem)/1.15 var(--f-osd);
+  color: #fff;
+  text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+  pointer-events: none;
+}
+
+/* on a phone, until the first swipe: how to turn him, over the picture */
+.mb-swipe {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 22%;
+  z-index: 3;
+  margin: 0;
+  text-align: center;
+  font: 400 clamp(1.35rem, 5.2vw, 1.75rem)/1 var(--f-osd);
+  letter-spacing: .08em;
+  color: #fff;
+  text-shadow: 2px 2px 0 #000, -1px -1px 0 #000;
+  pointer-events: none;
+}
+.mb-chev { display: inline-block; color: var(--window); }
+.mb-chev-l { animation: mb-chev-l .9s ease-in-out infinite; }
+.mb-chev-r { animation: mb-chev-r .9s ease-in-out infinite; }
+@keyframes mb-chev-l { 50% { transform: translateX(-7px); } }
+@keyframes mb-chev-r { 50% { transform: translateX(7px); } }
+.mb-touch-note { display: none; margin: 8px 0 0; font: 400 1.1rem/1.2 var(--f-osd); letter-spacing: .03em; color: var(--muted); text-align: center; }
+
+.mb-card {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 18px;
+  text-align: center;
+  background: rgba(10, 7, 24, .62);
+}
+.mb-play {
+  padding: 10px 22px 8px;
+  border: 2px solid #5b4d91;
+  border-radius: 6px;
+  background: #1b1634;
+  color: #fff;
+  font: 400 clamp(1.7rem, 6vw, 2.2rem)/1 var(--f-osd);
+  letter-spacing: .08em;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #0a0816, 0 0 24px rgba(255, 95, 210, .25);
+}
+.mb-play:hover { border-color: var(--window); }
+.mb-play:active { transform: translateY(2px); box-shadow: 0 1px 0 #0a0816; }
+.mb-hint { margin: 0; font: 400 1.25rem/1.2 var(--f-osd); color: var(--ink); text-shadow: 2px 2px 0 #000; }
+.mb-hint-touch { display: none; }
+.mb-over-title { margin: 0; max-width: 15ch; font-size: clamp(1.45rem, 5.4vw, 2.3rem); }
+.mb-over-line { margin: 0; max-width: 30ch; font: 400 clamp(1.2rem, 4vw, 1.45rem)/1.2 var(--f-osd); color: var(--ink); text-shadow: 2px 2px 0 #000; }
+.mb-over-stats { margin: 0; font: 400 1.15rem/1.2 var(--f-osd); letter-spacing: .03em; color: var(--muted); text-shadow: 2px 2px 0 #000; }
+.mb-over-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 4px; }
+.mb-share { align-self: stretch; }
+
+.mb-stats { margin: 14px 0 0; font: 400 1.3rem/1.2 var(--f-osd); letter-spacing: .03em; color: var(--muted); text-align: center; }
+
+.mb-pad {
+  display: none;
+  grid-template-columns: repeat(3, 68px);
+  grid-template-rows: repeat(2, 58px);
+  gap: 8px;
+  justify-content: center;
+  margin: 14px auto 0;
+}
+.mb-pad button {
+  font: 400 1.7rem/1 var(--f-osd);
+  color: var(--ink);
+  background: #1b1634;
+  border: 2px solid #3b3263;
+  border-radius: 10px;
+  box-shadow: 0 3px 0 #0a0816;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.mb-pad button:active { transform: translateY(2px); box-shadow: 0 1px 0 #0a0816; border-color: var(--window); }
+.mb-pad [data-d="up"] { grid-column: 2; grid-row: 1; }
+.mb-pad [data-d="left"] { grid-column: 1; grid-row: 2; }
+.mb-pad [data-d="down"] { grid-column: 2; grid-row: 2; }
+.mb-pad [data-d="right"] { grid-column: 3; grid-row: 2; }
+
+.mb-lore { max-width: 40ch; margin: 20px auto 0; text-align: center; }
+.mb .foot a { color: var(--muted); text-decoration: none; }
+.mb .foot a:hover { color: var(--ink); }
+
+.mb-lore-card { display: none; max-width: 24ch; color: var(--muted); }
+
+/* a phone held upright: the game is the whole screen and never scrolls. The grid is 11 wide and as tall as
+   the screen allows (game.js layout()), and a swipe anywhere under the bar turns him. */
+@media (max-width: 599px) and (orientation: portrait) {
+  html, body.mb { height: 100%; overscroll-behavior: none; }
+  body.mb { display: flex; flex-direction: column; min-height: 100dvh; }
+  .mb-bar { grid-template-columns: auto 1fr auto; width: calc(100% - 16px); gap: 8px; padding: max(8px, env(safe-area-inset-top)) 0 8px; }
+  .mb-title { justify-self: center; font-size: clamp(1.5rem, 8vw, 2.2rem); }
+  .mb-back { padding: 7px 9px 6px 8px; font-size: .9rem; gap: 5px; }
+  .mb-back svg { width: 13px; height: 13px; }
+  #sound { font-size: 1.1rem; padding: 7px 10px 6px; }
+  .mb-main { flex: 1; width: calc(100% - 16px); align-content: start; padding-bottom: 8px; touch-action: none; }
+  .mb-set { padding: 8px 8px 30px; border-radius: 20px 20px 16px 16px; }
+  .mb-set .tv-plate { left: 14px; bottom: 8px; font-size: .95rem; }
+  .mb-set .tv-knob { right: 14px; bottom: 6px; width: 17px; height: 17px; }
+  .mb-set .tv-knob-2 { right: 38px; bottom: 9px; width: 12px; height: 12px; }
+  .mb-ch, .mb-len { top: 8px; font-size: 1.25rem; }
+  .mb-ch { left: 10px; } .mb-len { right: 10px; }
+  .mb-stats { margin-top: 8px; font-size: 1.1rem; }
+  .mb-pad { grid-template-columns: repeat(3, 76px); grid-template-rows: repeat(2, 52px); gap: 6px; margin-top: 8px; }
+  .mb-lore, .mb .foot { display: none; }
+  .mb-lore-card { display: block; }
+}
+@media (pointer: coarse) {
+  .mb-touch-note { display: block; }
+  .mb-hint-keys { display: none; }
+  .mb-hint-touch { display: block; }
+  .mb-pad { display: grid; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mbt > span, .mbt-i::after, .mb-chev-l, .mb-chev-r { animation: none; }
+}

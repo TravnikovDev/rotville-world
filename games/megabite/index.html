@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Megabite · Rotville</title>
+<meta name="description" content="Megabite gets longer. That is the whole of it. Steer him under Rotville, through the gutters, vents and cable routes, eating the square things the town leaves lying about.">
+<link rel="canonical" href="https://rotville.world/games/megabite/">
+<meta name="theme-color" content="#120d2a">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rotville">
+<meta property="og:title" content="Megabite · Rotville">
+<meta property="og:description" content="He gets longer. That is the whole of it.">
+<meta property="og:url" content="https://rotville.world/games/megabite/">
+<meta property="og:image" content="https://rotville.world/games/megabite/assets/og.jpg">
+<meta property="og:image:alt" content="Megabite, a snake of iron blocks with a plug for a head, crossing the ducts under Rotville on a small TV. He gets longer. That is the whole of it.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rotville.world/games/megabite/assets/og.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" href="../../favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<link rel="stylesheet" href="../../assets/gate.css">
+<link rel="stylesheet" href="assets/game.css">
+</head>
+<body class="mb">
+
+<header class="mb-bar">
+  <a class="mb-back" href="../../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l8 7-8 7v-5H3z"/></svg>Rotville</a>
+  <h1 class="mb-title"><span class="sr-only">Megabite</span><span class="mbt" aria-hidden="true"><span>M</span><span>E</span><span>G</span><span>A</span><span>B</span><span class="mbt-i">ı</span><span>T</span><span>E</span></span></h1>
+  <button class="tape" id="sound" type="button" aria-pressed="true"><span class="led" aria-hidden="true"></span><span class="tape-label">Sound: on</span></button>
+</header>
+
+<main class="mb-main">
+  <div class="tv-set mb-set">
+    <div class="tv-screen mb-screen" id="screen">
+      <canvas id="c" width="300" height="264" aria-label="Megabite under the town"></canvas>
+      <span class="static" id="static" aria-hidden="true"></span>
+      <span class="osd mb-ch" aria-hidden="true">CH 04</span>
+      <span class="osd mb-len" id="len" aria-live="off">3 BLOCKS</span>
+      <span class="osd mb-pause" id="pausemark" hidden>PAUSE ▮▮</span>
+      <p class="mb-sub" id="sub" aria-live="polite"></p>
+      <p class="mb-swipe" id="swipehint" hidden><span class="mb-chev mb-chev-l">‹‹</span> SWIPE TO TURN <span class="mb-chev mb-chev-r">››</span></p>
+
+      <div class="mb-card" id="ready">
+        <button class="mb-play" id="play" type="button">▶ PLAY</button>
+        <p class="mb-hint mb-hint-keys">Arrow keys or WASD to turn.<br>Space to pause.</p>
+        <p class="mb-hint mb-hint-touch">Swipe anywhere to turn, or use the pad.</p>
+        <p class="mb-hint mb-lore-card">He does not cross the town, he goes under it.</p>
+      </div>
+
+      <div class="mb-card" id="over" hidden>
+        <h2 class="title mb-over-title" id="over-title">Nobody has seen him stop.</h2>
+        <p class="mb-over-line" id="over-line">He was 3 blocks long when the picture went.</p>
+        <p class="mb-over-stats" id="over-stats"></p>
+        <div class="mb-over-actions">
+          <button class="mb-play" id="again" type="button">▶ AGAIN</button>
+          <button class="tape mb-share" id="share" type="button"><span class="tape-label">Share</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
+    <span class="tv-knob" aria-hidden="true"></span>
+    <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+  </div>
+
+  <p class="mb-stats"><span id="best">Longest 0</span> · <span id="map">Map drawn 0%</span></p>
+
+  <div class="mb-pad" id="pad" aria-label="Turn">
+    <button type="button" data-d="up" aria-label="Up">▲</button>
+    <button type="button" data-d="left" aria-label="Left">◀</button>
+    <button type="button" data-d="down" aria-label="Down">▼</button>
+    <button type="button" data-d="right" aria-label="Right">▶</button>
+  </div>
+  <p class="mb-touch-note">Swipe anywhere, or tap the arrows.</p>
+
+  <p class="narrator mb-lore">He does not cross the town, he goes under it: gutters, vents and cable routes, which is the one map nobody has drawn.</p>
+</main>
+
+<footer class="foot">
+  <p><a href="../../">Rotville. A perfectly normal town.</a></p>
+</footer>
+
+<script src="assets/game.js" defer></script>
+</body>
+</html>

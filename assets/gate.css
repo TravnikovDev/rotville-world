@@ -1,0 +1,393 @@
+/* Rotville - the gate. One visual world: the town after dark, seen on tape. */
+
+:root {
+  --night: #120d2a;      /* the ground: the sky after dark */
+  --night-2: #1b1440;
+  --dusk: #33205f;       /* the horizon in the banner */
+  --ink: #ece7f8;
+  --muted: #a99fcc;      /* a lavender grey, leaning to the sky */
+  --cream: #fbefb2;      /* the banner's tagline */
+  --glow: #ff5fd2;       /* the lit door in the R */
+  --window: #ffc85a;     /* lit windows */
+  --sign: #176140;       /* road-sign green */
+  --sign-hi: #1c774f;
+  --sign-deep: #0b2f20;
+  --sign-ink: #f5f3ea;
+  --bezel: #221b3d;
+  --bezel-2: #141026;
+  --f-sign: "Overpass", "Arial Narrow", system-ui, sans-serif;
+  --f-osd: "VT323", ui-monospace, "Courier New", monospace;
+  --f-toy: "Lilita One", "Arial Rounded MT Bold", system-ui, sans-serif;   /* the banner's letters */
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--night); }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(130% 42% at 50% 100%, var(--dusk) 0%, transparent 70%), var(--night);
+  color: var(--ink);
+  font: 400 1.35rem/1.25 var(--f-osd);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+img, video, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--window); outline-offset: 4px; border-radius: 6px; }
+
+/* on-screen display, the way a VCR writes over the picture */
+.osd {
+  position: absolute;
+  z-index: 2;
+  font: 400 1.5rem/1 var(--f-osd);
+  letter-spacing: .05em;
+  color: #fff;
+  text-shadow: 0 0 6px rgba(255, 255, 255, .35), 2px 2px 0 rgba(0, 0, 0, .6);
+  pointer-events: none;
+}
+
+/* a title in the wordmark's letters, in one colour: the tagline's cream on a painted edge */
+.title {
+  font: 400 2rem/1.02 var(--f-toy);
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--cream);
+  text-shadow:
+    -.015em -.015em 0 #fffbe8,
+    .01em .02em 0 #8c7431, .02em .04em 0 #8c7431, .03em .06em 0 #8c7431, .04em .08em 0 #8c7431,
+    .06em .15em .1em rgba(6, 3, 18, .65);
+}
+
+/* the name as the banner paints it: toy letters, each its own colour, with a painted edge and depth */
+.wordmark { font: 400 clamp(3.4rem, 16vw, 5.4rem)/.95 var(--f-toy); }
+.wm { display: inline-flex; align-items: baseline; gap: .02em; }
+.wm > span {
+  --c: #d8323f; --s: #7c1520; --h: #f07a82; --t: none; --i: 0;
+  display: inline-block;
+  color: var(--c);
+  transform: var(--t);
+  text-shadow:
+    -.015em -.015em 0 var(--h),
+    .01em .02em 0 var(--s), .02em .04em 0 var(--s), .03em .06em 0 var(--s), .04em .08em 0 var(--s), .05em .1em 0 var(--s),
+    .07em .17em .1em rgba(6, 3, 18, .65);
+  animation: bob 3.6s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -.45s);
+  transition: translate .3s cubic-bezier(.3, 1.8, .5, 1);
+}
+.wm > span:hover { translate: 0 -.14em; }
+.wm > span:nth-child(1) { --i: 0; --c: #d8323f; --s: #7c1520; --h: #f38a92; --t: rotate(-5deg) translateY(.03em); }
+.wm > span:nth-child(2) { --i: 1; --c: #43b02b; --s: #1f5c12; --h: #97e07d; --t: rotate(-2deg) translateY(.02em); }
+.wm > span:nth-child(3) { --i: 2; --c: #a038bb; --s: #551865; --h: #d38fe6; --t: rotate(3deg) translateY(-.07em) scale(1.07); }
+.wm > span:nth-child(4) { --i: 3; --c: #e6b02a; --s: #8a620d; --h: #f9dc84; --t: rotate(-4deg) translateY(.03em) scale(.9); }
+.wm > span:nth-child(5) { --i: 4; --c: #3066f2; --s: #173a9c; --h: #8eadff; --t: rotate(2deg) translateY(-.05em) scale(1.05); }
+.wm > span:nth-child(6) { --i: 5; --c: #f26c1e; --s: #8d380b; --h: #ffb07a; --t: rotate(-3deg) translateY(-.02em); }
+.wm > span:nth-child(7) { --i: 6; --c: #dc3c91; --s: #7b1d51; --h: #f594c7; --t: rotate(2deg) translateY(-.01em); }
+.wm > span:nth-child(8) { --i: 7; --c: #17a3a0; --s: #0a5a5a; --h: #74dcd8; --t: rotate(5deg) translateY(.04em) scale(.93); }
+@keyframes bob { 0%, 100% { transform: var(--t); } 50% { transform: var(--t) translateY(-.04em); } }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---------- hero: the channel's banner, played back ---------- */
+.hero {
+  position: relative;
+  overflow: hidden;
+  height: min(92vw, 58vh);
+  background: var(--night-2);
+}
+.hero-img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 26%;
+  background: linear-gradient(to bottom, transparent, var(--night));
+  pointer-events: none;
+}
+.tape-fx { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.tape-fx::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(to bottom, rgba(10, 6, 24, .26) 0 1px, transparent 1px 3px);
+}
+.tape-fx::after {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background: url(grain.png);
+  opacity: .09;
+  mix-blend-mode: overlay;
+  animation: grain .5s steps(4) infinite;
+}
+.band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -16%;
+  height: 16%;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, .05) 45%, rgba(255, 255, 255, .09) 52%, transparent);
+  animation: track 11s linear infinite;
+}
+.osd-play { top: max(16px, env(safe-area-inset-top)); left: 18px; font-size: clamp(1.5rem, 3vw, 2.25rem); }
+/* the town keeps no clock, so the deck was never set */
+.osd-clock { top: max(16px, env(safe-area-inset-top)); right: 18px; font-size: clamp(1.5rem, 3vw, 2.25rem); animation: blink 1s steps(1) infinite; }
+
+/* the deck's PLAY, made a real button: it starts the game under the town */
+.osd-link {
+  pointer-events: auto;
+  z-index: 4;
+  padding: 6px 12px 5px;
+  border: 2px solid rgba(255, 255, 255, .85);
+  border-radius: 4px;
+  background: rgba(10, 6, 24, .55);
+  color: #fff;
+  text-decoration: none;
+}
+.osd-link:hover { background: var(--glow); border-color: #fff; color: #1a0f2e; text-shadow: none; }
+
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-7%, 4%); }
+  50% { transform: translate(5%, -6%); }
+  75% { transform: translate(-3%, -2%); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes track { to { transform: translateY(760%); } }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---------- the gate ---------- */
+.gate {
+  width: min(1080px, 100% - 32px);
+  margin-inline: auto;
+  display: grid;
+  gap: 30px;
+  padding-bottom: 36px;
+}
+
+.intro {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  margin-top: -62px;
+}
+.avatar {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  border: 4px solid var(--night);
+  background: var(--night-2);
+  box-shadow: 0 0 0 2px rgba(255, 95, 210, .35), 0 0 38px rgba(255, 95, 210, .3);
+}
+.intro .wordmark { margin: 16px 0 10px; }
+.tagline { margin: 0; font: 400 clamp(1.45rem, 4.4vw, 1.9rem)/1.1 var(--f-osd); letter-spacing: .02em; color: var(--cream); text-shadow: 0 2px 0 rgba(6, 3, 18, .75); }
+.narrator { max-width: 34ch; margin: 16px 0 0; font: 400 1.5rem/1.22 var(--f-osd); letter-spacing: 0; color: var(--ink); opacity: .92; text-wrap: pretty; }
+
+/* the doors out: road signs */
+.exits { display: grid; gap: 14px; }
+.sign {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  min-height: 80px;
+  padding: 16px 20px 16px 18px;
+  background: var(--sign);
+  color: var(--sign-ink);
+  text-decoration: none;
+  border-radius: 12px;
+  box-shadow: 0 8px 0 -3px var(--sign-deep), 0 20px 30px -14px rgba(0, 0, 0, .7);
+  transform-origin: 50% -60%;
+  transition: transform .2s ease, background-color .2s ease;
+}
+.sign::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 3px solid var(--sign-ink);
+  border-radius: 8px;
+  pointer-events: none;
+}
+.sign:hover { background: var(--sign-hi); transform: rotate(-1deg); }
+.sign:active { transform: rotate(-1deg) translateY(2px); }
+.shield {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: var(--sign-ink);
+  color: var(--sign);
+}
+.shield svg { fill: currentColor; shape-rendering: crispEdges; }
+.dest { display: grid; font: 800 1.7rem/1.05 var(--f-sign); letter-spacing: .005em; }
+.dest small { margin-top: 4px; font: 600 1rem/1.2 var(--f-sign); letter-spacing: .02em; opacity: .86; }
+.arrow { width: 30px; height: 30px; fill: currentColor; transform: rotate(-45deg); }
+/* a place to go in town, not a way out of it: the brown sign roads use for attractions, its arrow straight ahead */
+.sign-play { --sign: #6f4527; --sign-hi: #85532f; --sign-deep: #3a2313; margin-top: 6px; }
+.sign .arrow-ahead { transform: none; }
+
+/* ---------- Channel 3 ---------- */
+.tv { display: grid; justify-items: center; text-align: center; }
+.tv-set {
+  position: relative;
+  width: min(300px, 80vw);
+  padding: 16px 16px 52px;
+  border-radius: 30px 30px 24px 24px;
+  background: linear-gradient(165deg, #2e2652, var(--bezel) 38%, var(--bezel-2));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .09), inset 0 -3px 0 rgba(0, 0, 0, .45),
+    0 34px 50px -22px rgba(0, 0, 0, .85), 0 0 70px -14px rgba(255, 95, 210, .3);
+}
+.tv-screen {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 9 / 16;
+  border-radius: 18px / 22px;
+  background: #000;
+  box-shadow: 0 0 0 3px #0b0917;
+  isolation: isolate;
+}
+.tv-screen video { width: 100%; height: 100%; object-fit: cover; }
+.tv-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, .2) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, .55) 100%);
+}
+.static {
+  position: absolute;
+  inset: -40%;
+  z-index: 1;
+  background: url(grain.png) 0 0 / 72px 72px;
+  image-rendering: pixelated;
+  opacity: 0;
+  pointer-events: none;
+}
+.static.on { opacity: .92; animation: grain .24s steps(3) infinite; }
+.osd-ch { top: 12px; left: 14px; }
+.osd-ep { top: 12px; right: 14px; }
+.tv-play {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: none;
+  place-items: center;
+  font: 400 4.5rem/1 var(--f-osd);
+  color: #fff;
+  background: rgba(8, 6, 20, .38);
+  text-shadow: 3px 3px 0 rgba(0, 0, 0, .6);
+}
+.tv.blocked .tv-play { display: grid; }
+.tv-plate { position: absolute; left: 22px; bottom: 17px; font: 400 1.15rem/1 var(--f-osd); letter-spacing: .14em; color: var(--muted); }
+.tv-knob {
+  position: absolute;
+  right: 22px;
+  bottom: 14px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #5d5279, #1c1730 70%);
+  box-shadow: inset 0 -2px 3px rgba(0, 0, 0, .6), 0 1px 0 rgba(255, 255, 255, .06);
+}
+.tv-knob-2 { right: 56px; bottom: 18px; width: 16px; height: 16px; }
+
+.now { margin: 22px 0 0; font: 400 1.3rem/1 var(--f-osd); letter-spacing: .08em; text-transform: uppercase; color: var(--window); }
+.tv-title {
+  display: grid;
+  place-items: center;
+  width: min(100%, 21ch);
+  height: 2.2em;
+  margin: 6px 0 2px;
+  font-size: clamp(1.6rem, 6vw, 2rem);
+}
+.watch { margin: 0; font: 400 1.15rem/1.3 var(--f-osd); letter-spacing: .03em; color: var(--muted); }
+.watch a { color: var(--ink); text-underline-offset: 3px; }
+.watch a:hover { color: var(--window); }
+
+/* ---------- the deck and the foot ---------- */
+.deck { display: grid; justify-items: center; gap: 8px; }
+.deck-note { font: 400 1.1rem/1 var(--f-osd); letter-spacing: .04em; color: var(--muted); }
+.foot {
+  padding: 4px 16px max(40px, env(safe-area-inset-bottom));
+  text-align: center;
+  font: 400 1.15rem/1.3 var(--f-osd);
+  letter-spacing: .04em;
+  color: var(--muted);
+}
+.foot p { margin: 0; }
+.tape {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 9px;
+  border: 2px solid #3b3263;
+  border-radius: 6px;
+  background: #1b1634;
+  color: var(--ink);
+  font: 400 1.35rem/1 var(--f-osd);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #0a0816;
+}
+.tape:hover { border-color: #5b4d91; }
+.tape:active { transform: translateY(2px); box-shadow: 0 1px 0 #0a0816; }
+.led { width: 10px; height: 10px; border-radius: 50%; background: #45172a; box-shadow: inset 0 1px 1px rgba(0, 0, 0, .6); }
+.tape[aria-pressed="true"] .led { background: #ff3d60; box-shadow: 0 0 9px #ff3d60, inset 0 0 2px #ffd3db; }
+
+/* ---------- wide screens: the doors on the left, the set on the right ---------- */
+@media (min-width: 900px) {
+  .hero { height: min(46vw, 54vh); }
+  .gate { grid-template-columns: minmax(0, 1fr) 340px; grid-template-rows: auto auto 1fr; column-gap: 72px; align-items: start; padding-bottom: 48px; }
+  /* a channel header: the avatar beside the name */
+  .intro {
+    grid-column: 1;
+    grid-template-columns: auto 1fr;
+    column-gap: 26px;
+    align-items: end;
+    justify-items: start;
+    text-align: left;
+    margin-top: -58px;
+  }
+  .avatar { grid-row: 1 / span 2; width: 116px; height: 116px; }
+  .intro .wordmark { margin: 0 0 12px; font-size: 5.4rem; }
+  .tagline { grid-column: 2; }
+  .narrator { grid-column: 1 / -1; max-width: 48ch; margin-top: 20px; }
+  .exits { grid-column: 1; max-width: 540px; }
+  .tv { grid-column: 2; grid-row: 1 / span 3; margin-top: 40px; }
+  .deck { grid-column: 1; grid-row: 3; justify-items: start; margin-top: 6px; }
+  .tv-set { width: 320px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tape-fx::after, .band, .osd-clock, .static.on, .wm > span { animation: none; }
+  .wm > span { transition: none; }
+  .sign, .sign:hover, .sign:active { transition: none; transform: none; }
+}
+
+/* ---------- the lost tape (404) ---------- */
+.lost-main {
+  display: grid;
+  justify-items: center;
+  gap: 20px;
+  width: min(560px, 100% - 32px);
+  margin: 0 auto;
+  padding: 56px 0 64px;
+  text-align: center;
+}
+.lost-main .tv-set { width: min(220px, 60vw); }
+.lost-osd { left: 0; right: 0; top: 46%; text-align: center; font-size: 1.9rem; }
+.lost-title { margin: 8px 0 0; font-size: clamp(2rem, 8vw, 2.7rem); max-width: 14ch; }
+.lost-main .narrator { margin: 0; }
+.lost-main .sign { width: min(100%, 360px); }
+.lost-main .sign .arrow { transform: rotate(180deg); }
