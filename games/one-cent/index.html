@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>One Cent · Rotville</title>
+<meta name="description" content="Nickelpig wants the cent lying in the road outside Big Barry, and he may only move while Big Barry's eye is shut. If it clinks, it is his.">
+<link rel="canonical" href="https://rotville.world/games/one-cent/">
+<meta name="theme-color" content="#120d2a">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rotville">
+<meta property="og:title" content="One Cent · Rotville">
+<meta property="og:description" content="If it clinks, it is his. Move only while the eye is shut.">
+<meta property="og:url" content="https://rotville.world/games/one-cent/">
+<meta property="og:image" content="https://rotville.world/games/one-cent/assets/og.jpg">
+<meta property="og:image:alt" content="Nickelpig, a red beetle-pig with coins in his shell, creeping across a night street toward a cent lying outside Big Barry, the office building with one enormous eye on its roof.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rotville.world/games/one-cent/assets/og.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" href="../../favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<link rel="stylesheet" href="../../assets/gate.css">
+<link rel="stylesheet" href="assets/game.css">
+</head>
+<body class="oc">
+
+<header class="oc-bar">
+  <a class="oc-back" href="../../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l8 7-8 7v-5H3z"/></svg>Rotville</a>
+  <h1 class="oc-title"><span class="sr-only">One Cent</span><span class="oct" aria-hidden="true"><span>O</span><span>N</span><span>E</span><span class="oct-gap"> </span><span>C</span><span>E</span><span>N</span><span>T</span></span></h1>
+  <button class="tape" id="sound" type="button" aria-pressed="true"><span class="led" aria-hidden="true"></span><span class="tape-label">Sound: on</span></button>
+</header>
+
+<main class="oc-main" id="area">
+  <div class="tv-set oc-set">
+    <div class="tv-screen oc-screen" id="screen">
+      <canvas id="c" width="270" height="480" aria-label="Nickelpig on the street outside Big Barry"></canvas>
+      <span class="static" id="static" aria-hidden="true"></span>
+      <span class="osd oc-ch" aria-hidden="true">CH 05</span>
+      <span class="osd oc-cents" id="cents">0¢</span>
+      <span class="osd oc-tries" id="tries" aria-label="Tries left">●●●</span>
+      <span class="osd oc-mark" id="mark" hidden></span>
+      <p class="oc-sub" id="sub" aria-live="polite"></p>
+
+      <div class="oc-card" id="ready">
+        <button class="oc-play" id="play" type="button">▶ PLAY</button>
+        <p class="oc-hint">Hold to creep. Let go when the eye opens.</p>
+        <p class="oc-hint oc-hint-keys">Space, W or the up arrow on a keyboard.</p>
+        <p class="oc-hint oc-lore">The eye sometimes blinks. Do not stare for too long.</p>
+      </div>
+
+      <div class="oc-card" id="over" hidden>
+        <h2 class="title oc-over-title" id="over-title">Nickelpig took nothing.</h2>
+        <p class="oc-over-line" id="over-line">It cost him 3 anyway.</p>
+        <p class="oc-over-stats" id="over-stats"></p>
+        <div class="oc-over-actions">
+          <button class="oc-play" id="again" type="button">▶ AGAIN</button>
+          <button class="tape oc-share" id="share" type="button"><span class="tape-label">Share</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
+    <span class="tv-knob" aria-hidden="true"></span>
+    <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+  </div>
+
+  <button class="oc-hold" id="hold" type="button" aria-label="Hold to creep">HOLD TO CREEP</button>
+  <p class="oc-stats"><span id="best">Most cents 0</span></p>
+  <p class="narrator oc-about">Big Barry is the office building with one enormous eye on the roof. Nickelpig will fight over a single cent, and there is one in the road outside.</p>
+</main>
+
+<footer class="foot">
+  <p><a href="../../">Rotville. A perfectly normal town.</a></p>
+</footer>
+
+<script src="assets/game.js" defer></script>
+</body>
+</html>

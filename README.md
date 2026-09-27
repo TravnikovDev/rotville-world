@@ -8,11 +8,13 @@ The main page has the town, the ways to watch it, and a small TV on Channel 3 th
 
 [Megabite](https://rotville.world/games/megabite/) is the first game. Megabite is a snake of iron blocks with a plug for a head, and he goes under the town eating the square things people leave lying about. He gets longer. That is the whole of it. It plays with the arrow keys on a computer and with swipes on a phone.
 
+[One Cent](https://rotville.world/games/one-cent/) is the second. Nickelpig wants the single cent lying in the road outside Big Barry, the office building with one enormous eye on its roof, and he may only move while that eye is shut. Hold to creep, let go when the eye opens.
+
 Rotville is on [YouTube](https://www.youtube.com/@Rotville), [TikTok](https://www.tiktok.com/@rotville.world) and [Instagram](https://www.instagram.com/rotville.world/).
 
 ## How it is made
 
-The site is plain HTML, CSS and JavaScript, with no framework and no build step, and GitHub Pages serves the `main` branch as it is. Megabite is drawn on a canvas from pre-rendered sprites. The fonts are VT323, Lilita One and Overpass from Google Fonts.
+The site is plain HTML, CSS and JavaScript, with no framework and no build step, and GitHub Pages serves the `main` branch as it is. The games are drawn on a canvas from pre-rendered sprites. The fonts are VT323, Lilita One and Overpass from Google Fonts.
 
 To run it on your own computer, start a static server in this folder and open http://localhost:8000:
 
@@ -23,7 +25,7 @@ python3 -m http.server 8000
 | path | what it is |
 |---|---|
 | `index.html`, `assets/` | the main page with its styles, script, pictures, reel and music |
-| `games/megabite/` | the game |
+| `games/megabite/`, `games/one-cent/` | the games |
 | `404.html` | the page for a link that leads nowhere |
 | `CNAME` | the domain |
 
