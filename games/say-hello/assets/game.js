@@ -113,7 +113,8 @@
   audio.fetch();
 
   /* ---------- the chamber ---------- */
-  let SC, atlas, ready = false, pat = {};
+  let SC, atlas, wallImg, ready = false, pat = {};
+  let drips = [], dripT = 0.8;
   let state = "ready";                     // ready, play, stopped, pause, over
   let clock = 0, playT = 0, endT = 0, nextOpen = OPEN_EVERY, acc = 0;
   let pipes = [], caps = [], bubbles = [], gil, shy;
@@ -175,6 +176,16 @@
 
   function update(dt) {
     clock += dt;
+    // a drop gathers at the outflow's mouth, falls into the gutter and rings out
+    dripT -= dt;
+    if (dripT <= 0) { dripT = rnd(0.8, 1.6); drips.push({ t: 0, y: 0, v: 0, land: -1 }); }
+    for (const d of drips) {
+      d.t += dt;
+      if (d.t < 0.35) continue;
+      if (d.land < 0) { d.v += 320 * dt; d.y += d.v * dt; if (SC.wall.outflow[1] + 3 + d.y >= WALL + 4) d.land = 0; }
+      else d.land += dt;
+    }
+    drips = drips.filter(d => d.land < 0.4);
     for (const b of bubbles) b.t += dt;
     bubbles = bubbles.filter(b => b.t < b.dur);
     for (const c of caps) c.t += dt;
@@ -337,13 +348,39 @@
 
   function draw() {
     // the back wall: brick, darker toward the top, with a shadow along its foot
-    g.fillStyle = pat.wall; g.fillRect(0, 0, W, WALL);
+    // (hello_wall.py: the culvert with its gate, the vent, the lamp, the pipe run and the valve, from the game's camera)
+    g.drawImage(wallImg, 0, 0);
     let gr = g.createLinearGradient(0, 0, 0, WALL);
-    gr.addColorStop(0, "rgba(8,6,20,.78)"); gr.addColorStop(1, "rgba(8,6,20,.3)");
+    gr.addColorStop(0, "rgba(8,6,20,.62)"); gr.addColorStop(1, "rgba(8,6,20,.26)");
     g.fillStyle = gr; g.fillRect(0, 0, W, WALL);
+    // the lamp's light on the bricks, not quite steady
+    const L = SC.wall.lamp, dip = Math.floor(clock * 7) % 19 === 0 ? 0.1 : 0;
+    const glow = Math.max(0, 0.26 + 0.05 * Math.sin(clock * 11) + 0.03 * Math.sin(clock * 23.7) - dip);
+    g.globalCompositeOperation = "lighter";
+    gr = g.createRadialGradient(L[0], L[1], 2, L[0], L[1], 46);
+    gr.addColorStop(0, "rgba(255,196,120," + glow.toFixed(3) + ")"); gr.addColorStop(1, "rgba(255,196,120,0)");
+    g.fillStyle = gr; g.fillRect(L[0] - 46, L[1] - 46, 92, 92);
+    g.globalCompositeOperation = "source-over";
     // the floor, and the dark of the corners
     g.fillStyle = pat.floor; g.fillRect(0, WALL, W, H - WALL);
     g.fillStyle = "rgba(14,14,26,.44)"; g.fillRect(0, WALL, W, H - WALL);
+    // the gutter along the foot of the wall, the water in it going along, and the outflow dripping into it
+    g.fillStyle = "rgba(0,0,6,.5)"; g.fillRect(0, WALL, W, 9);
+    pat.water.setTransform(new DOMMatrix().translate((clock * 9) % 32, WALL));
+    g.globalAlpha = 0.85; g.fillStyle = pat.water; g.fillRect(0, WALL + 2, W, 6); g.globalAlpha = 1;
+    g.fillStyle = "rgba(150,180,230,.3)"; g.fillRect(0, WALL + 2, W, 1);
+    g.fillStyle = "rgba(170,190,230,.25)"; g.fillRect(0, WALL + 8, W, 1);
+    const O = SC.wall.outflow, ox = Math.round(O[0]), oy = Math.round(O[1] + 3);
+    for (const d of drips) {
+      g.fillStyle = "rgba(223,234,255,.95)";
+      if (d.t < 0.35) g.fillRect(ox, oy, 1, d.t > 0.2 ? 2 : 1);
+      else if (d.land < 0) g.fillRect(ox, Math.round(oy + d.y), 1, 2);
+      else {
+        const u = d.land / 0.4;
+        g.strokeStyle = "rgba(223,234,255," + (0.85 * (1 - u)).toFixed(2) + ")"; g.lineWidth = 1;
+        g.beginPath(); g.ellipse(ox + 0.5, WALL + 4.5, 1 + 7 * u, 0.6 + 1.8 * u, 0, 0, Math.PI * 2); g.stroke();
+      }
+    }
     gr = g.createLinearGradient(0, WALL, 0, WALL + 26);
     gr.addColorStop(0, "rgba(0,0,0,.55)"); gr.addColorStop(1, "rgba(0,0,0,0)");
     g.fillStyle = gr; g.fillRect(0, WALL, W, 26);
@@ -479,11 +516,11 @@
   addEventListener("resize", sayVolume);
   sayVolume();
 
-  Promise.all([fetch("assets/scene.json").then(r => r.json()), load("assets/sprites.png"), load("assets/tiles.png")])
-    .then(([s, a, t]) => {
-      SC = s; atlas = a;
+  Promise.all([fetch("assets/scene.json").then(r => r.json()), load("assets/sprites.png"), load("assets/tiles.png"), load("assets/wall.png")])
+    .then(([s, a, t, wl]) => {
+      SC = s; atlas = a; wallImg = wl;
       const tile = name => { const [c, x2] = off(32, 32); x2.drawImage(t, s.tiles[name] * 32, 0, 32, 32, 0, 0, 32, 32); return g.createPattern(c, "repeat"); };
-      pat = { floor: tile("stone-block"), wall: tile("brick-mossy") };
+      pat = { floor: tile("stone-block"), water: tile("water") };
       reset(); ready = true;
     })
     .catch(() => { $("sub").textContent = "The tape would not load. Try the page again."; });
