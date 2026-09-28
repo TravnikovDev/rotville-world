@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pipe Dream · Rotville</title>
+<meta name="description" content="When dreams clog in Rotville, Knightley is called. A dream comes up like a cloud in front of Snoreacle; lay pipe to carry it to the drain before it gets out onto the floor.">
+<link rel="canonical" href="https://rotville.world/games/pipe-dream/">
+<meta name="theme-color" content="#120d2a">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rotville">
+<meta property="og:title" content="Pipe Dream · Rotville">
+<meta property="og:description" content="When dreams clog in Rotville, Knightley is called. Lay the pipe before the dream reaches the end of it.">
+<meta property="og:url" content="https://rotville.world/games/pipe-dream/">
+<meta property="og:image" content="https://rotville.world/games/pipe-dream/assets/og.jpg">
+<meta property="og:image:alt" content="Knightley, a frog skeleton in a starry sleep cap and a moon-and-stars apron holding a wrench, beside a grid of rusty pipes that carry a pastel cloud with stars in it from a sleeping hooded idol to a drain.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rotville.world/games/pipe-dream/assets/og.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" href="../../favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<link rel="stylesheet" href="../../assets/gate.css">
+<link rel="stylesheet" href="assets/game.css">
+</head>
+<body class="pd">
+
+<header class="pd-bar">
+  <a class="pd-back" href="../../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l8 7-8 7v-5H3z"/></svg>Rotville</a>
+  <h1 class="pd-title"><span class="sr-only">Pipe Dream</span><span class="pdt" aria-hidden="true"><span>P</span><span>I</span><span>P</span><span>E</span><span class="pdt-gap"> </span><span class="pdt-d">D</span><span class="pdt-d">R</span><span class="pdt-d">E</span><span class="pdt-d">A</span><span class="pdt-d">M</span></span></h1>
+  <button class="tape" id="sound" type="button" aria-pressed="true"><span class="led" aria-hidden="true"></span><span class="tape-label">Sound: on</span></button>
+</header>
+
+<main class="pd-main" id="area">
+  <div class="tv-set pd-set">
+    <div class="tv-screen pd-screen" id="screen">
+      <canvas id="c" width="270" height="480" aria-label="A grid of floor squares where Knightley lays pipe from a sleeping hooded idol to a drain"></canvas>
+      <span class="static" id="static" aria-hidden="true"></span>
+      <span class="osd pd-ch" aria-hidden="true">CH 15</span>
+      <span class="osd pd-timer" id="timer" aria-live="off"></span>
+      <span class="osd pd-cleared" id="cleared">0 CLEARED</span>
+      <span class="osd pd-wet" id="wet" aria-label="Dry floors left: 3 of 3">●●●</span>
+      <p class="pd-sub" id="sub" aria-live="polite"></p>
+
+      <div class="pd-card" id="ready">
+        <button class="pd-play" id="play" type="button">▶ PLAY</button>
+        <p class="pd-hint">A dream comes up like a cloud in front of Snoreacle. Lay pipe to carry it to the drain before it gets out onto the floor.</p>
+        <p class="pd-hint">Tap a square to lay the next piece there. Tap a piece again to swap it. Flush sends the dream through faster.</p>
+        <p class="pd-hint pd-hint-keys">Arrow keys and Space lay pipe. F flushes.</p>
+        <p class="pd-hint pd-lore">Three wet floors, and the night is over.</p>
+      </div>
+
+      <div class="pd-card" id="over" hidden>
+        <h2 class="title pd-over-title" id="over-title">The night is over.</h2>
+        <p class="pd-over-line" id="over-line">Knightley cleared no clogs.</p>
+        <p class="pd-over-stats" id="over-stats"></p>
+        <div class="pd-over-actions">
+          <button class="pd-play" id="again" type="button">▶ AGAIN</button>
+          <button class="tape pd-share" id="share" type="button"><span class="tape-label">Share</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
+    <span class="tv-knob" aria-hidden="true"></span>
+    <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+  </div>
+
+  <button class="pd-flush" id="flush" type="button">FLUSH ▶▶</button>
+  <p class="pd-stats"><span id="best">Most cleared 0</span></p>
+  <p class="narrator pd-about">The pipes behind the town's eyelids are older than the town, and dreams keep clogging in them. When they do, Knightley is called. He works while you sleep, and he leaves the floor wet.</p>
+</main>
+
+<footer class="foot">
+  <p><a href="../../">Rotville. A perfectly normal town.</a></p>
+</footer>
+
+<script src="assets/game.js" defer></script>
+</body>
+</html>

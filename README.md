@@ -18,6 +18,8 @@ The main page has the town, the ways to watch it, and a small TV on Channel 3 th
 
 [Say Hello](https://rotville.world/games/say-hello/) is the sixth. Gil Lister, a cheerful worm who lives inside the pipes, pops out of one pipe after another to say hello, and in the town's lore nobody ever says it back. Here you do: tap him while he is out. Shytan pops out too, under his umbrella, and tapping him counts as a miss. The pipes lose their caps one by one and Gil gets quicker, and three hellos nobody answered end it.
 
+[Pipe Dream](https://rotville.world/games/pipe-dream/) is the seventh. When dreams clog in Rotville, Knightley is called: the dream plumber, a frog skeleton in a starry sleep cap. A dream comes up like a cloud in front of Snoreacle, the hooded idol that mutters in its sleep, and you lay pipe from the next pieces to carry it to the drain before it reaches an open end. If it does, it gets out onto the floor and leaves a puddle with a star floating in it, and three wet floors end the night. The first clogs are near and come with the pieces they need; after that, every clog cleared, the dream comes sooner and runs faster, and there is more old pipe nobody can move.
+
 Rotville is on [YouTube](https://www.youtube.com/@Rotville), [TikTok](https://www.tiktok.com/@rotville.world) and [Instagram](https://www.instagram.com/rotville.world/).
 
 ## How it is made
@@ -33,7 +35,7 @@ python3 -m http.server 8000
 | path | what it is |
 |---|---|
 | `index.html`, `assets/` | the main page with its styles, script, pictures, reel and music |
-| `games/megabite/`, `games/one-cent/`, `games/lamp/`, `games/drain/`, `games/paper-round/`, `games/say-hello/` | the games |
+| `games/megabite/`, `games/one-cent/`, `games/lamp/`, `games/drain/`, `games/paper-round/`, `games/say-hello/`, `games/pipe-dream/` | the games |
 | `404.html` | the page for a link that leads nowhere |
 | `CNAME` | the domain |
 
