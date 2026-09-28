@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Say Hello · Rotville</title>
+<meta name="description" content="Gil Lister pops out of the pipes to say hello, and nobody ever says it back. Say it back: tap him while he is out. Shytan pops out too, under his umbrella. Do not make eye contact.">
+<link rel="canonical" href="https://rotville.world/games/say-hello/">
+<meta name="theme-color" content="#120d2a">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rotville">
+<meta property="og:title" content="Say Hello · Rotville">
+<meta property="og:description" content="Gil Lister pops out of the pipes to say hello. Say it back.">
+<meta property="og:url" content="https://rotville.world/games/say-hello/">
+<meta property="og:image" content="https://rotville.world/games/say-hello/assets/og.jpg">
+<meta property="og:image:alt" content="Gil Lister, a brown segmented worm with a very large smile and tiny arms, coming up out of a rusty sewer pipe with a speech bubble that says HELLO, among a grid of pipes on a stone floor.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rotville.world/games/say-hello/assets/og.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" href="../../favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<link rel="stylesheet" href="../../assets/gate.css">
+<link rel="stylesheet" href="assets/game.css">
+</head>
+<body class="sh">
+
+<header class="sh-bar">
+  <a class="sh-back" href="../../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l8 7-8 7v-5H3z"/></svg>Rotville</a>
+  <h1 class="sh-title"><span class="sr-only">Say Hello</span><span class="sht" aria-hidden="true"><span>S</span><span>A</span><span>Y</span><span class="sht-gap"> </span><span>H</span><span>E</span><span>L</span><span>L</span><span class="sht-pipe">O</span></span></h1>
+  <button class="tape" id="sound" type="button" aria-pressed="true"><span class="led" aria-hidden="true"></span><span class="tape-label">Sound: on</span></button>
+</header>
+
+<main class="sh-main" id="area">
+  <div class="tv-set sh-set">
+    <div class="tv-screen sh-screen" id="screen">
+      <canvas id="c" width="270" height="480" aria-label="A sewer floor with twelve pipes coming up out of it, where Gil Lister pops out to say hello"></canvas>
+      <span class="static" id="static" aria-hidden="true"></span>
+      <span class="osd sh-ch" aria-hidden="true">CH 13</span>
+      <span class="osd sh-hellos" id="hellos">0 SAID BACK</span>
+      <span class="osd sh-misses" id="misses" aria-label="Unanswered hellos left: 3 of 3">●●●</span>
+      <p class="sh-sub" id="sub" aria-live="polite"></p>
+
+      <div class="sh-card" id="ready">
+        <button class="sh-play" id="play" type="button">▶ PLAY</button>
+        <p class="sh-hint">Gil Lister pops out of the pipes to say hello. Tap him while he is out, and you have said it back.</p>
+        <p class="sh-hint">Shytan pops out too, under his umbrella. Leave him be.</p>
+        <p class="sh-hint sh-hint-keys">Keys 1 2 3, Q W E, A S D and Z X C are the pipes.</p>
+        <p class="sh-hint sh-lore">Three hellos nobody answered, and it is over.</p>
+      </div>
+
+      <div class="sh-card" id="over" hidden>
+        <h2 class="title sh-over-title" id="over-title">Gil Lister went back in.</h2>
+        <p class="sh-over-line" id="over-line">You said it back 0 times.</p>
+        <p class="sh-over-stats" id="over-stats"></p>
+        <div class="sh-over-actions">
+          <button class="sh-play" id="again" type="button">▶ AGAIN</button>
+          <button class="tape sh-share" id="share" type="button"><span class="tape-label">Share</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
+    <span class="tv-knob" aria-hidden="true"></span>
+    <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+  </div>
+
+  <p class="sh-stats"><span id="best">Most said back 0</span></p>
+  <p class="narrator sh-about">Gil Lister lives inside the pipes and can take any bend. He pops out to say hello. It is the only greeting in the sewer system, and it is not reciprocated.</p>
+</main>
+
+<footer class="foot">
+  <p><a href="../../">Rotville. A perfectly normal town.</a></p>
+</footer>
+
+<script src="assets/game.js" defer></script>
+</body>
+</html>

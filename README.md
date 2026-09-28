@@ -16,6 +16,8 @@ The main page has the town, the ways to watch it, and a small TV on Channel 3 th
 
 [Paper Round](https://rotville.world/games/paper-round/) is the fifth. Sprouted Doris walks a lane on her roots with a satchel of envelopes and delivers the hellos nobody sent to the places people live in, a post, a pipe, a bench, a file. Tap a place with a green flower to throw one, steer round the puddles and what is left on the lane, and pick up more letters as you go. Three places missed and the round is over.
 
+[Say Hello](https://rotville.world/games/say-hello/) is the sixth. Gil Lister, a cheerful worm who lives inside the pipes, pops out of one pipe after another to say hello, and in the town's lore nobody ever says it back. Here you do: tap him while he is out. Shytan pops out too, under his umbrella, and tapping him counts as a miss. The pipes lose their caps one by one and Gil gets quicker, and three hellos nobody answered end it.
+
 Rotville is on [YouTube](https://www.youtube.com/@Rotville), [TikTok](https://www.tiktok.com/@rotville.world) and [Instagram](https://www.instagram.com/rotville.world/).
 
 ## How it is made
@@ -31,7 +33,7 @@ python3 -m http.server 8000
 | path | what it is |
 |---|---|
 | `index.html`, `assets/` | the main page with its styles, script, pictures, reel and music |
-| `games/megabite/`, `games/one-cent/`, `games/lamp/`, `games/drain/`, `games/paper-round/` | the games |
+| `games/megabite/`, `games/one-cent/`, `games/lamp/`, `games/drain/`, `games/paper-round/`, `games/say-hello/` | the games |
 | `404.html` | the page for a link that leads nowhere |
 | `CNAME` | the domain |
 
