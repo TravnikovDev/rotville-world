@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Channel 3 · Rotville</title>
+<meta name="description" content="Channel 3 never changes its number, only its programme. A few seconds each, one order from the narrator each, and faster every few channels: catch that cent, do not move, light the dark rooms, find the key, eat the square, move while it blinks.">
+<link rel="canonical" href="https://rotville.world/games/channel-3/">
+<meta name="theme-color" content="#120d2a">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rotville">
+<meta property="og:title" content="Channel 3 · Rotville">
+<meta property="og:description" content="A few seconds a channel. Do what the narrator says. It gets faster.">
+<meta property="og:url" content="https://rotville.world/games/channel-3/">
+<meta property="og:image" content="https://rotville.world/games/channel-3/assets/og.jpg">
+<meta property="og:image:alt" content="A small TV on Channel 3 showing the order DO NOT MOVE over Big Barry's enormous eye.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rotville.world/games/channel-3/assets/og.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" href="../../favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<link rel="stylesheet" href="../../assets/gate.css">
+<link rel="stylesheet" href="assets/game.css">
+</head>
+<body class="c3">
+
+<header class="c3-bar">
+  <a class="c3-back" href="../../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l8 7-8 7v-5H3z"/></svg>Rotville</a>
+  <h1 class="c3-title"><span class="sr-only">Channel 3</span><span class="c3t" aria-hidden="true"><span>C</span><span>H</span><span>A</span><span>N</span><span>N</span><span>E</span><span>L</span><span class="c3t-gap"> </span><span class="c3t-3">3</span></span></h1>
+  <button class="tape" id="sound" type="button" aria-pressed="true"><span class="led" aria-hidden="true"></span><span class="tape-label">Sound: on</span></button>
+</header>
+
+<main class="c3-main" id="area">
+  <div class="tv-set c3-set">
+    <div class="tv-screen c3-screen" id="screen">
+      <canvas id="c" width="270" height="480" aria-label="Channel 3"></canvas>
+      <span class="static" id="static" aria-hidden="true"></span>
+      <span class="osd c3-ch" aria-hidden="true">CH 03</span>
+      <span class="osd c3-lives" id="lives" aria-label="Tries left: 3 of 3">●●●</span>
+      <span class="osd c3-count" id="count">0 WATCHED</span>
+      <p class="c3-order" id="order" aria-live="assertive"></p>
+      <p class="c3-verdict" id="verdict" aria-live="polite"></p>
+      <p class="c3-sub" id="sub" aria-live="polite"></p>
+
+      <div class="c3-card" id="ready">
+        <button class="c3-play" id="play" type="button">▶ PLAY</button>
+        <p class="c3-hint">A few seconds a channel. Do what the narrator says.</p>
+        <p class="c3-hint">Tap, drag, hold or swipe, as the programme needs.</p>
+        <p class="c3-hint c3-hint-keys">Arrow keys and Space work too.</p>
+        <p class="c3-hint c3-lore">Three misses and Channel 3 goes off the air.</p>
+      </div>
+
+      <div class="c3-card" id="over" hidden>
+        <h2 class="title c3-over-title" id="over-title">Off the air.</h2>
+        <p class="c3-over-line" id="over-line">You watched 0 channels.</p>
+        <p class="c3-over-stats" id="over-stats"></p>
+        <div class="c3-over-actions">
+          <button class="c3-play" id="again" type="button">▶ AGAIN</button>
+          <button class="tape c3-share" id="share" type="button"><span class="tape-label">Share</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
+    <span class="tv-knob" aria-hidden="true"></span>
+    <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+  </div>
+
+  <button class="c3-hold" id="hold" type="button" aria-label="Hold">HOLD</button>
+  <p class="c3-stats"><span id="best">Most watched 0</span></p>
+  <p class="narrator c3-about">Channel 3 is the only channel in Rotville. It keeps its number and changes its programme every few seconds, and every programme is somebody from town doing one thing.</p>
+</main>
+
+<footer class="foot">
+  <p><a href="../../">Rotville. A perfectly normal town.</a></p>
+</footer>
+
+<script src="assets/game.js" defer></script>
+</body>
+</html>

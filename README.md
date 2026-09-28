@@ -14,6 +14,8 @@ The main page has the town, the ways to watch it, and a small TV on Channel 3 th
 
 [Down the Drain](https://rotville.world/games/drain/) is the fourth. Holloring, a pink see-through jelly who keeps whatever gets lost down the drains, falls down a dark shaft that gets faster and darker the deeper he goes. A holler lights it up for a moment, whatever he catches floats inside him, and each pipe he hits knocks one thing back out. Three knocks and he stops, and the score is how far down he got.
 
+[Channel 3](https://rotville.world/games/channel-3/) is the fifth: a few seconds a channel and one order from the narrator each, faster every four. Catch that cent with Nickelpig, do not move under Big Barry's eye, light Fusegrin's dark rooms, find the key with Holloring, steer Megabite onto the square, and creep while the eye blinks. It borrows its residents from the other games' own sprite sheets. Three misses and it goes off the air.
+
 Rotville is on [YouTube](https://www.youtube.com/@Rotville), [TikTok](https://www.tiktok.com/@rotville.world) and [Instagram](https://www.instagram.com/rotville.world/).
 
 ## How it is made
@@ -29,7 +31,7 @@ python3 -m http.server 8000
 | path | what it is |
 |---|---|
 | `index.html`, `assets/` | the main page with its styles, script, pictures, reel and music |
-| `games/megabite/`, `games/one-cent/`, `games/lamp/`, `games/drain/` | the games |
+| `games/megabite/`, `games/one-cent/`, `games/lamp/`, `games/drain/`, `games/channel-3/` | the games |
 | `404.html` | the page for a link that leads nowhere |
 | `CNAME` | the domain |
 
