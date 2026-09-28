@@ -385,6 +385,16 @@ a { color: inherit; }
   .deck { grid-column: 1; grid-row: 3; justify-items: start; margin-top: 6px; }
   .tv-set { width: 320px; }
 }
+/* the set stays in view, 40px from the top, while the signs scroll past it. A shorter screen gets a smaller set, so
+   the title and the links under it stay on screen too: 269px is everything in the section but the picture, plus the
+   40px and a little air. A screen under 600px tall is too short for it, and the set scrolls as before. */
+@media (min-width: 900px) and (min-height: 600px) {
+  .tv { position: sticky; top: 40px; }
+  .tv-set {
+    width: min(320px, calc((100vh - 269px) * .5625 + 32px));
+    width: min(320px, calc((100dvh - 269px) * .5625 + 32px));
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .tape-fx::after, .band, .osd-clock, .static.on, .wm > span { animation: none; }
