@@ -243,6 +243,9 @@ a { color: inherit; }
 /* a place to go in town, not a way out of it: the brown sign roads use for attractions, its arrow straight ahead */
 .sign-play { --sign: #6f4527; --sign-hi: #85532f; --sign-deep: #3a2313; }
 .sign .arrow-ahead { transform: none; }
+/* a game that has a place on the road but is not open yet */
+.sign-soon { grid-template-columns: auto 1fr; opacity: .55; cursor: default; }
+.sign-soon:hover, .sign-soon:active { background: var(--sign); transform: none; }
 
 /* ---------- Channel 3 ---------- */
 .tv { display: grid; justify-items: center; text-align: center; }

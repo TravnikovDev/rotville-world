@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paper Round · Rotville</title>
+<meta name="description" content="Sprouted Doris delivers the hellos nobody sent. Walk her down the lane, throw a hello to every place with someone in, mind the puddles, and pick up more letters as you go.">
+<link rel="canonical" href="https://rotville.world/games/paper-round/">
+<meta name="theme-color" content="#120d2a">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rotville">
+<meta property="og:title" content="Paper Round · Rotville">
+<meta property="og:description" content="Sprouted Doris delivers the hellos nobody sent. Nobody sent them.">
+<meta property="og:url" content="https://rotville.world/games/paper-round/">
+<meta property="og:image" content="https://rotville.world/games/paper-round/assets/og.jpg">
+<meta property="og:image:alt" content="Sprouted Doris, a green flower with one red petal and a single gold eye, walking a lane on her roots with a satchel of envelopes, between a filing cabinet, a bench and a door that residents live in.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rotville.world/games/paper-round/assets/og.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" href="../../favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<link rel="stylesheet" href="../../assets/gate.css">
+<link rel="stylesheet" href="assets/game.css">
+</head>
+<body class="pr">
+
+<header class="pr-bar">
+  <a class="pr-back" href="../../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l8 7-8 7v-5H3z"/></svg>Rotville</a>
+  <h1 class="pr-title"><span class="sr-only">Paper Round</span><span class="prt" aria-hidden="true"><span>P</span><span>A</span><span>P</span><span>E</span><span>R</span><span class="prt-gap"> </span><span>R</span><span class="prt-red">O</span><span>U</span><span>N</span><span>D</span></span></h1>
+  <button class="tape" id="sound" type="button" aria-pressed="true"><span class="led" aria-hidden="true"></span><span class="tape-label">Sound: on</span></button>
+</header>
+
+<main class="pr-main" id="area">
+  <div class="tv-set pr-set">
+    <div class="tv-screen pr-screen" id="screen">
+      <canvas id="c" width="270" height="480" aria-label="Sprouted Doris walking a lane with a satchel of envelopes"></canvas>
+      <span class="static" id="static" aria-hidden="true"></span>
+      <span class="osd pr-ch" aria-hidden="true">CH 11</span>
+      <span class="osd pr-hellos" id="hellos">0 HELLOS</span>
+      <span class="osd pr-letters" id="letters" aria-label="Letters in the satchel">✉ 12</span>
+      <span class="osd pr-misses" id="misses" aria-label="Misses left: 3 of 3">●●●</span>
+      <p class="pr-sub" id="sub" aria-live="polite"></p>
+
+      <div class="pr-card" id="ready">
+        <button class="pr-play" id="play" type="button">▶ PLAY</button>
+        <p class="pr-hint">Tap a place with a green flower and she throws a hello there.</p>
+        <p class="pr-hint">Drag to steer round the puddles and what is left on the lane. Walk over letters to pick them up.</p>
+        <p class="pr-hint pr-hint-keys">Arrow keys to steer, Space to throw.</p>
+        <p class="pr-hint pr-lore">Three places missed and the round is over.</p>
+      </div>
+
+      <div class="pr-card" id="over" hidden>
+        <h2 class="title pr-over-title" id="over-title">The round is over.</h2>
+        <p class="pr-over-line" id="over-line">Sprouted Doris delivered 0 hellos.</p>
+        <p class="pr-over-stats" id="over-stats"></p>
+        <div class="pr-over-actions">
+          <button class="pr-play" id="again" type="button">▶ AGAIN</button>
+          <button class="tape pr-share" id="share" type="button"><span class="tape-label">Share</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
+    <span class="tv-knob" aria-hidden="true"></span>
+    <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+  </div>
+
+  <button class="pr-throw" id="throw" type="button">THROW</button>
+  <p class="pr-stats"><span id="best">Most hellos 0</span></p>
+  <p class="narrator pr-about">Sprouted Doris used to watch from the puddles. Now she walks the lanes on her roots with a satchel of envelopes, and delivers the hellos nobody sent to everyone who lives in a post, a pipe, a bench or a file.</p>
+</main>
+
+<footer class="foot">
+  <p><a href="../../">Rotville. A perfectly normal town.</a></p>
+</footer>
+
+<script src="assets/game.js" defer></script>
+</body>
+</html>
