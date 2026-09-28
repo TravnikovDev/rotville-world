@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lamp · Rotville</title>
+<meta name="description" content="Fusegrin's fuse is not a countdown. It is his lamp. The bulbs in the house go out one after another, and you roll him from room to room to keep the whole house lit.">
+<link rel="canonical" href="https://rotville.world/games/lamp/">
+<meta name="theme-color" content="#120d2a">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rotville">
+<meta property="og:title" content="Lamp · Rotville">
+<meta property="og:description" content="The fuse is not a countdown. It is his lamp. Keep the house lit.">
+<meta property="og:url" content="https://rotville.world/games/lamp/">
+<meta property="og:image" content="https://rotville.world/games/lamp/assets/og.jpg">
+<meta property="og:image:alt" content="A house cut open at night, some rooms lit and some dark, and Fusegrin, a navy iron ball with a lit fuse and a grin, standing in one of them.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rotville.world/games/lamp/assets/og.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" href="../../favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<link rel="stylesheet" href="../../assets/gate.css">
+<link rel="stylesheet" href="assets/game.css">
+</head>
+<body class="lp">
+
+<header class="lp-bar">
+  <a class="lp-back" href="../../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l8 7-8 7v-5H3z"/></svg>Rotville</a>
+  <h1 class="lp-title"><span class="sr-only">Lamp</span><span class="lpt" aria-hidden="true"><span>L</span><span class="lpt-a">A</span><span>M</span><span>P</span></span></h1>
+  <button class="tape" id="sound" type="button" aria-pressed="true"><span class="led" aria-hidden="true"></span><span class="tape-label">Sound: on</span></button>
+</header>
+
+<main class="lp-main" id="area">
+  <div class="tv-set lp-set">
+    <div class="tv-screen lp-screen" id="screen">
+      <canvas id="c" width="270" height="480" aria-label="A house cut open at night, and Fusegrin in one of its rooms"></canvas>
+      <span class="static" id="static" aria-hidden="true"></span>
+      <span class="osd lp-ch" aria-hidden="true">CH 07</span>
+      <span class="osd lp-lit" id="lit">0 LIT</span>
+      <span class="osd lp-dark" id="dark" aria-label="Rooms dark: 0 of 3">●●●</span>
+      <p class="lp-sub" id="sub" aria-live="polite"></p>
+
+      <div class="lp-card" id="ready">
+        <button class="lp-play" id="play" type="button">▶ PLAY</button>
+        <p class="lp-hint">Tap a room and Fusegrin rolls there.</p>
+        <p class="lp-hint">A room lights up while he stands in it.</p>
+        <p class="lp-hint lp-hint-keys">Arrow keys or WASD on a keyboard.</p>
+        <p class="lp-hint lp-lore">Three dark rooms at once and the house has gone dark.</p>
+      </div>
+
+      <div class="lp-card" id="over" hidden>
+        <h2 class="title lp-over-title" id="over-title">The house went dark.</h2>
+        <p class="lp-over-line" id="over-line">Fusegrin lit 0 rooms.</p>
+        <p class="lp-over-stats" id="over-stats"></p>
+        <div class="lp-over-actions">
+          <button class="lp-play" id="again" type="button">▶ AGAIN</button>
+          <button class="tape lp-share" id="share" type="button"><span class="tape-label">Share</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
+    <span class="tv-knob" aria-hidden="true"></span>
+    <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+  </div>
+
+  <p class="lp-stats"><span id="best">Most rooms 0</span></p>
+  <p class="narrator lp-about">Fusegrin is a navy iron ball with a fuse that has been lit for as long as anyone can remember. People carry him into rooms that have lost their light and stand him in a corner, and he is pleased to be asked.</p>
+</main>
+
+<footer class="foot">
+  <p><a href="../../">Rotville. A perfectly normal town.</a></p>
+</footer>
+
+<script src="assets/game.js" defer></script>
+</body>
+</html>

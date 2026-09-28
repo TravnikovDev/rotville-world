@@ -10,6 +10,8 @@ The main page has the town, the ways to watch it, and a small TV on Channel 3 th
 
 [One Cent](https://rotville.world/games/one-cent/) is the second. Nickelpig wants the single cent lying in the road outside Big Barry, the office building with one enormous eye on its roof, and he may only move while that eye is shut. Hold to creep, let go when the eye opens.
 
+[Lamp](https://rotville.world/games/lamp/) is the third. Fusegrin is a navy iron ball whose fuse is not a countdown but his lamp. The bulbs in a house go out one after another, and you roll him from room to room, up and down the ladders, to keep the whole house lit.
+
 Rotville is on [YouTube](https://www.youtube.com/@Rotville), [TikTok](https://www.tiktok.com/@rotville.world) and [Instagram](https://www.instagram.com/rotville.world/).
 
 ## How it is made
@@ -25,7 +27,7 @@ python3 -m http.server 8000
 | path | what it is |
 |---|---|
 | `index.html`, `assets/` | the main page with its styles, script, pictures, reel and music |
-| `games/megabite/`, `games/one-cent/` | the games |
+| `games/megabite/`, `games/one-cent/`, `games/lamp/` | the games |
 | `404.html` | the page for a link that leads nowhere |
 | `CNAME` | the domain |
 
