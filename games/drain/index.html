@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Down the Drain · Rotville</title>
+<meta name="description" content="Holloring keeps whatever gets lost down the drains. Steer him down a dark shaft that gets faster and darker the deeper he goes, holler to light it up, and catch the lost things. Three knocks and he stops.">
+<link rel="canonical" href="https://rotville.world/games/drain/">
+<meta name="theme-color" content="#120d2a">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rotville">
+<meta property="og:title" content="Down the Drain · Rotville">
+<meta property="og:description" content="Holloring keeps whatever gets lost down here. How deep can he go?">
+<meta property="og:url" content="https://rotville.world/games/drain/">
+<meta property="og:image" content="https://rotville.world/games/drain/assets/og.jpg">
+<meta property="og:image:alt" content="Holloring, a pink see-through jelly drop with one eye, falling down a dark drain shaft lit by the ring of his own echo, with lost things floating round him.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rotville.world/games/drain/assets/og.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" href="../../favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<link rel="stylesheet" href="../../assets/gate.css">
+<link rel="stylesheet" href="assets/game.css">
+</head>
+<body class="dd">
+
+<header class="dd-bar">
+  <a class="dd-back" href="../../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l8 7-8 7v-5H3z"/></svg>Rotville</a>
+  <h1 class="dd-title"><span class="sr-only">Down the Drain</span><span class="ddt" aria-hidden="true"><span>D</span><span>O</span><span>W</span><span>N</span><span class="ddt-gap"> </span><span>T</span><span>H</span><span>E</span><span class="ddt-gap"> </span><span>D</span><span>R</span><span>A</span><span>I</span><span>N</span></span></h1>
+  <button class="tape" id="sound" type="button" aria-pressed="true"><span class="led" aria-hidden="true"></span><span class="tape-label">Sound: on</span></button>
+</header>
+
+<main class="dd-main" id="area">
+  <div class="tv-set dd-set">
+    <div class="tv-screen dd-screen" id="screen">
+      <canvas id="c" width="270" height="480" aria-label="Holloring falling down a dark drain shaft"></canvas>
+      <span class="static" id="static" aria-hidden="true"></span>
+      <span class="osd dd-ch" aria-hidden="true">CH 09</span>
+      <span class="osd dd-kept" id="kept">0 KEPT</span>
+      <span class="osd dd-depth" id="depth" aria-label="Depth">0 M</span>
+      <span class="osd dd-knocks" id="knocks" aria-label="Knocks left: 3 of 3">●●●</span>
+      <p class="dd-sub" id="sub" aria-live="polite"></p>
+
+      <div class="dd-card" id="ready">
+        <button class="dd-play" id="play" type="button">▶ PLAY</button>
+        <p class="dd-hint">Drag to steer. Tap to holler.</p>
+        <p class="dd-hint dd-hint-keys">Arrow keys to steer, Space to holler.</p>
+        <p class="dd-hint">The echo lights the drain for a moment. Catch what got lost, mind the pipes.</p>
+        <p class="dd-hint">A pipe knocks one thing back out of him. The deeper he goes, the faster and darker it gets.</p>
+        <p class="dd-hint dd-lore">Three knocks and he stops.</p>
+      </div>
+
+      <div class="dd-card" id="over" hidden>
+        <h2 class="title dd-over-title" id="over-title">Holloring went 0 m down.</h2>
+        <p class="dd-over-line" id="over-line">He kept nothing this time.</p>
+        <p class="dd-over-stats" id="over-stats"></p>
+        <div class="dd-over-actions">
+          <button class="dd-play" id="again" type="button">▶ AGAIN</button>
+          <button class="tape dd-share" id="share" type="button"><span class="tape-label">Share</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
+    <span class="tv-knob" aria-hidden="true"></span>
+    <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+  </div>
+
+  <button class="dd-holler" id="holler" type="button">HOLLER</button>
+  <p class="dd-stats"><span id="best">Deepest 0 m · most kept 0</span></p>
+  <p class="narrator dd-about">Holloring is a pink jelly drop with one eye. He lives in the drains and takes in whatever gets dropped, because he believes lost things are safer inside. You can see through him, so you can see what he has kept.</p>
+</main>
+
+<footer class="foot">
+  <p><a href="../../">Rotville. A perfectly normal town.</a></p>
+</footer>
+
+<script src="assets/game.js" defer></script>
+</body>
+</html>

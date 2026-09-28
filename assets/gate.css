@@ -185,8 +185,22 @@ a { color: inherit; }
 .tagline { margin: 0; font: 400 clamp(1.45rem, 4.4vw, 1.9rem)/1.1 var(--f-osd); letter-spacing: .02em; color: var(--cream); text-shadow: 0 2px 0 rgba(6, 3, 18, .75); }
 .narrator { max-width: 34ch; margin: 16px 0 0; font: 400 1.5rem/1.22 var(--f-osd); letter-spacing: 0; color: var(--ink); opacity: .92; text-wrap: pretty; }
 
-/* the doors out: road signs */
-.exits { display: grid; gap: 14px; }
+/* the doors out: road signs, in two groups under a label each, the label in a light tint of its signs */
+.exits { display: grid; gap: 30px; }
+.exit-group { display: grid; gap: 14px; }
+.exit-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font: 400 1.3rem/1 var(--f-osd);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--head);
+}
+.exit-head::after { content: ""; flex: 1; height: 2px; background: currentColor; opacity: .3; }
+.exit-tv { --head: #8fd9ad; }
+.exit-games { --head: #eab07a; }
 .sign {
   position: relative;
   display: grid;
@@ -227,7 +241,7 @@ a { color: inherit; }
 .dest small { margin-top: 4px; font: 600 1rem/1.2 var(--f-sign); letter-spacing: .02em; opacity: .86; }
 .arrow { width: 30px; height: 30px; fill: currentColor; transform: rotate(-45deg); }
 /* a place to go in town, not a way out of it: the brown sign roads use for attractions, its arrow straight ahead */
-.sign-play { --sign: #6f4527; --sign-hi: #85532f; --sign-deep: #3a2313; margin-top: 6px; }
+.sign-play { --sign: #6f4527; --sign-hi: #85532f; --sign-deep: #3a2313; }
 .sign .arrow-ahead { transform: none; }
 
 /* ---------- Channel 3 ---------- */

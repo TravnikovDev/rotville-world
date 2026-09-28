@@ -12,6 +12,8 @@ The main page has the town, the ways to watch it, and a small TV on Channel 3 th
 
 [Lamp](https://rotville.world/games/lamp/) is the third. Fusegrin is a navy iron ball whose fuse is not a countdown but his lamp. The bulbs in a house go out one after another, and you roll him from room to room, up and down the ladders, to keep the whole house lit.
 
+[Down the Drain](https://rotville.world/games/drain/) is the fourth. Holloring, a pink see-through jelly who keeps whatever gets lost down the drains, falls down a dark shaft that gets faster and darker the deeper he goes. A holler lights it up for a moment, whatever he catches floats inside him, and each pipe he hits knocks one thing back out. Three knocks and he stops, and the score is how far down he got.
+
 Rotville is on [YouTube](https://www.youtube.com/@Rotville), [TikTok](https://www.tiktok.com/@rotville.world) and [Instagram](https://www.instagram.com/rotville.world/).
 
 ## How it is made
@@ -27,7 +29,7 @@ python3 -m http.server 8000
 | path | what it is |
 |---|---|
 | `index.html`, `assets/` | the main page with its styles, script, pictures, reel and music |
-| `games/megabite/`, `games/one-cent/`, `games/lamp/` | the games |
+| `games/megabite/`, `games/one-cent/`, `games/lamp/`, `games/drain/` | the games |
 | `404.html` | the page for a link that leads nowhere |
 | `CNAME` | the domain |
 

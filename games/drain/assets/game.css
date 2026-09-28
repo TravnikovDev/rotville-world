@@ -1,0 +1,186 @@
+/* Down the Drain. The gate's tokens, sets and buttons (../../assets/gate.css), plus this. */
+
+[hidden] { display: none !important; }
+
+.dd-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  width: min(760px, 100% - 24px);
+  margin: 0 auto;
+  padding: max(14px, env(safe-area-inset-top)) 0 10px;
+}
+.dd-back {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px 8px 11px;
+  border-radius: 8px;
+  background: var(--sign);
+  color: var(--sign-ink);
+  font: 800 1rem/1 var(--f-sign);
+  text-decoration: none;
+  box-shadow: inset 0 0 0 3px var(--sign), inset 0 0 0 5px var(--sign-ink), 0 5px 0 -2px var(--sign-deep);
+}
+.dd-back:hover { background: var(--sign-hi); }
+.dd-back svg { width: 16px; height: 16px; fill: currentColor; transform: rotate(180deg); }
+#sound { justify-self: end; font-size: 1.15rem; padding: 8px 12px 7px; }
+
+/* the name in the banner's letters, in Holloring's pink; the letters sink one after another, like things dropped */
+.dd-title { margin: 0; font: 400 clamp(1.3rem, 5.4vw, 2.5rem)/1 var(--f-toy); white-space: nowrap; }
+.ddt { display: inline-flex; gap: .01em; }
+.ddt > span {
+  display: inline-block;
+  color: #ff9ec4;
+  text-shadow:
+    -.015em -.015em 0 #ffd6e6,
+    .01em .02em 0 #7a2a52, .02em .04em 0 #7a2a52, .03em .06em 0 #7a2a52, .04em .08em 0 #7a2a52,
+    .06em .15em .1em rgba(6, 3, 18, .65);
+}
+.ddt > .ddt-gap { width: .26em; }
+.ddt > span:nth-child(9) { animation: dd-sink 4.6s ease-in-out infinite; }
+.ddt > span:nth-child(13) { animation: dd-sink 4.6s ease-in-out 2.3s infinite; }
+@keyframes dd-sink {
+  0%, 70%, 100% { transform: none; }
+  80% { transform: translateY(.12em); }
+  90% { transform: translateY(.04em); }
+}
+
+.dd-main {
+  display: grid;
+  justify-items: center;
+  width: min(760px, 100% - 24px);
+  margin: 0 auto;
+  padding-bottom: 20px;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.dd-set { width: auto; padding: 14px 14px 46px; }
+.dd-screen {
+  aspect-ratio: 9 / 16;
+  height: min(72vh, 700px);
+  width: auto;
+  border-radius: 16px / 20px;
+  touch-action: none;
+  cursor: crosshair;
+}
+.dd-screen canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
+.dd-ch { top: 10px; left: 12px; }
+.dd-kept { top: 10px; right: 12px; transition: transform .12s; }
+.dd-kept.bump { transform: scale(1.25); }
+.dd-depth { top: 36px; right: 12px; font-size: 1.1rem; letter-spacing: .08em; color: var(--window); }
+.dd-knocks { top: 56px; right: 12px; font-size: 1.1rem; letter-spacing: .12em; color: #ff9ec4; }
+.dd-sub {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 3.5%;
+  z-index: 3;
+  margin: 0;
+  text-align: center;
+  font: 400 clamp(1.2rem, 4.4vw, 1.6rem)/1.15 var(--f-osd);
+  color: #fff;
+  text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+  pointer-events: none;
+}
+
+.dd-card {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 18px;
+  text-align: center;
+  background: rgba(10, 7, 24, .66);
+  cursor: default;
+}
+.dd-play {
+  padding: 10px 22px 8px;
+  border: 2px solid #5b4d91;
+  border-radius: 6px;
+  background: #1b1634;
+  color: #fff;
+  font: 400 clamp(1.7rem, 6vw, 2.2rem)/1 var(--f-osd);
+  letter-spacing: .08em;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #0a0816, 0 0 24px rgba(255, 158, 196, .25);
+}
+.dd-play:hover { border-color: var(--window); }
+.dd-play:active { transform: translateY(2px); box-shadow: 0 1px 0 #0a0816; }
+.dd-hint { margin: 0; max-width: 23ch; font: 400 1.25rem/1.2 var(--f-osd); color: var(--ink); text-shadow: 2px 2px 0 #000; }
+.dd-lore { color: var(--cream); }
+.dd-over-title { margin: 0; max-width: 13ch; font-size: clamp(1.45rem, 5.4vw, 2.2rem); }
+.dd-over-line { margin: 0; max-width: 24ch; font: 400 clamp(1.25rem, 4.2vw, 1.5rem)/1.2 var(--f-osd); color: var(--ink); text-shadow: 2px 2px 0 #000; }
+.dd-over-stats { margin: 0; font: 400 1.15rem/1.2 var(--f-osd); letter-spacing: .03em; color: var(--muted); text-shadow: 2px 2px 0 #000; }
+.dd-over-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 4px; }
+.dd-share { align-self: stretch; }
+
+/* the one button, for a thumb: it fills back up while the echo is still out */
+.dd-holler {
+  position: relative;
+  overflow: hidden;
+  margin-top: 14px;
+  width: min(360px, 100%);
+  padding: 16px 20px 14px;
+  border: 2px solid #3b3263;
+  border-radius: 12px;
+  background: #1b1634;
+  color: var(--ink);
+  font: 400 1.6rem/1 var(--f-osd);
+  letter-spacing: .14em;
+  box-shadow: 0 4px 0 #0a0816;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+.dd-holler::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  transform: scaleX(var(--ready, 1));
+  background: rgba(255, 158, 196, .16);
+  pointer-events: none;
+}
+.dd-holler.on { transform: translateY(3px); box-shadow: 0 1px 0 #0a0816; border-color: #ff9ec4; color: #ffd6e6; }
+.dd-stats { margin: 12px 0 0; font: 400 1.3rem/1.2 var(--f-osd); letter-spacing: .03em; color: var(--muted); text-align: center; }
+.dd-about { max-width: 40ch; margin: 18px auto 0; text-align: center; }
+.dd .foot a { color: var(--muted); text-decoration: none; }
+.dd .foot a:hover { color: var(--ink); }
+
+@media (pointer: coarse) {
+  .dd-hint-keys { display: none; }
+}
+
+/* a phone held upright: the game is the whole screen and never scrolls */
+@media (max-width: 599px) and (orientation: portrait) {
+  html, body.dd { height: 100%; overscroll-behavior: none; }
+  body.dd { display: flex; flex-direction: column; min-height: 100dvh; }
+  .dd-bar { grid-template-columns: auto 1fr auto; width: calc(100% - 16px); gap: 8px; padding: max(8px, env(safe-area-inset-top)) 0 8px; }
+  .dd-title { justify-self: center; font-size: clamp(1.05rem, 5.3vw, 1.6rem); }
+  .dd-back { padding: 7px 9px 6px 8px; font-size: .9rem; gap: 5px; }
+  .dd-back svg { width: 13px; height: 13px; }
+  #sound { font-size: 1.1rem; padding: 7px 10px 6px; }
+  .dd-main { flex: 1; width: calc(100% - 16px); align-content: start; padding-bottom: 8px; touch-action: none; }
+  .dd-set { padding: 8px 8px 30px; border-radius: 20px 20px 16px 16px; }
+  .dd-set .tv-plate { left: 14px; bottom: 8px; font-size: .95rem; }
+  .dd-set .tv-knob { right: 14px; bottom: 6px; width: 17px; height: 17px; }
+  .dd-set .tv-knob-2 { right: 38px; bottom: 9px; width: 12px; height: 12px; }
+  .dd-screen { height: min(calc(100dvh - 205px), calc((100vw - 32px) * 16 / 9)); }
+  .dd-ch, .dd-kept { top: 8px; font-size: 1.25rem; }
+  .dd-ch { left: 10px; } .dd-kept { right: 10px; }
+  .dd-depth { top: 30px; right: 10px; }
+  .dd-knocks { top: 48px; right: 10px; }
+  .dd-holler { margin-top: 10px; padding: 13px 16px 11px; font-size: 1.4rem; }
+  .dd-stats { margin-top: 6px; font-size: 1.1rem; }
+  .dd-about, .dd .foot { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ddt > span { animation: none !important; }
+}
