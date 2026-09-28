@@ -385,14 +385,27 @@ a { color: inherit; }
   .deck { grid-column: 1; grid-row: 3; justify-items: start; margin-top: 6px; }
   .tv-set { width: 320px; }
 }
+/* ---------- a tablet held upright: the name across the top, the doors on the left, a smaller set beside them ---------- */
+@media (min-width: 720px) and (max-width: 899px) and (orientation: portrait) {
+  .gate { grid-template-columns: minmax(0, 1fr) 260px; grid-template-rows: auto auto 1fr; column-gap: 28px; align-items: start; }
+  .intro { grid-column: 1 / -1; }
+  .exits { grid-column: 1; grid-row: 2; }
+  .tv { grid-column: 2; grid-row: 2 / span 2; }
+  .deck { grid-column: 1; grid-row: 3; justify-items: start; }
+  .tv-set { width: 100%; }
+  .now { font-size: 1.1rem; }
+  .tv-title { font-size: 1.5rem; }
+  .watch { text-wrap: balance; }
+}
+
 /* the set stays in view, 40px from the top, while the signs scroll past it. A shorter screen gets a smaller set, so
    the title and the links under it stay on screen too: 269px is everything in the section but the picture, plus the
    40px and a little air. A screen under 600px tall is too short for it, and the set scrolls as before. */
-@media (min-width: 900px) and (min-height: 600px) {
+@media (min-width: 900px) and (min-height: 600px), (min-width: 720px) and (orientation: portrait) {
   .tv { position: sticky; top: 40px; }
   .tv-set {
-    width: min(320px, calc((100vh - 269px) * .5625 + 32px));
-    width: min(320px, calc((100dvh - 269px) * .5625 + 32px));
+    width: min(100%, 320px, calc((100vh - 269px) * .5625 + 32px));
+    width: min(100%, 320px, calc((100dvh - 269px) * .5625 + 32px));
   }
 }
 
