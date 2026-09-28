@@ -20,6 +20,8 @@ The main page has the town, the ways to watch it, and a small TV on Channel 3 th
 
 [Pipe Dream](https://rotville.world/games/pipe-dream/) is the seventh. When dreams clog in Rotville, Knightley is called: the dream plumber, a frog skeleton in a starry sleep cap. A dream comes up like a cloud in front of Snoreacle, the hooded idol that mutters in its sleep, and you lay pipe from the next pieces to carry it to the drain before it reaches an open end. If it does, it gets out onto the floor and leaves a puddle with a star floating in it, and three wet floors end the night. The first clogs are near and come with the pieces they need; after that, every clog cleared, the dream comes sooner and runs faster, and there is more old pipe nobody can move.
 
+[Pinball](https://rotville.world/games/pinball/) is the eighth. Mawrice, a ball of reservoir waste 1.3 metres across, is the ball, and the Old Sewerworks is the table, with half the town on it. He eats what is in front of him, and only what is in front of him: the crates, cans and bits of pipe left on the table are eaten when he hits them head on, and anything he meets at an angle he glances off. Conelie is the bumpers and stands at the top of the culvert ramp to point him the wrong way; a family of Feltoids is more bumpers; Holloring takes him in and lets him slide back out; Gil Lister's pipes are joined underneath, and Gil pops out of them to say hello; the Dreamlayer Depths pull him down and give back something nobody has stayed awake to translate. Escargo hauls a crate across on a trailer, Handshoe will not let go for a moment, the Flitter drops the list, and eating the junk in front of the DO NOT LIFT cover takes the cover off. Two ramps, two orbits, R, O and T, kickbacks and a spinner that counts the town and still reads POPULATION ??? make up the rest.
+
 Rotville is on [YouTube](https://www.youtube.com/@Rotville), [TikTok](https://www.tiktok.com/@rotville.world) and [Instagram](https://www.instagram.com/rotville.world/).
 
 ## How it is made
@@ -35,7 +37,7 @@ python3 -m http.server 8000
 | path | what it is |
 |---|---|
 | `index.html`, `assets/` | the main page with its styles, script, pictures, reel and music |
-| `games/megabite/`, `games/one-cent/`, `games/lamp/`, `games/drain/`, `games/paper-round/`, `games/say-hello/`, `games/pipe-dream/` | the games |
+| `games/megabite/`, `games/one-cent/`, `games/lamp/`, `games/drain/`, `games/paper-round/`, `games/say-hello/`, `games/pipe-dream/`, `games/pinball/` | the games |
 | `404.html` | the page for a link that leads nowhere |
 | `CNAME` | the domain |
 

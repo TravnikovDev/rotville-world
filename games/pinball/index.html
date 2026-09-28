@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pinball · Rotville</title>
+<meta name="description" content="Mawrice is the ball and the Old Sewerworks is the table, with half the town on it. He eats what is in front of him, and only what is in front of him. Conelie points him the wrong way, Holloring keeps him a while, Gil Lister says hello from the pipes.">
+<link rel="canonical" href="https://rotville.world/games/pinball/">
+<meta name="theme-color" content="#120d1c">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rotville">
+<meta property="og:title" content="Pinball · Rotville">
+<meta property="og:description" content="Mawrice is the ball. He eats what is in front of him, and only what is in front of him: hit the junk head on.">
+<meta property="og:url" content="https://rotville.world/games/pinball/">
+<meta property="og:image" content="https://rotville.world/games/pinball/assets/og.jpg">
+<meta property="og:image:alt" content="A crowded pinball table in an old brick sewer: two ramps, a swirling hole in the middle, three orange traffic cones with one eye each, cloth figures, a worm coming out of a pipe, a snail on a cart, and a round rust-coloured ball with a ring of teeth rolling at a crate.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rotville.world/games/pinball/assets/og.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" href="../../favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<link rel="stylesheet" href="../../assets/gate.css">
+<link rel="stylesheet" href="assets/game.css">
+</head>
+<body class="pb">
+
+<header class="pb-bar">
+  <a class="pb-back" href="../../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l8 7-8 7v-5H3z"/></svg>Rotville</a>
+  <h1 class="pb-title"><span class="sr-only">Pinball</span><span class="pbt" aria-hidden="true"><span>P</span><span>I</span><span>N</span><span class="pbt-b">B</span><span class="pbt-b">A</span><span class="pbt-b">L</span><span class="pbt-b">L</span></span></h1>
+  <button class="tape" id="sound" type="button" aria-pressed="true"><span class="led" aria-hidden="true"></span><span class="tape-label">Sound: on</span></button>
+</header>
+
+<main class="pb-main" id="area">
+  <div class="tv-set pb-set">
+    <div class="tv-screen pb-screen" id="screen">
+      <canvas id="c" width="270" height="480" aria-label="A pinball table in the Old Sewerworks with residents of Rotville on it: Mawrice is the ball, traffic cones and cloth Feltoids are the bumpers, there are two ramps, two orbits, a swirling hole, pipes and holes that keep him, and crates, cans and bits of pipe he eats"></canvas>
+      <span class="static" id="static" aria-hidden="true"></span>
+      <span class="osd pb-ch" aria-hidden="true">CH 17</span>
+      <span class="osd pb-balls" id="balls" aria-label="Balls left: 3">●●●</span>
+      <p class="pb-sub" id="sub" aria-live="polite"></p>
+
+      <div class="pb-card" id="ready">
+        <button class="pb-play" id="play" type="button">▶ PLAY</button>
+        <p class="pb-hint">Mawrice is the ball. He eats what is in front of him, and only what is in front of him: hit the junk head on.</p>
+        <p class="pb-hint">Up the ramps, round the orbits, into Holloring or the Depths: the blinking shot is worth double.</p>
+        <p class="pb-hint">Press the left or right side to flip. Hold, then let go, to launch.</p>
+        <p class="pb-hint pb-hint-keys">← and → flip. Space launches. ↑ nudges.</p>
+        <p class="pb-hint pb-lore">The bumpers are Conelie. The cone squeaks when bumped, and points him the wrong way.</p>
+      </div>
+
+      <div class="pb-card" id="over" hidden>
+        <h2 class="title pb-over-title" id="over-title">Mawrice is in the canal.</h2>
+        <p class="pb-over-line" id="over-line">He ate nothing.</p>
+        <p class="pb-over-stats" id="over-stats"></p>
+        <div class="pb-over-actions">
+          <button class="pb-play" id="again" type="button">▶ AGAIN</button>
+          <button class="tape pb-share" id="share" type="button"><span class="tape-label">Share</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
+    <span class="tv-knob" aria-hidden="true"></span>
+    <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+  </div>
+
+  <div class="pb-flips">
+    <button class="pb-flip" id="flip-l" type="button" aria-label="Left flipper">◀ FLIP</button>
+    <button class="pb-flip" id="flip-r" type="button" aria-label="Right flipper">FLIP ▶</button>
+  </div>
+  <p class="pb-stats"><span id="best">Best 0</span></p>
+  <p class="narrator pb-about">The Old Sewerworks is disused, and the masonry there is the oldest in town. Mawrice rolls through it anyway, eating what is in front of him. Half the town is down there with him. Conelie points him the wrong way, Holloring keeps him a while, Gil Lister says hello from the pipes, and the Depths give back something nobody has stayed awake to translate.</p>
+</main>
+
+<footer class="foot">
+  <p><a href="../../">Rotville. A perfectly normal town.</a></p>
+</footer>
+
+<script src="assets/game.js" defer></script>
+</body>
+</html>
