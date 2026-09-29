@@ -39,6 +39,7 @@ python3 -m http.server 8000
 | `index.html`, `assets/` | the main page with its styles, script, pictures, reel and music |
 | `games/megabite/`, `games/one-cent/`, `games/lamp/`, `games/drain/`, `games/paper-round/`, `games/say-hello/`, `games/pipe-dream/`, `games/pinball/` | the games |
 | `404.html` | the page for a link that leads nowhere |
+| `robots.txt`, `sitemap.xml` | what search engines read: every page to index, the main page and each game |
 | `CNAME` | the domain |
 
 ## Rights
