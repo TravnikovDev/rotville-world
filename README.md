@@ -22,6 +22,8 @@ The main page has the town, the ways to watch it, and a small TV on Channel 3 th
 
 [Pinball](https://rotville.world/games/pinball/) is the eighth. Mawrice, a ball of reservoir waste 1.3 metres across, is the ball, and the Old Sewerworks is the table. He eats what is in front of him, and only what is in front of him: the crates, cans and bits of pipe left on the table are eaten when he hits them head on, and anything he meets at an angle he glances off. The bumpers are Conelie, the cone that squeaks when bumped and knocks him off the wrong way. R, O and T at the top raise what he eats is worth, a lit kickback sends him back up an outlane once, and the canal between the flippers takes him in the end. Every table he eats clean, somebody leaves more, further apart, and "head on" gets narrower.
 
+[Fizz](https://rotville.world/games/fizz/) is the ninth. Whisko stirs the bubbles at FIZZCO while Cracked Keyf checks every bottle. Hold to fill a bottle and release when the fizz reaches the mark. The line speeds up and the mark narrows; three rejected bottles end the shift.
+
 Rotville is on [YouTube](https://www.youtube.com/@Rotville), [TikTok](https://www.tiktok.com/@rotville.world) and [Instagram](https://www.instagram.com/rotville.world/).
 
 ## How it is made
@@ -37,7 +39,7 @@ python3 -m http.server 8000
 | path | what it is |
 |---|---|
 | `index.html`, `assets/` | the main page with its styles, script, pictures, reel and music |
-| `games/megabite/`, `games/one-cent/`, `games/lamp/`, `games/drain/`, `games/paper-round/`, `games/say-hello/`, `games/pipe-dream/`, `games/pinball/` | the games |
+| `games/megabite/`, `games/one-cent/`, `games/lamp/`, `games/drain/`, `games/paper-round/`, `games/say-hello/`, `games/pipe-dream/`, `games/pinball/`, `games/fizz/` | the games |
 | `404.html` | the page for a link that leads nowhere |
 | `robots.txt`, `sitemap.xml` | what search engines read: every page to index, the main page and each game |
 | `CNAME` | the domain |

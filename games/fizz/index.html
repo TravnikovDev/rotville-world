@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SGZ7TMLQGM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-SGZ7TMLQGM');
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fizz · Rotville</title>
+<meta name="description" content="Whisko stirs the bubbles at FIZZCO. Hold to fill a bottle, then release inside the mark before Cracked Keyf writes it down.">
+<link rel="canonical" href="https://rotville.world/games/fizz/">
+<meta name="theme-color" content="#180e24">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rotville">
+<meta property="og:title" content="Fizz · Rotville">
+<meta property="og:description" content="Whisko loves the bubbles. Cracked Keyf checks every bottle.">
+<meta property="og:url" content="https://rotville.world/games/fizz/">
+<meta property="og:image" content="https://rotville.world/games/fizz/assets/og.jpg">
+<meta property="og:image:alt" content="At the FIZZCO bottling machine, a bottle fills with bright pink fizz between Whisko, a magenta cone with a paddle, and Cracked Keyf, a green bottle holding a clipboard.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rotville.world/games/fizz/assets/og.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" href="../../favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<link rel="stylesheet" href="../../assets/gate.css">
+<link rel="stylesheet" href="assets/game.css">
+</head>
+<body class="fz">
+
+<header class="fz-bar">
+  <a class="fz-back" href="../../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l8 7-8 7v-5H3z"/></svg>Rotville</a>
+  <h1 class="fz-title"><span class="sr-only">Fizz</span><span class="fzt" aria-hidden="true"><span>F</span><span>I</span><span>Z</span><span>Z</span></span></h1>
+  <button class="tape" id="sound" type="button" aria-pressed="true"><span class="led" aria-hidden="true"></span><span class="tape-label">Sound: on</span></button>
+</header>
+
+<main class="fz-main">
+  <div class="tv-set fz-set">
+    <div class="tv-screen fz-screen" id="screen">
+      <canvas id="c" width="270" height="480" aria-label="The FIZZCO bottling machine. Hold to fill the bottle with fizz and release inside the yellow mark."></canvas>
+      <span class="static" aria-hidden="true"></span>
+      <span class="osd fz-ch" aria-hidden="true">CH 19</span>
+      <span class="osd fz-score" id="score" aria-label="Bottles accepted: 0">0 BOTTLES</span>
+      <span class="osd fz-misses" id="misses" aria-label="Rejected bottles: 0">REJECTED 0/3</span>
+      <p class="fz-status" id="status" aria-live="polite"></p>
+
+      <div class="fz-card" id="ready">
+        <button class="fz-play" id="play" type="button">▶ PLAY</button>
+        <p>Whisko loves the bubbles. Cracked Keyf checks every bottle.</p>
+        <p>Hold to stir. Release while the fizz is inside the yellow mark.</p>
+        <p class="fz-keys">Hold Space on a keyboard, or hold the button below.</p>
+      </div>
+
+      <div class="fz-card" id="over" hidden>
+        <h2 class="title" id="over-title">The shift is over.</h2>
+        <p id="over-line"></p>
+        <p id="over-best"></p>
+        <div class="fz-actions">
+          <button class="fz-play" id="again" type="button">▶ AGAIN</button>
+          <button class="tape fz-share" id="share" type="button"><span class="tape-label">Share</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
+    <span class="tv-knob" aria-hidden="true"></span>
+    <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+  </div>
+
+  <button class="fz-stir" id="stir" type="button" aria-label="Hold to stir and release to finish the bottle" disabled>HOLD TO STIR</button>
+  <p class="fz-best" id="best">Best 0 bottles</p>
+  <p class="narrator fz-about">At FIZZCO, Whisko stirs the fizz and Cracked Keyf records what comes off the line. Every bottle is checked.</p>
+</main>
+
+<footer class="foot"><p><a href="../../">Rotville. A perfectly normal town.</a></p></footer>
+<script src="assets/game.js" defer></script>
+</body>
+</html>
