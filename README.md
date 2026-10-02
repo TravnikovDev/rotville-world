@@ -24,6 +24,8 @@ The main page has the town, the ways to watch it, and a small TV on Channel 3 th
 
 [Fizz](https://rotville.world/games/fizz/) is the ninth: Puzzle Bobble in a FIZZCO syrup vat. Whisko, the works' mixer, who loves the bubbles and hates the paperwork, fires flavour bubbles up from the nozzle under the vat. Three or more of one flavour touching pop, and whatever they were holding up falls. Stroops turns the press's wheel on top of the vat, and every few shots the press comes down a row. Cracked Keyf stands on his ledge at the line with his clipboard, and when the bubbles reach it, he writes it down and the shift is over. Empty the vat and the next shift brings another flavour, another row and a busier press.
 
+[Every Road](https://rotville.world/games/every-road/) is the tenth: Amidar with a nose. Moo-Goo, a beast of the sewer tunnels who is mostly nose, sniffs every road of a small town of cabins. A road he walks from one crossing to the next is sniffed and stays damp, and a block whose roads are all sniffed he remembers, so it comes back to colour. Conelie sits on roads he has not sniffed yet and points him the wrong way, so those are sniffed from both ends. If he goes too long without a new smell, he forgets, and he cries for no reason. From the fourth town some roads are missing, so blocks run together into bigger yards with dead ends between them, and from the sixth the town is bigger; no two are laid out the same.
+
 Rotville is on [YouTube](https://www.youtube.com/@Rotville), [TikTok](https://www.tiktok.com/@rotville.world) and [Instagram](https://www.instagram.com/rotville.world/).
 
 ## How it is made

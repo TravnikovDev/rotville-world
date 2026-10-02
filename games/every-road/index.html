@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SGZ7TMLQGM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-SGZ7TMLQGM');
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Every Road · Rotville</title>
+<meta name="description" content="Moo-Goo sniffs every road in Rotville. Walk a road end to end and it is sniffed; sniff all the roads round a block and he remembers it. Conelie sits on the roads he still has to sniff and points him the wrong way, and every town is laid out differently.">
+<link rel="canonical" href="https://rotville.world/games/every-road/">
+<meta name="theme-color" content="#1c1f17">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rotville">
+<meta property="og:title" content="Every Road · Rotville">
+<meta property="og:description" content="Moo-Goo sniffs every road in Rotville, and remembers every block he has sniffed all the way round.">
+<meta property="og:url" content="https://rotville.world/games/every-road/">
+<meta property="og:image" content="https://rotville.world/games/every-road/assets/og.jpg">
+<meta property="og:image:alt" content="A small town of cabins seen from above, with light concrete roads between the blocks. Moo-Goo, a pink beast that is mostly nose, walks the roads, and the roads he has sniffed are damp and dotted with green drips. An orange traffic cone with one eye sits on one of them.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rotville.world/games/every-road/assets/og.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" href="../../favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<script>try{if(sessionStorage.getItem("rv.ch")){sessionStorage.removeItem("rv.ch");document.documentElement.classList.add("ch-in")}}catch(e){}</script>
+<link rel="stylesheet" href="../../assets/gate.css">
+<link rel="stylesheet" href="assets/game.css">
+</head>
+<body class="er">
+
+<header class="er-bar">
+  <a class="er-back" href="../../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l8 7-8 7v-5H3z"/></svg>Rotville</a>
+  <h1 class="er-title"><span class="sr-only">Every Road</span><span class="ert" aria-hidden="true"><span class="ert-c">E</span><span class="ert-c">V</span><span class="ert-c">E</span><span class="ert-c">R</span><span class="ert-c">Y</span><span class="ert-gap"> </span><span class="ert-p">R</span><span class="ert-p">O</span><span class="ert-p">A</span><span class="ert-p">D</span></span></h1>
+  <button class="tape" id="sound" type="button" aria-pressed="true"><span class="led" aria-hidden="true"></span><span class="tape-label">Sound: on</span></button>
+</header>
+
+<main class="er-main" id="area">
+  <div class="tv-set er-set">
+    <div class="tv-screen er-screen" id="screen">
+      <canvas id="c" width="270" height="480" aria-label="A small town of cabins seen from above, with light concrete roads between the blocks. Moo-Goo walks the roads, sniffing, and the roads he has sniffed are damp. Conelie, an orange cone, sits on some of them."></canvas>
+      <span class="static" id="static" aria-hidden="true"></span>
+      <span class="osd er-ch" aria-hidden="true">CH 21</span>
+      <span class="osd er-score" id="score">0</span>
+      <span class="osd er-level" id="level">ROAD 1</span>
+      <span class="osd er-banner" id="banner" aria-hidden="true"></span>
+      <span class="er-mem" aria-label="Memory"><span class="osd er-mem-label" aria-hidden="true">MEMORY</span><span class="er-mem-track"><span class="er-mem-bar" id="mem"></span></span></span>
+      <p class="er-sub" id="sub" aria-live="polite"></p>
+
+      <div class="er-card" id="ready">
+        <button class="er-play" id="play" type="button">▶ PLAY</button>
+        <p class="er-hint">Moo-Goo sniffs every road in Rotville. Walk a road from end to end and it is sniffed. Sniff all four roads round a block and he remembers it.</p>
+        <p class="er-hint er-hint-keys">Arrow keys or WASD to turn. Space pauses.</p>
+        <p class="er-hint er-hint-touch">Swipe to turn, or use the arrows.</p>
+        <p class="er-hint er-lore">Conelie sits on roads he has not sniffed yet and points him the wrong way, so sniff those from both ends. If he goes too long without a new smell, he forgets.</p>
+      </div>
+
+      <div class="er-card" id="over" hidden>
+        <h2 class="title er-over-title" id="over-title">Moo-Goo forgot.</h2>
+        <p class="er-over-line" id="over-line">He cried for no reason.</p>
+        <p class="er-over-stats" id="over-stats"></p>
+        <div class="er-over-actions">
+          <button class="er-play" id="again" type="button">▶ AGAIN</button>
+          <button class="tape er-share" id="share" type="button"><span class="tape-label">Share</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
+    <span class="tv-knob" aria-hidden="true"></span>
+    <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+    <!-- neighbours -->
+    <nav class="nb" aria-label="Other games">
+      <a class="nb-link nb-prev" href="../fizz/" data-ch="19" aria-label="Previous channel: Fizz, three of a flavour">
+        <span class="nb-tv"><img src="../fizz/assets/preview.webp" width="216" height="384" alt="Fizz: three of a flavour" loading="lazy" decoding="async"><span class="nb-osd" aria-hidden="true">CH 19</span></span>
+        <span class="nb-name" aria-hidden="true">◀ Fizz</span>
+      </a>
+      <a class="nb-link nb-next" href="../megabite/" data-ch="04" aria-label="Next channel: Megabite, a game under the town">
+        <span class="nb-tv"><img src="../megabite/assets/preview.webp" width="216" height="384" alt="Megabite: a game under the town" loading="lazy" decoding="async"><span class="nb-osd" aria-hidden="true">CH 04</span></span>
+        <span class="nb-name" aria-hidden="true">Megabite ▶</span>
+      </a>
+    </nav>
+    <!-- /neighbours -->
+  </div>
+
+  <div class="er-pad" id="pad" aria-label="Turn">
+    <button type="button" data-d="up" aria-label="Up">▲</button>
+    <button type="button" data-d="left" aria-label="Left">◀</button>
+    <button type="button" data-d="down" aria-label="Down">▼</button>
+    <button type="button" data-d="right" aria-label="Right">▶</button>
+  </div>
+  <p class="er-stats"><span id="best">Best 0</span></p>
+  <p class="narrator er-about">Moo-Goo is mostly nose. He is older than the city and remembers the milk floods. Every road he walks from end to end, he sniffs, and a block he has sniffed all the way round, he remembers. Conelie sits on the roads he still has to do and points him the wrong way. No two towns are laid out the same. Nobody knows why he cries.</p>
+</main>
+
+<footer class="foot">
+  <p><a href="../../">Rotville. A perfectly normal town.</a></p>
+</footer>
+
+<script src="assets/game.js" defer></script>
+<script src="../../assets/neighbours.js" defer></script>
+</body>
+</html>

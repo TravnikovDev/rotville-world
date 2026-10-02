@@ -1,0 +1,209 @@
+/* Every Road. The gate's tokens, sets and buttons (../../assets/gate.css), plus this. */
+
+[hidden] { display: none !important; }
+
+.er-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  width: min(760px, 100% - 24px);
+  margin: 0 auto;
+  padding: max(14px, env(safe-area-inset-top)) 0 10px;
+}
+.er-back {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px 8px 11px;
+  border-radius: 8px;
+  background: var(--sign);
+  color: var(--sign-ink);
+  font: 800 1rem/1 var(--f-sign);
+  text-decoration: none;
+  box-shadow: inset 0 0 0 3px var(--sign), inset 0 0 0 5px var(--sign-ink), 0 5px 0 -2px var(--sign-deep);
+}
+.er-back:hover { background: var(--sign-hi); }
+.er-back svg { width: 16px; height: 16px; fill: currentColor; transform: rotate(180deg); }
+#sound { justify-self: end; font-size: 1.15rem; padding: 8px 12px 7px; }
+
+/* the name in the banner's letters: EVERY in light concrete, ROAD in Moo-Goo's pink, each letter sniffed in turn */
+.er-title { margin: 0; font: 400 clamp(1.4rem, 6vw, 2.5rem)/1 var(--f-toy); white-space: nowrap; }
+.ert { display: inline-flex; gap: .02em; }
+.ert > span { display: inline-block; animation: er-sniff 4.2s ease-in-out infinite; }
+.ert-gap { width: .28em; }
+.ert-c { color: #e2ddd0; text-shadow: -.015em -.015em 0 #fffaf0, .01em .02em 0 #6c675d, .02em .04em 0 #6c675d, .03em .06em 0 #6c675d, .04em .08em 0 #6c675d, .06em .15em .1em rgba(6, 3, 18, .65); }
+.ert-p { color: #f2b49c; text-shadow: -.015em -.015em 0 #ffe3d6, .01em .02em 0 #7a3f30, .02em .04em 0 #7a3f30, .03em .06em 0 #7a3f30, .04em .08em 0 #7a3f30, .06em .15em .1em rgba(6, 3, 18, .65); }
+.ert > span:nth-child(2) { animation-delay: .12s; } .ert > span:nth-child(3) { animation-delay: .24s; }
+.ert > span:nth-child(4) { animation-delay: .36s; } .ert > span:nth-child(5) { animation-delay: .48s; }
+.ert > span:nth-child(7) { animation-delay: .72s; } .ert > span:nth-child(8) { animation-delay: .84s; }
+.ert > span:nth-child(9) { animation-delay: .96s; } .ert > span:nth-child(10) { animation-delay: 1.08s; }
+@keyframes er-sniff {
+  0%, 70%, 100% { transform: translateY(0) rotate(0); }
+  76% { transform: translateY(-.07em) rotate(-3deg); }
+  82% { transform: translateY(.02em) rotate(2deg); }
+}
+
+.er-main {
+  display: grid;
+  justify-items: center;
+  width: min(760px, 100% - 24px);
+  margin: 0 auto;
+  padding-bottom: 20px;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.er-set { width: auto; padding: 14px 14px 46px; }
+.er-screen {
+  aspect-ratio: 9 / 16;
+  height: min(72vh, 700px);
+  width: auto;
+  border-radius: 16px / 20px;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.er-screen canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
+.er-ch { top: 10px; left: 12px; }
+.er-score { top: 10px; right: 12px; }
+.er-level { top: 36px; right: 12px; font-size: 1.1rem; letter-spacing: .08em; color: #f2b49c; }
+.er-banner {
+  left: 0;
+  right: 0;
+  top: 44%;
+  text-align: center;
+  font-size: clamp(2rem, 8vw, 2.8rem);
+  letter-spacing: .12em;
+  opacity: 0;
+}
+.er-banner.on { animation: er-banner 1.6s steps(8) forwards; }
+.er-banner.hold { opacity: 1; animation: none; }
+@keyframes er-banner { 0% { opacity: 0; } 12%, 70% { opacity: 1; } 100% { opacity: 0; } }
+
+/* how much he still remembers: it drains while he walks roads he knows, and a new smell fills it */
+.er-mem {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 9px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.er-mem-label { position: static; font-size: 1rem; letter-spacing: .1em; color: #e2ddd0; }
+.er-mem-track { flex: 1; height: 8px; border: 2px solid rgba(255, 255, 255, .8); border-radius: 2px; background: rgba(10, 8, 6, .55); box-shadow: 1px 1px 0 rgba(0, 0, 0, .6); }
+.er-mem-bar { display: block; height: 100%; width: 100%; background: #f2b49c; transition: width .15s linear; }
+.er-mem.low .er-mem-bar { background: #ff6f6a; animation: blink .5s steps(1) infinite; }
+
+.er-sub {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 11%;
+  z-index: 3;
+  margin: 0;
+  text-align: center;
+  font: 400 clamp(1.2rem, 4.4vw, 1.6rem)/1.15 var(--f-osd);
+  color: #fff;
+  text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+  pointer-events: none;
+}
+
+.er-card {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 18px;
+  text-align: center;
+  background: rgba(18, 15, 12, .74);
+}
+.er-play {
+  padding: 10px 22px 8px;
+  border: 2px solid #c98a76;
+  border-radius: 6px;
+  background: #2b2320;
+  color: #fff;
+  font: 400 clamp(1.7rem, 6vw, 2.2rem)/1 var(--f-osd);
+  letter-spacing: .08em;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #0e0b09, 0 0 24px rgba(242, 180, 156, .25);
+}
+.er-play:hover { border-color: var(--window); }
+.er-play:active { transform: translateY(2px); box-shadow: 0 1px 0 #0e0b09; }
+.er-hint { margin: 0; max-width: 25ch; font: 400 1.25rem/1.2 var(--f-osd); color: var(--ink); text-shadow: 2px 2px 0 #000; }
+.er-hint-touch { display: none; }
+.er-lore { color: var(--cream); }
+.er-over-title { margin: 0; max-width: 13ch; font-size: clamp(1.45rem, 5.4vw, 2.2rem); }
+.er-over-line { margin: 0; max-width: 24ch; font: 400 clamp(1.25rem, 4.2vw, 1.5rem)/1.2 var(--f-osd); color: var(--ink); text-shadow: 2px 2px 0 #000; }
+.er-over-stats { margin: 0; max-width: 26ch; font: 400 1.15rem/1.2 var(--f-osd); letter-spacing: .03em; color: var(--muted); text-shadow: 2px 2px 0 #000; }
+.er-over-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 4px; }
+.er-share { align-self: stretch; }
+
+/* the arrows under the set, for a touch screen */
+.er-pad {
+  display: none;
+  grid-template-columns: repeat(3, 68px);
+  grid-template-rows: repeat(2, 54px);
+  gap: 8px;
+  justify-content: center;
+  margin: 12px auto 0;
+}
+.er-pad button {
+  font: 400 1.7rem/1 var(--f-osd);
+  color: var(--ink);
+  background: #241e1b;
+  border: 2px solid #5a4a42;
+  border-radius: 10px;
+  box-shadow: 0 3px 0 #0e0b09;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.er-pad button:active, .er-pad button.on { transform: translateY(2px); box-shadow: 0 1px 0 #0e0b09; border-color: #f2b49c; }
+.er-pad [data-d="up"] { grid-column: 2; grid-row: 1; }
+.er-pad [data-d="left"] { grid-column: 1; grid-row: 2; }
+.er-pad [data-d="down"] { grid-column: 2; grid-row: 2; }
+.er-pad [data-d="right"] { grid-column: 3; grid-row: 2; }
+.er-stats { margin: 12px 0 0; font: 400 1.3rem/1.2 var(--f-osd); letter-spacing: .03em; color: var(--muted); text-align: center; }
+.er-about { max-width: 40ch; margin: 18px auto 0; text-align: center; }
+.er .foot a { color: var(--muted); text-decoration: none; }
+.er .foot a:hover { color: var(--ink); }
+
+@media (pointer: coarse) {
+  .er-hint-keys { display: none; }
+  .er-hint-touch { display: block; }
+  .er-pad { display: grid; }
+}
+
+/* a phone held upright: the game is the whole screen and never scrolls */
+@media (max-width: 599px) and (orientation: portrait) {
+  html, body.er { height: 100%; overscroll-behavior: none; }
+  body.er { display: flex; flex-direction: column; min-height: 100dvh; }
+  .er-bar { grid-template-columns: auto 1fr auto; width: calc(100% - 16px); gap: 8px; padding: max(8px, env(safe-area-inset-top)) 0 8px; }
+  .er-title { justify-self: center; font-size: clamp(1.1rem, 5.4vw, 1.7rem); }
+  .er-back { padding: 7px 9px 6px 8px; font-size: .9rem; gap: 5px; }
+  .er-back svg { width: 13px; height: 13px; }
+  #sound { font-size: 1.1rem; padding: 7px 10px 6px; }
+  .er-main { flex: 1; width: calc(100% - 16px); align-content: start; padding-bottom: 8px; touch-action: none; }
+  .er-set { padding: 8px 8px 30px; border-radius: 20px 20px 16px 16px; }
+  .er-set .tv-plate { left: 14px; bottom: 8px; font-size: .95rem; }
+  .er-set .tv-knob { right: 14px; bottom: 6px; width: 17px; height: 17px; }
+  .er-set .tv-knob-2 { right: 38px; bottom: 9px; width: 12px; height: 12px; }
+  .er-screen { height: min(calc(100dvh - 268px), calc((100vw - 32px) * 16 / 9)); }
+  .er-ch, .er-score { top: 8px; font-size: 1.25rem; }
+  .er-ch { left: 10px; } .er-score { right: 10px; }
+  .er-level { top: 30px; right: 10px; }
+  .er-pad { grid-template-rows: repeat(2, 50px); margin-top: 8px; }
+  .er-stats { margin-top: 6px; font-size: 1.1rem; }
+  .er-about, .er .foot { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ert > span { animation: none; }
+  .er-mem.low .er-mem-bar { animation: none; }
+}
