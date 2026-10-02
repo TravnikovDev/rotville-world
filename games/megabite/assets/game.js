@@ -487,7 +487,7 @@
   let last = performance.now();
   function frame(now) {
     requestAnimationFrame(frame);
-    const dt = Math.min(100, now - last);
+    const dt = Math.max(0, Math.min(100, now - last));   // a frame can be stamped before the clock started
     last = now;
     if (state === "play") {
       acc += dt; clock += dt;

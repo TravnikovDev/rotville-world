@@ -333,7 +333,7 @@
   let last = performance.now();
   function frame(now) {
     requestAnimationFrame(frame);
-    const dt = Math.min(0.1, (now - last) / 1000);
+    const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));   // a frame can be stamped before the clock started
     last = now;
     if (!ready) return;
     holding = (pointers.size > 0 || keyHeld) && state === "play";
