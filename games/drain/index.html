@@ -35,6 +35,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<script>try{if(sessionStorage.getItem("rv.ch")){sessionStorage.removeItem("rv.ch");document.documentElement.classList.add("ch-in")}}catch(e){}</script>
 <link rel="stylesheet" href="../../assets/gate.css">
 <link rel="stylesheet" href="assets/game.css">
 </head>
@@ -79,6 +80,18 @@
     <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
     <span class="tv-knob" aria-hidden="true"></span>
     <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+    <!-- neighbours -->
+    <nav class="nb" aria-label="Other games">
+      <a class="nb-link nb-prev" href="../lamp/" data-ch="07" aria-label="Previous channel: Lamp, keep the house lit">
+        <span class="nb-tv"><img src="../lamp/assets/preview.webp" width="216" height="384" alt="Lamp: keep the house lit" loading="lazy" decoding="async"><span class="nb-osd" aria-hidden="true">CH 07</span></span>
+        <span class="nb-name" aria-hidden="true">◀ Lamp</span>
+      </a>
+      <a class="nb-link nb-next" href="../paper-round/" data-ch="11" aria-label="Next channel: Paper Round, deliver the hellos nobody sent">
+        <span class="nb-tv"><img src="../paper-round/assets/preview.webp" width="216" height="384" alt="Paper Round: deliver the hellos nobody sent" loading="lazy" decoding="async"><span class="nb-osd" aria-hidden="true">CH 11</span></span>
+        <span class="nb-name" aria-hidden="true">Paper Round ▶</span>
+      </a>
+    </nav>
+    <!-- /neighbours -->
   </div>
 
   <button class="dd-holler" id="holler" type="button">HOLLER</button>
@@ -91,5 +104,6 @@
 </footer>
 
 <script src="assets/game.js" defer></script>
+<script src="../../assets/neighbours.js" defer></script>
 </body>
 </html>

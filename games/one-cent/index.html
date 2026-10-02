@@ -35,6 +35,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<script>try{if(sessionStorage.getItem("rv.ch")){sessionStorage.removeItem("rv.ch");document.documentElement.classList.add("ch-in")}}catch(e){}</script>
 <link rel="stylesheet" href="../../assets/gate.css">
 <link rel="stylesheet" href="assets/game.css">
 </head>
@@ -77,6 +78,18 @@
     <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
     <span class="tv-knob" aria-hidden="true"></span>
     <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+    <!-- neighbours -->
+    <nav class="nb" aria-label="Other games">
+      <a class="nb-link nb-prev" href="../megabite/" data-ch="04" aria-label="Previous channel: Megabite, a game under the town">
+        <span class="nb-tv"><img src="../megabite/assets/preview.webp" width="216" height="384" alt="Megabite: a game under the town" loading="lazy" decoding="async"><span class="nb-osd" aria-hidden="true">CH 04</span></span>
+        <span class="nb-name" aria-hidden="true">◀ Megabite</span>
+      </a>
+      <a class="nb-link nb-next" href="../lamp/" data-ch="07" aria-label="Next channel: Lamp, keep the house lit">
+        <span class="nb-tv"><img src="../lamp/assets/preview.webp" width="216" height="384" alt="Lamp: keep the house lit" loading="lazy" decoding="async"><span class="nb-osd" aria-hidden="true">CH 07</span></span>
+        <span class="nb-name" aria-hidden="true">Lamp ▶</span>
+      </a>
+    </nav>
+    <!-- /neighbours -->
   </div>
 
   <button class="oc-hold" id="hold" type="button" aria-label="Hold to creep">HOLD TO CREEP</button>
@@ -89,5 +102,6 @@
 </footer>
 
 <script src="assets/game.js" defer></script>
+<script src="../../assets/neighbours.js" defer></script>
 </body>
 </html>
