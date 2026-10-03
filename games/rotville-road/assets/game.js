@@ -1,8 +1,8 @@
 /* Rotville Road. Farrat, the grey courier rat harnessed to one enormous wheel, sets off down Rotville Road and cannot
    recall where he was going, so he keeps going anyway, on gas. Lean him back over the potholes and forward up the
    hills, flip him in the air for points, boost when it is worth the gas, and reach a jerrycan before the tank runs
-   dry. Bins and bags on the road sometimes have cheese in them, and cheese mends a tumble. Three tumbles, or an empty
-   tank, and he sits down to remember. Hill Climb Racing, on one wheel. */
+   dry, or he crawls on the fumes. Bins and bags on the road sometimes have cheese in them, and cheese mends a tumble.
+   Three tumbles and he sits down to remember. Hill Climb Racing, on one wheel. */
 (() => {
   "use strict";
   const W = 270, H = 480;
@@ -20,10 +20,12 @@
     best: "Further than ever. Nothing rings a bell.",
     end: "Farrat sits down to remember where he was going.",
     gas: "Out of gas. Farrat does not remember filling up.",
+    worse: "From here the road gets worse. Farrat has not noticed.",
   };
   const BOARDS = ["SOMEWHERE?", "MAYBE HERE?", "NOPE.", "KEEP GOING!", "THAT WAY?", "BACK THERE", "NOT FAR", "ALMOST?",
                   "ROTVILLE ROAD", "WHICH WAY?", "STILL GOING?", "THIS WAY"];
   const GAS_RATE = 1 / 40;                          // a full tank lasts 40 seconds of riding, and a third of that boosting
+  const FUMES_KMH = 10;                             // with the tank empty he keeps going on the fumes, 10 km/h on the speedometer
   const TAU = Math.PI * 2;
   const wrap = a => a - TAU * Math.floor((a + Math.PI) / TAU);
 
@@ -31,8 +33,9 @@
   function makeCore(seed) {
     const gen = s0 => { let s = s0 >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
     const C = {
-      PPM: 30, WR: 18, RIM: 14,                     // 30 pixels to the metre on the road's signs and his speedometer, so
-                                                    // his wheel is 1.2 m across and his pace about 25 km/h
+      PPM: 68.22, WR: 18, RIM: 14,                  // 68.22 pixels to the metre on the road: his wheel is 0.53 m across
+      KMH_PPM: 30,                                  // the speedometer reads as if for a full-size cart, 30 pixels to its
+                                                    // metre, so his pace shows about 25 km/h and a boosted descent 50
       G: 440,
       COM: [7, -5], I: 130,                         // his centre of mass from the hub, upright (the iron wheel keeps it low)
       TOE: [17, 16.5], HEAD: [20, -28], HEAD_R: 9,  // the front of his foot; his head
@@ -48,17 +51,17 @@
     };
     // the hills: a chain of segments, each eased from one height to the next with half a cosine, so a crest or a
     // hollow is level at its top and the steepest part of a hill is pi/2 of its average slope. The slopes are capped,
-    // and the cap grows with the distance: 0.06 for the first 100 m, 0.35 (29 degrees at its steepest) by 450 m,
-    // 0.43 by 1500 m and 0.5 (38 degrees) by 3000 m, the hills longer too after the first 450 m.
+    // and the cap grows with the distance: 0.08 (7 degrees at their steepest) for the first 100 m, where he learns how
+    // he rides, 0.35 (29 degrees) by 300 m, 0.43 by 767 m and 0.5 (38 degrees) by 1433 m, the hills longer after 300 m.
     const segX = [-1e6, C.START + 500], segY = [0, 0], segR = gen(seed ^ 0x51ED270B);
     let lastS = 0;
     function grow(x) {
       while (segX[segX.length - 1] < x + 400) {
         const x0 = segX[segX.length - 1], d = Math.max(0, (x0 - C.START) / C.PPM);
-        const cap = d < 100 ? 0.06 : d < 450 ? 0.06 + 0.29 * (d - 100) / 350 : d < 1500 ? 0.35 + 0.08 * (d - 450) / 1050 : Math.min(0.5, 0.43 + 0.07 * (d - 1500) / 1500);
-        const L = d < 450 ? 170 + segR() * 160 : 140 + segR() * 200;
+        const cap = d < 100 ? 0.08 : d < 300 ? 0.08 + 0.27 * (d - 100) / 200 : d < 767 ? 0.35 + 0.08 * (d - 300) / 467 : Math.min(0.5, 0.43 + 0.07 * (d - 767) / 667);
+        const L = d < 300 ? 170 + segR() * 160 : 140 + segR() * 200;
         let sl;
-        if (segR() < (d < 900 ? 0.22 : 0.16)) sl = (segR() - 0.5) * 0.06;  // a level stretch to breathe on
+        if (segR() < (d < 400 ? 0.22 : 0.16)) sl = (segR() - 0.5) * 0.06;  // a level stretch to breathe on
         else {
           const dir = lastS > 0.02 ? (segR() < 0.65 ? -1 : 1) : lastS < -0.02 ? (segR() < 0.65 ? 1 : -1) : (segR() < 0.5 ? 1 : -1);
           sl = dir * cap * (0.45 + 0.55 * segR());
@@ -78,52 +81,79 @@
     // the road's features, a chunk at a time, each chunk from its own seed whatever order they are made in
     const CH = 600, chunks = new Map();
     const level = (x, r) => Math.abs(hills(x + r) - hills(x - r)) / (2 * r);
+    // humps and ramps are decided first, from a seed of their own, so a chunk can see the ramps behind it: in the first
+    // 500 m the 30 m after a ramp stay clear, nothing in them but the road, for him to land a jump before he has to
+    // think about the next thing
+    const bumpsC = new Map(), CLEAR = 30 * C.PPM, CLEAR_TILL = C.START + 500 * C.PPM;
+    function landing(x, from, to) {               // inside the run-up or the 30 m after a ramp of chunks from..to?
+      for (let k = Math.max(0, from); k <= to; k++) {
+        for (const p of bumps(k).ramps) if (p.x < CLEAR_TILL && x > p.x - p.w - 40 && x < p.x + p.drop + CLEAR) return true;
+      }
+      return false;
+    }
+    const SPAN = Math.ceil(CLEAR / CH) + 1;         // how many chunks back a ramp's landing can reach
+    function bumps(i) {
+      let b = bumpsC.get(i);
+      if (b) return b;
+      b = { humps: [], ramps: [] };
+      bumpsC.set(i, b);
+      const rand = gen((seed * 2246822519) ^ (i * 3266489917 + 374761393));
+      const x0 = i * CH, e = x0 - C.START - 100 * C.PPM;
+      if (e > 300) {
+        // humps: a short rise that throws him at speed, bigger and more of them further on
+        if (e > 1800 && rand() < Math.min(0.85, 0.3 + e / 20000)) {
+          const x = x0 + 80 + rand() * (CH - 160), w = 70 + rand() * 80, a = Math.min(24, 6 + rand() * 5 + e / 2500);
+          if (level(x, w / 2) < 0.1 && !landing(x - w / 2, i - SPAN, i - 1)) b.humps.push({ x, w, a });
+        }
+        // ramps: a run-up curving to a lip 18 to 40 pixels up, then a drop; at speed it throws him far enough to turn
+        // him over, and slow he goes over the edge
+        if (e > 3600 && !b.humps.length && rand() < Math.min(0.6, 0.25 + e / 30000)) {
+          const x = x0 + 100 + rand() * (CH - 220), a = Math.min(40, 18 + rand() * 8 + e / 2000), w = 70 + rand() * 40;
+          if (level(x, w) < 0.12 && !landing(x - w, i - SPAN, i - 1)) b.ramps.push({ x, a, w, drop: a / 1.1 });
+        }
+      }
+      return b;
+    }
     function chunk(i) {
       let c = chunks.get(i);
       if (c) return c;
-      c = { humps: [], ramps: [], holes: [], pebbles: [], junk: [], signs: [], fences: [], props: [], tufts: [] };
+      const b = bumps(i);
+      c = { humps: b.humps, ramps: b.ramps, holes: [], pebbles: [], junk: [], signs: [], fences: [], props: [], tufts: [] };
       chunks.set(i, c);
       const rand = gen((seed * 2654435761) ^ (i * 40503 + 977));
       const x0 = i * CH, d = x0 - C.START;
-      if (d > 300) {
-        // humps: a short rise that throws him at speed, from 100 m, bigger and more of them further on
-        if (d > 3000 && rand() < Math.min(0.85, 0.3 + d / 20000)) {
-          const x = x0 + 80 + rand() * (CH - 160), w = 70 + rand() * 80, a = Math.min(24, 6 + rand() * 5 + d / 2500);
-          if (level(x, w / 2) < 0.1) c.humps.push({ x, w, a });
-        }
-        // ramps from 120 m: a run-up curving to a lip 18 to 40 pixels up, then a drop; at speed it throws him far enough
-        // to turn him over, and slow he goes over the edge
-        if (d > 3600 && !c.humps.length && rand() < Math.min(0.6, 0.25 + d / 30000)) {
-          const x = x0 + 100 + rand() * (CH - 220), a = Math.min(40, 18 + rand() * 8 + d / 2000), w = 70 + rand() * 40;
-          if (level(x, w) < 0.12) c.ramps.push({ x, a, w, drop: a / 1.1 });
-        }
-        // potholes: none in the first 100 m, then up to two a chunk, wider and deeper further on
-        const nHole = d < 3000 ? 0 : rand() < Math.min(0.95, 0.35 + d / 30000) ? (rand() < Math.min(0.5, d / 60000) ? 2 : 1) : 0;
+      // the first 100 m are clear, for him to learn how he rides; from there the road gets worse, everything counted
+      // from 100 m in pixels (e) the way the game used to count it from the start
+      const e = d - 100 * C.PPM;
+      const clear = x => landing(x, i - SPAN, i + 1);   // a ramp's run-up or landing in the first 500 m
+      if (e > 300) {
+        // potholes: up to two a chunk, wider and deeper further on
+        const nHole = e < 1500 ? 0 : rand() < Math.min(0.95, 0.35 + e / 30000) ? (rand() < Math.min(0.5, e / 60000) ? 2 : 1) : 0;
         for (let k = 0; k < nHole; k++) {
           const x = x0 + 60 + rand() * (CH - 120);
           if (level(x, 30) > 0.15) continue;
           if (c.humps.some(p => Math.abs(p.x - x) < p.w / 2 + 50)) continue;
           if (c.ramps.some(p => x > p.x - p.w - 40 && x < p.x + p.drop + 90)) continue;
-          if (c.holes.some(p => Math.abs(p.x - x) < 90)) continue;
-          const w = Math.min(34, 18 + rand() * 8 + d / 2500), dep = Math.min(10, 6 + rand() * 3 + d / 6000);
+          if (c.holes.some(p => Math.abs(p.x - x) < 90) || clear(x - 17)) continue;
+          const w = Math.min(34, 18 + rand() * 8 + e / 2500), dep = Math.min(10, 6 + rand() * 3 + e / 6000);
           c.holes.push({ x, w, d: dep, wall: 4 });
         }
         // pebbles, only where the road is nearly level: on a climb one would stop him dead
-        const nPeb = Math.floor(rand() * (1 + Math.min(4, d / 4000)) + (d > 800 ? 0.6 : 0));
+        const nPeb = Math.floor(rand() * (1 + Math.min(4, e / 4000)) + (e > 800 ? 0.6 : 0));
         for (let k = 0; k < nPeb; k++) {
-          const x = x0 + rand() * CH, r = rand() < 0.6 || d < 3000 ? 3 : 4.5;       // only the small ones in the first 100 m
+          const x = x0 + rand() * CH, r = rand() < 0.6 ? 3 : 4.5;
           if (c.holes.some(p => Math.abs(p.x - x) < p.w / 2 + 14)) continue;
           if (c.humps.some(p => Math.abs(p.x - x) < p.w / 2 + 10)) continue;
           if (c.ramps.some(p => x > p.x - p.w - 20 && x < p.x + p.drop + 60)) continue;
-          if (level(x, 24) > 0.12) continue;
+          if (level(x, 24) > 0.12 || clear(x)) continue;
           c.pebbles.push({ x, r, k: r > 4 ? "pebbleB" : "pebbleA" });
         }
-        // a bin bag now and then from 100 m, and from 200 m a dustbin too, on road that is nearly level
-        if (d > 3000 && rand() < Math.min(0.55, 0.3 + d / 40000)) {
-          const x = x0 + 60 + rand() * (CH - 120), bin = d > 6000 && rand() < 0.4;
+        // a bin bag now and then, and further on a dustbin too, on road that is nearly level
+        if (e > 2300 && rand() < Math.min(0.55, 0.3 + e / 40000)) {
+          const x = x0 + 60 + rand() * (CH - 120), bin = e > 6000 && rand() < 0.4;
           const near = q => Math.abs(q.x - x) < (q.w ? q.w / 2 : 0) + 40;
           const onRamp = c.ramps.some(p => x > p.x - p.w - 40 && x < p.x + p.drop + 80);
-          if (level(x, 30) < 0.12 && !onRamp && !c.holes.some(near) && !c.humps.some(near) && !c.pebbles.some(near)) c.junk.push({ x, k: bin ? "bin" : "bag", hit: 0 });
+          if (level(x, 30) < 0.12 && !onRamp && !clear(x - 10) && !c.holes.some(near) && !c.humps.some(near) && !c.pebbles.some(near)) c.junk.push({ x, k: bin ? "bin" : "bag", hit: 0 });
         }
       }
       // what stands beside the road: signposts that have forgotten too, fence, bushes, stumps; tufts in front. The
@@ -198,10 +228,10 @@
       return { d: Math.sqrt(best), x: bx, y: by, under: py > h(px) };
     }
     const slopeBase = x => { ensure(x); return (hBase(x + 6) - hBase(x - 6)) / 12; };
-    // jerrycans: the first at 90 m, then further apart the further he gets, 150 m apart at first and 390 by 3000 m,
+    // jerrycans: the first at 40 m, then further apart the further he gets, 67 m apart at first and 147 by 1000 m,
     // each on road that is nearly level and clear of the holes and the junk
     const cans = [], canR = gen(seed ^ 0x2545F491);
-    let nextCan = C.START + 90 * C.PPM;
+    let nextCan = C.START + 40 * C.PPM;
     function cansTo(x) {
       while (nextCan < x + 1200) {
         let cx = nextCan;
@@ -219,7 +249,7 @@
         }
         cans.push({ x: cx, got: 0 });
         const d = (nextCan - C.START) / C.PPM;
-        nextCan += (150 + 0.08 * d) * C.PPM * (0.85 + 0.3 * canR());
+        nextCan += (66.67 + 0.08 * d) * C.PPM * (0.85 + 0.3 * canR());
       }
       return cans;
     }
@@ -343,8 +373,8 @@
       }
       return x;
     }
-    // his pace: 225 pixels a second to start (27 km/h), rising to 300 (36 km/h) by 2400 m
-    const pace = x => C.V0 + 75 * Math.min(1, Math.max(0, (x - C.START) / C.PPM) / 2400);
+    // his pace: 225 pixels a second to start (27 km/h on the speedometer), rising to 300 (36 km/h) by 1067 m
+    const pace = x => C.V0 + 75 * Math.min(1, Math.max(0, (x - C.START) / C.PPM) / 1067);
     return { C, F, h, hBase, chunk, chunks, ensure, slopeBase, place, step, hub, rot, CH, pace, getUp, cansTo };
   }
 
@@ -353,8 +383,8 @@
   let K = null, C = null, F = null, seed = 1;
   let bestScore = store.get("bestScore", 0), bestM = store.get("bestM", 0);
   let score = 0, metres = 0, maxX = 0, tumbles = 0, mended = 0, flips = 0, said = {}, bestSaid = false, endCause = "";
-  let gas = 1, gasOutT = 0, boosting = false, boostHeld = false, lowWarned = false;
-  let clock = 0, stateT = 0, acc = 0, lean = 0, camX = 0, camY = 0, nextMile = 250, shake = 0, kmh = 0, beat = 0;
+  let gas = 1, boosting = false, boostHeld = false, lowWarned = false;
+  let clock = 0, stateT = 0, acc = 0, lean = 0, camX = 0, camY = 0, nextMile = 100, shake = 0, kmh = 0, beat = 0;
   let fx = [], pops = [], cheeses = [], flying = [], puffT = 0, dustT = 0, lastHop = 0, flash = 0, lastGain = 0, pending = null;
   let atlas = null, SPR = {};
   const SUB = 1 / 480;                              // the physics step
@@ -372,7 +402,7 @@
     STAGE.mid = [[0.016, r(4, 6.28), 20], [0.041, r(5, 6.28), 8], [0.09, r(6, 6.28), 3]];
     STAGE.clouds = [];
     for (let k = 0; k < 7; k++) STAGE.clouds.push({ u: r(10 + k, 2400), y: 36 + r(20 + k, 150), w: 22 + r(30 + k, 34) | 0 });
-    maxX = F.hubX; metres = 0; nextMile = 250; acc = 0; fx = []; pops = []; cheeses = []; flying = []; lastGain = clock; pending = null;
+    maxX = F.hubX; metres = 0; nextMile = 100; acc = 0; fx = []; pops = []; cheeses = []; flying = []; lastGain = clock; pending = null;
     camX = F.hubX - FX; camY = F.hubY - FY; bgCam = camY;
     lastHop = 0;
   }
@@ -380,7 +410,7 @@
     audio.unlock();
     newRoad((Math.random() * 4294967296) >>> 0);
     score = 0; tumbles = 0; mended = 0; flips = 0; said = {}; bestSaid = false; endCause = "";
-    gas = 1; gasOutT = 0; lowWarned = false; boosting = false;
+    gas = 1; lowWarned = false; boosting = false;
     state = "play"; stateT = 0;
     $("ready").hidden = true; $("over").hidden = true;
     say("start");
@@ -403,15 +433,15 @@
   function end(cause) {
     endCause = cause; state = "sitting"; stateT = 0;
     if (boosting) { boosting = false; audio.boostStop(); }
-    say(cause === "gas" ? "gas" : "end");
+    say("end");
   }
   function over() {
     state = "over"; stateT = 0;
     const isBest = score > bestScore;
     if (isBest) { bestScore = score; store.set("bestScore", bestScore); }
     if (metres > bestM) { bestM = metres; store.set("bestM", bestM); }
-    $("over-title").textContent = endCause === "gas" ? "Farrat ran out of gas." : "Farrat sat down.";
-    const line = endCause === "gas" ? "He does not remember filling up." : "He is trying to remember where he was going.";
+    $("over-title").textContent = "Farrat sat down.";
+    const line = "He is trying to remember where he was going.";
     $("over-line").textContent = isBest ? "A new best. " + line : line;
     $("over-stats").textContent = fmt(score) + " points · " + fmt(metres) + " m · " + flips + (flips === 1 ? " flip" : " flips") + " · best " + fmt(bestScore);
     $("over").hidden = false;
@@ -435,7 +465,7 @@
       const want = !attract && boostHeld && gas > 0;
       if (want !== boosting) { boosting = want; if (want) audio.boostStart(); else audio.boostStop(); }
       acc += dt;
-      const lv = attract ? bot() : lean, sp = attract || gas > 0 ? K.pace(F.hubX) : 0;
+      const lv = attract ? bot() : lean, sp = attract || gas > 0 ? K.pace(F.hubX) : FUMES_KMH / 3.6 * C.KMH_PPM;
       while (acc >= SUB) {
         acc -= SUB;
         const why = K.step(SUB, lv, sp, boosting);
@@ -461,7 +491,7 @@
     if (Math.abs(F.hubY - FY - camY) > 150) camY = F.hubY - FY - Math.sign(F.hubY - FY - camY) * 150;
     bgCam += (camY - bgCam) * Math.min(1, dt / 5);
     // his speed for the set's speedometer, in km/h, and slower for the bed, which plays faster when he goes faster
-    const now = state === "play" ? Math.hypot(F.vx, F.vy) * 3.6 / C.PPM : 0;
+    const now = state === "play" ? Math.hypot(F.vx, F.vy) * 3.6 / C.KMH_PPM : 0;
     kmh += (now - kmh) * Math.min(1, dt * 6);
     beat += (now - beat) * Math.min(1, dt * 1.2);
     audio.tempo(beat);
@@ -492,24 +522,21 @@
     if (F.hubX > maxX + 4) { maxX = F.hubX; lastGain = clock; }
     // twelve seconds without a new metre, stuck under a climb he will not lean into: that is a tumble, and he gets up
     // past it
-    if (playing && gas > 0 && clock - lastGain > 12) { lastGain = clock; banner("STUCK", 1.6); tumble(); return; }
-    // the gas: it burns while he rides, three times as fast boosting; empty, he rolls on until he stops
+    if (playing && clock - lastGain > 12) { lastGain = clock; banner("STUCK", 1.6); tumble(); return; }
+    // the gas: it burns while he rides, three times as fast boosting; empty, he keeps going on the fumes, slowly,
+    // until a jerrycan fills him up again
     if (playing && gas > 0) {
       gas = Math.max(0, gas - dt * GAS_RATE * (boosting ? 3 : 1));
       if (gas < 0.2 && !lowWarned) { lowWarned = true; audio.low(); }
-      if (gas === 0) { gasOutT = 0; banner("NO GAS", 1.6); audio.empty(); }
+      if (gas === 0) { banner("NO GAS", 1.6); audio.empty(); say("gas"); }
     }
-    if (playing && gas === 0) {
-      gasOutT += dt;
-      if ((F.ground && Math.hypot(F.vx, F.vy) < 8 && gasOutT > 1.2) || gasOutT > 9) { end("gas"); return; }
-    }
-    // ten points a metre, a bell every 250
+    // ten points a metre, a bell every hundred, and at the first hundred the narrator says the road gets worse
     const m = Math.max(0, Math.floor((maxX - C.START) / C.PPM));
     if (playing && m !== metres) {
       score += (m - metres) * 10;
       metres = m;
-      if (metres >= nextMile) { audio.bell(); banner(nextMile + " m", 1.6); nextMile += 250; }
-      if (!bestSaid && bestM >= 60 && metres > bestM) { bestSaid = true; say("best"); audio.bell(); }
+      if (metres >= nextMile) { audio.bell(); banner(nextMile + " m", 1.6); if (nextMile === 100) say("worse"); nextMile += 100; }
+      if (!bestSaid && bestM >= 20 && metres > bestM) { bestSaid = true; say("best"); audio.bell(); }
     }
     // tricks: a landing counts once he has stayed on his wheel a moment
     if (F.landed) { if (playing) pending = { rot: F.landed.rot, air: F.landed.air, t: clock }; F.landed = null; }
@@ -520,7 +547,7 @@
       const cy = K.hBase(c.x) - 7;
       if (touches(c.x, cy, 7)) {
         c.got = clock;
-        if (playing) { gas = 1; lowWarned = false; gasOutT = 0; score += 50; pop("GAS", c.x, cy - 12, "#f2c94c"); audio.glug(); }
+        if (playing) { gas = 1; lowWarned = false; score += 50; pop("GAS", c.x, cy - 12, "#f2c94c"); audio.glug(); }
       }
     }
     // bin bags and dustbins: he goes through them unless he jumps them
@@ -890,10 +917,10 @@
       }
       for (const pr of c.props) if (pr.x > x0 && pr.x < x1) spr(pr.k, pr.x - ox, vy(pr.x) + 2);
     }
-    // milestones every 250 metres, and the furthest so far
-    const m0 = Math.max(1, Math.ceil(((x0 - C.START) / C.PPM) / 250)), m1 = Math.floor(((x1 - C.START) / C.PPM) / 250);
+    // milestones every hundred metres, and the furthest so far
+    const m0 = Math.max(1, Math.ceil(((x0 - C.START) / C.PPM) / 100)), m1 = Math.floor(((x1 - C.START) / C.PPM) / 100);
     for (let m = m0; m <= m1; m++) {
-      const x = C.START + m * 250 * C.PPM, im = milestone(m * 250);
+      const x = C.START + m * 100 * C.PPM, im = milestone(m * 100);
       g.drawImage(im, Math.round(x - ox - im.width / 2), vy(x) - im.height + 2);
     }
     if (bestM > 0) {
@@ -1032,12 +1059,12 @@
     audio.line(k).then(d => { subTimer = setTimeout(() => { $("sub").textContent = ""; }, (Math.max(d, 1.8) + 0.6) * 1000); });
   }
 
-  /* ---------- sound: the bed, five lines, the rest made on the spot ---------- */
+  /* ---------- sound: the bed, six lines, the rest made on the spot ---------- */
   const audio = {
     ctx: null, on: store.get("sound", true), raw: {}, buf: {}, music: null, bst: null,
     fetch() {
       for (const [k, f] of [["start", "assets/line-start.mp3"], ["tumble", "assets/line-tumble.mp3"], ["best", "assets/line-best.mp3"],
-                            ["end", "assets/line-end.mp3"], ["gas", "assets/line-gas.mp3"], ["music", "assets/country-road.mp3"]]) {
+                            ["end", "assets/line-end.mp3"], ["gas", "assets/line-gas.mp3"], ["worse", "assets/line-worse.mp3"], ["music", "assets/country-road.mp3"]]) {
         this.raw[k] = fetch(f).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
       }
     },
