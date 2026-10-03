@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SGZ7TMLQGM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-SGZ7TMLQGM');
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rotville Road · Rotville</title>
+<meta name="description" content="Farrat, the courier rat harnessed to one enormous wheel, sets off down Rotville Road on gas and forgets where to. Lean him over the potholes and up the hills, flip him in the air for points, boost when it is worth the gas, and reach a jerrycan before the tank runs dry.">
+<link rel="canonical" href="https://rotville.world/games/rotville-road/">
+<meta name="theme-color" content="#1c1f17">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rotville">
+<meta property="og:title" content="Rotville Road · Rotville">
+<meta property="og:description" content="Farrat sets off down Rotville Road on his one enormous wheel, on gas, and forgets where to. Flip him, boost him, and see how far he gets.">
+<meta property="og:url" content="https://rotville.world/games/rotville-road/">
+<meta property="og:image" content="https://rotville.world/games/rotville-road/assets/og.jpg">
+<meta property="og:image:alt" content="A dirt road over green hills under a grey sky, seen from the side. Farrat, a grey rat in a stamped cap, rides along it harnessed to a big spoked wheel, puffs of green gas behind him, toward a signpost whose boards read SOMEWHERE?, MAYBE HERE?, NOPE. and KEEP GOING!">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rotville.world/games/rotville-road/assets/og.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" href="../../favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<script>try{if(sessionStorage.getItem("rv.ch")){sessionStorage.removeItem("rv.ch");document.documentElement.classList.add("ch-in")}}catch(e){}</script>
+<link rel="stylesheet" href="../../assets/gate.css">
+<link rel="stylesheet" href="assets/game.css">
+</head>
+<body class="rr">
+
+<header class="rr-bar">
+  <a class="rr-back" href="../../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l8 7-8 7v-5H3z"/></svg>Rotville</a>
+  <h1 class="rr-title"><span class="sr-only">Rotville Road</span><span class="rrt" aria-hidden="true"><span class="rrt-d">R</span><span class="rrt-d">O</span><span class="rrt-d">T</span><span class="rrt-d">V</span><span class="rrt-d">I</span><span class="rrt-d">L</span><span class="rrt-d">L</span><span class="rrt-d">E</span><span class="rrt-gap"> </span><span class="rrt-r">R</span><span class="rrt-r">O</span><span class="rrt-r">A</span><span class="rrt-r">D</span></span></h1>
+  <button class="tape" id="sound" type="button" aria-pressed="true"><span class="led" aria-hidden="true"></span><span class="tape-label">Sound: on</span></button>
+</header>
+
+<main class="rr-main" id="area">
+  <div class="tv-set rr-set">
+    <div class="tv-screen rr-screen" id="screen">
+      <canvas id="c" width="270" height="480" aria-label="A dirt road over green hills, seen from the side. Farrat, a grey rat harnessed to a big spoked wheel, runs along it past fences, bushes and signposts."></canvas>
+      <span class="static" id="static" aria-hidden="true"></span>
+      <span class="osd rr-ch" aria-hidden="true">CH 23</span>
+      <span class="osd rr-speed" id="speed" aria-label="Speed">0 km/h</span>
+      <span class="osd rr-score" id="score" aria-label="Points">0</span>
+      <span class="osd rr-dist" id="dist">0 m</span>
+      <span class="osd rr-banner" id="banner" aria-hidden="true"></span>
+      <span class="rr-foot">
+        <span class="rr-wheels" id="wheels" aria-label="3 tumbles left"><span class="rr-wheel" aria-hidden="true"></span><span class="rr-wheel" aria-hidden="true"></span><span class="rr-wheel" aria-hidden="true"></span></span>
+        <span class="rr-gas" aria-label="Gas"><span class="osd rr-gas-label" aria-hidden="true">GAS</span><span class="rr-gas-track"><span class="rr-gas-bar" id="gas"></span></span></span>
+      </span>
+      <p class="rr-sub" id="sub" aria-live="polite"></p>
+
+      <div class="rr-card" id="ready">
+        <button class="rr-play" id="play" type="button">▶ PLAY</button>
+        <p class="rr-hint">Farrat sets off down Rotville Road on gas and forgets where to. He keeps going anyway.</p>
+        <p class="rr-hint rr-hint-keys">Left and right, or A and D, lean him back and forward, and flip him in the air. Up or W boosts. Space pauses.</p>
+        <p class="rr-hint rr-hint-touch">Hold the left or right half of the screen to lean and flip him. Hold both halves, or the middle button, to boost.</p>
+        <p class="rr-hint rr-lore">Boosting burns gas three times as fast, and jerrycans fill the tank. Bins and bags sometimes have cheese in them, and cheese mends a tumble.</p>
+      </div>
+
+      <div class="rr-card" id="over" hidden>
+        <h2 class="title rr-over-title" id="over-title">Farrat sat down.</h2>
+        <p class="rr-over-line" id="over-line">He is trying to remember where he was going.</p>
+        <p class="rr-over-stats" id="over-stats"></p>
+        <div class="rr-over-actions">
+          <button class="rr-play" id="again" type="button">▶ AGAIN</button>
+          <button class="tape rr-share" id="share" type="button"><span class="tape-label">Share</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
+    <span class="tv-knob" aria-hidden="true"></span>
+    <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+    <!-- neighbours -->
+    <nav class="nb" aria-label="Other games">
+      <a class="nb-link nb-prev" href="../every-road/" data-ch="21" aria-label="Previous channel: Every Road, the nose remembers">
+        <span class="nb-tv"><img src="../every-road/assets/preview.webp" width="216" height="384" alt="Every Road: the nose remembers" loading="lazy" decoding="async"><span class="nb-osd" aria-hidden="true">CH 21</span></span>
+        <span class="nb-name" aria-hidden="true">◀ Every Road</span>
+      </a>
+      <a class="nb-link nb-next" href="../megabite/" data-ch="04" aria-label="Next channel: Megabite, a game under the town">
+        <span class="nb-tv"><img src="../megabite/assets/preview.webp" width="216" height="384" alt="Megabite: a game under the town" loading="lazy" decoding="async"><span class="nb-osd" aria-hidden="true">CH 04</span></span>
+        <span class="nb-name" aria-hidden="true">Megabite ▶</span>
+      </a>
+    </nav>
+    <!-- /neighbours -->
+  </div>
+
+  <div class="rr-pad" id="pad" aria-label="Lean and boost">
+    <button type="button" data-d="back" aria-label="Lean back">◀ BACK</button>
+    <button type="button" data-d="boost" aria-label="Boost">BOOST</button>
+    <button type="button" data-d="fwd" aria-label="Lean forward">FWD ▶</button>
+  </div>
+  <p class="rr-stats"><span id="best">Best 0</span></p>
+  <p class="narrator rr-about">Farrat is a grey courier rat in a stamped cap, harnessed to a single enormous wheel. He means to cross the whole of Rotville Road, every pebble and every pothole. He packs, breathes in, sets off, and cannot recall where he was going. He keeps going anyway, on gas. Some say he has covered thousands of miles. Others say he is very good at circles.</p>
+</main>
+
+<footer class="foot">
+  <p><a href="../../">Rotville. A perfectly normal town.</a></p>
+</footer>
+
+<script src="assets/game.js" defer></script>
+<script src="../../assets/neighbours.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+/* Rotville Road. The gate's tokens, sets and buttons (../../assets/gate.css), plus this. */
+
+[hidden] { display: none !important; }
+
+.rr-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  width: min(760px, 100% - 24px);
+  margin: 0 auto;
+  padding: max(14px, env(safe-area-inset-top)) 0 10px;
+}
+.rr-back {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px 8px 11px;
+  border-radius: 8px;
+  background: var(--sign);
+  color: var(--sign-ink);
+  font: 800 1rem/1 var(--f-sign);
+  text-decoration: none;
+  box-shadow: inset 0 0 0 3px var(--sign), inset 0 0 0 5px var(--sign-ink), 0 5px 0 -2px var(--sign-deep);
+}
+.rr-back:hover { background: var(--sign-hi); }
+.rr-back svg { width: 16px; height: 16px; fill: currentColor; transform: rotate(180deg); }
+#sound { justify-self: end; font-size: 1.15rem; padding: 8px 12px 7px; }
+
+/* the name in the banner's letters: ROTVILLE in road dust, ROAD in signpost wood, every letter going over a bump in turn */
+.rr-title { margin: 0; font: 400 clamp(1.3rem, 5.6vw, 2.4rem)/1 var(--f-toy); white-space: nowrap; }
+.rrt { display: inline-flex; gap: .02em; }
+.rrt > span { display: inline-block; animation: rr-bump 3.6s ease-in-out infinite; }
+.rrt-gap { width: .28em; }
+.rrt-d { color: #d8c7a4; text-shadow: -.015em -.015em 0 #f3e8cf, .01em .02em 0 #6e5b40, .02em .04em 0 #6e5b40, .03em .06em 0 #6e5b40, .04em .08em 0 #6e5b40, .06em .15em .1em rgba(6, 3, 18, .65); }
+.rrt-r { color: #c99b63; text-shadow: -.015em -.015em 0 #f0cf9f, .01em .02em 0 #5b3c22, .02em .04em 0 #5b3c22, .03em .06em 0 #5b3c22, .04em .08em 0 #5b3c22, .06em .15em .1em rgba(6, 3, 18, .65); }
+.rrt > span:nth-child(2) { animation-delay: .09s; } .rrt > span:nth-child(3) { animation-delay: .18s; }
+.rrt > span:nth-child(4) { animation-delay: .27s; } .rrt > span:nth-child(5) { animation-delay: .36s; }
+.rrt > span:nth-child(6) { animation-delay: .45s; } .rrt > span:nth-child(7) { animation-delay: .54s; }
+.rrt > span:nth-child(8) { animation-delay: .63s; } .rrt > span:nth-child(10) { animation-delay: .81s; }
+.rrt > span:nth-child(11) { animation-delay: .9s; } .rrt > span:nth-child(12) { animation-delay: .99s; }
+.rrt > span:nth-child(13) { animation-delay: 1.08s; }
+@keyframes rr-bump {
+  0%, 74%, 100% { transform: translateY(0) rotate(0); }
+  79% { transform: translateY(-.09em) rotate(-4deg); }
+  85% { transform: translateY(.02em) rotate(2deg); }
+  90% { transform: translateY(0) rotate(0); }
+}
+
+.rr-main {
+  display: grid;
+  justify-items: center;
+  width: min(760px, 100% - 24px);
+  margin: 0 auto;
+  padding-bottom: 20px;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.rr-set { width: auto; padding: 14px 14px 46px; }
+.rr-screen {
+  aspect-ratio: 9 / 16;
+  height: min(72vh, 700px);
+  width: auto;
+  border-radius: 16px / 20px;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.rr-screen canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
+.rr-ch { top: 10px; left: 12px; }
+.rr-score { top: 10px; right: 12px; }
+.rr-speed { top: 36px; left: 12px; font-size: 1.35rem; color: #f0e3c2; }
+.rr-speed.fast { color: #f2c94c; }
+.rr-speed.faster { color: #ff8a5c; }
+.rr-dist { top: 36px; right: 12px; font-size: 1.15rem; color: #f0e3c2; }
+.rr-banner {
+  left: 0;
+  right: 0;
+  top: 40%;
+  text-align: center;
+  font-size: clamp(2rem, 8vw, 2.8rem);
+  letter-spacing: .12em;
+  opacity: 0;
+}
+.rr-banner.on { animation: rr-banner 1.6s steps(8) forwards; }
+.rr-banner.hold { opacity: 1; animation: none; }
+@keyframes rr-banner { 0% { opacity: 0; } 12%, 70% { opacity: 1; } 100% { opacity: 0; } }
+
+/* along the foot of the screen: the tumbles he has left, three small wheels, and the gas in his tank */
+.rr-foot {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 9px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+.rr-wheels { display: flex; gap: 7px; }
+.rr-wheel {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid #2b2420;
+  box-shadow: inset 0 0 0 1px #9c9183, 1px 1px 0 rgba(0, 0, 0, .6);
+  background:
+    linear-gradient(90deg, transparent 45%, #6d645a 45%, #6d645a 55%, transparent 55%),
+    linear-gradient(0deg, transparent 45%, #6d645a 45%, #6d645a 55%, transparent 55%),
+    rgba(240, 227, 194, .25);
+  transition: opacity .3s steps(3);
+}
+.rr-wheel.gone { opacity: .25; filter: grayscale(1); }
+.rr-gas { flex: 1; display: flex; align-items: center; gap: 8px; }
+.rr-gas-label { position: static; font-size: 1rem; letter-spacing: .1em; color: #f0e3c2; }
+.rr-gas-track { flex: 1; height: 8px; border: 2px solid rgba(255, 255, 255, .8); border-radius: 2px; background: rgba(10, 8, 6, .55); box-shadow: 1px 1px 0 rgba(0, 0, 0, .6); }
+.rr-gas-bar { display: block; height: 100%; width: 100%; background: #c9b04a; transition: width .15s linear; }
+.rr-gas.low .rr-gas-bar { background: #ff6f6a; animation: blink .5s steps(1) infinite; }
+
+.rr-sub {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 11%;
+  z-index: 3;
+  margin: 0;
+  text-align: center;
+  font: 400 clamp(1.2rem, 4.4vw, 1.6rem)/1.15 var(--f-osd);
+  color: #fff;
+  text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+  pointer-events: none;
+}
+
+.rr-card {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 18px;
+  text-align: center;
+  background: rgba(18, 15, 12, .7);
+}
+.rr-play {
+  padding: 10px 22px 8px;
+  border: 2px solid #c99b63;
+  border-radius: 6px;
+  background: #2b2320;
+  color: #fff;
+  font: 400 clamp(1.7rem, 6vw, 2.2rem)/1 var(--f-osd);
+  letter-spacing: .08em;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #0e0b09, 0 0 24px rgba(201, 155, 99, .25);
+}
+.rr-play:hover { border-color: var(--window); }
+.rr-play:active { transform: translateY(2px); box-shadow: 0 1px 0 #0e0b09; }
+.rr-hint { margin: 0; max-width: 25ch; font: 400 1.25rem/1.2 var(--f-osd); color: var(--ink); text-shadow: 2px 2px 0 #000; }
+.rr-hint-touch { display: none; }
+.rr-lore { color: var(--cream); }
+.rr-over-title { margin: 0; max-width: 13ch; font-size: clamp(1.45rem, 5.4vw, 2.2rem); }
+.rr-over-line { margin: 0; max-width: 24ch; font: 400 clamp(1.25rem, 4.2vw, 1.5rem)/1.2 var(--f-osd); color: var(--ink); text-shadow: 2px 2px 0 #000; }
+.rr-over-stats { margin: 0; max-width: 26ch; font: 400 1.15rem/1.2 var(--f-osd); letter-spacing: .03em; color: var(--muted); text-shadow: 2px 2px 0 #000; }
+.rr-over-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 4px; }
+.rr-share { align-self: stretch; }
+
+/* two buttons under the set, held, for a touch screen */
+.rr-pad {
+  display: none;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  width: min(420px, 100%);
+  margin: 12px auto 0;
+}
+.rr-pad button {
+  height: 58px;
+  font: 400 1.6rem/1 var(--f-osd);
+  letter-spacing: .06em;
+  color: var(--ink);
+  background: #241e1b;
+  border: 2px solid #5a4a42;
+  border-radius: 10px;
+  box-shadow: 0 3px 0 #0e0b09;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.rr-pad button:active, .rr-pad button.on { transform: translateY(2px); box-shadow: 0 1px 0 #0e0b09; border-color: #c99b63; }
+.rr-pad [data-d="boost"] { color: #f2c94c; border-color: #7a6a3a; }
+.rr-stats { margin: 12px 0 0; font: 400 1.3rem/1.2 var(--f-osd); letter-spacing: .03em; color: var(--muted); text-align: center; }
+.rr-about { max-width: 40ch; margin: 18px auto 0; text-align: center; }
+.rr .foot a { color: var(--muted); text-decoration: none; }
+.rr .foot a:hover { color: var(--ink); }
+
+@media (pointer: coarse) {
+  .rr-hint-keys { display: none; }
+  .rr-hint-touch { display: block; }
+  .rr-pad { display: grid; }
+}
+
+/* a phone held upright: the game is the whole screen and never scrolls */
+@media (max-width: 599px) and (orientation: portrait) {
+  html, body.rr { height: 100%; overscroll-behavior: none; }
+  body.rr { display: flex; flex-direction: column; min-height: 100dvh; }
+  .rr-bar { grid-template-columns: auto 1fr auto; width: calc(100% - 16px); gap: 8px; padding: max(8px, env(safe-area-inset-top)) 0 8px; }
+  .rr-title { justify-self: center; font-size: clamp(.9rem, 4.4vw, 1.5rem); }
+  .rr-back { padding: 7px 9px 6px 8px; font-size: .9rem; gap: 5px; }
+  .rr-back svg { width: 13px; height: 13px; }
+  #sound { font-size: 1rem; padding: 7px 8px 6px; white-space: nowrap; }
+  .rr-main { flex: 1; width: calc(100% - 16px); align-content: start; padding-bottom: 8px; touch-action: none; }
+  .rr-set { padding: 8px 8px 30px; border-radius: 20px 20px 16px 16px; }
+  .rr-set .tv-plate { left: 14px; bottom: 8px; font-size: .95rem; }
+  .rr-set .tv-knob { right: 14px; bottom: 6px; width: 17px; height: 17px; }
+  .rr-set .tv-knob-2 { right: 38px; bottom: 9px; width: 12px; height: 12px; }
+  .rr-screen { height: min(calc(100dvh - 252px), calc((100vw - 32px) * 16 / 9)); }
+  .rr-ch, .rr-score { top: 8px; font-size: 1.25rem; }
+  .rr-ch { left: 10px; } .rr-score { right: 10px; }
+  .rr-dist { top: 30px; right: 10px; }
+  .rr-speed { top: 30px; left: 10px; }
+  .rr-pad button { font-size: 1.35rem; }
+  .rr-pad { margin-top: 8px; }
+  .rr-pad button { height: 52px; }
+  .rr-stats { margin-top: 6px; font-size: 1.1rem; }
+  .rr-about, .rr .foot { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rrt > span { animation: none; }
+}

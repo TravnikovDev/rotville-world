@@ -26,6 +26,8 @@ The main page has the town, the ways to watch it, and a small TV on Channel 3 th
 
 [Every Road](https://rotville.world/games/every-road/) is the tenth: Amidar with a nose. Moo-Goo, a beast of the sewer tunnels who is mostly nose, sniffs every road of a small town of cabins. A road he walks from one crossing to the next is sniffed and stays damp, and a block whose roads are all sniffed he remembers, so it comes back to colour. Conelie sits on roads he has not sniffed yet and points him the wrong way, so those are sniffed from both ends. If he goes too long without a new smell, he forgets, and he cries for no reason. From the fourth town some roads are missing, so blocks run together into bigger yards with dead ends between them, and from the sixth the town is bigger; no two are laid out the same.
 
+[Rotville Road](https://rotville.world/games/rotville-road/) is the eleventh: Hill Climb Racing on one wheel. Farrat, a grey courier rat in a stamped cap, is harnessed to a single enormous wheel. He sets off down Rotville Road on gas, cannot recall where he was going, and keeps going anyway. Lean him back over the potholes and forward up the hills; in the air the same keys turn him over, and a flip he lands on his wheel scores. Boosting pushes him harder and burns gas three times as fast, and jerrycans on the road fill the tank. Bins and bags on the road sometimes have cheese in them, and cheese mends a tumble. Three tumbles or an empty tank and he sits down to remember. The hills get steeper and he gets faster the further he goes.
+
 Rotville is on [YouTube](https://www.youtube.com/@Rotville), [TikTok](https://www.tiktok.com/@rotville.world) and [Instagram](https://www.instagram.com/rotville.world/).
 
 ## How it is made
