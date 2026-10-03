@@ -48,14 +48,14 @@
     };
     // the hills: a chain of segments, each eased from one height to the next with half a cosine, so a crest or a
     // hollow is level at its top and the steepest part of a hill is pi/2 of its average slope. The slopes are capped,
-    // and the cap grows with the distance: 0.08 on the first stretch, 0.35 (29 degrees at its steepest) by 450 m,
+    // and the cap grows with the distance: 0.06 for the first 100 m, 0.35 (29 degrees at its steepest) by 450 m,
     // 0.43 by 1500 m and 0.5 (38 degrees) by 3000 m, the hills longer too after the first 450 m.
     const segX = [-1e6, C.START + 500], segY = [0, 0], segR = gen(seed ^ 0x51ED270B);
     let lastS = 0;
     function grow(x) {
       while (segX[segX.length - 1] < x + 400) {
         const x0 = segX[segX.length - 1], d = Math.max(0, (x0 - C.START) / C.PPM);
-        const cap = d < 450 ? 0.08 + 0.27 * d / 450 : d < 1500 ? 0.35 + 0.08 * (d - 450) / 1050 : Math.min(0.5, 0.43 + 0.07 * (d - 1500) / 1500);
+        const cap = d < 100 ? 0.06 : d < 450 ? 0.06 + 0.29 * (d - 100) / 350 : d < 1500 ? 0.35 + 0.08 * (d - 450) / 1050 : Math.min(0.5, 0.43 + 0.07 * (d - 1500) / 1500);
         const L = d < 450 ? 170 + segR() * 160 : 140 + segR() * 200;
         let sl;
         if (segR() < (d < 900 ? 0.22 : 0.16)) sl = (segR() - 0.5) * 0.06;  // a level stretch to breathe on
@@ -86,19 +86,19 @@
       const rand = gen((seed * 2654435761) ^ (i * 40503 + 977));
       const x0 = i * CH, d = x0 - C.START;
       if (d > 300) {
-        // humps: a short rise that throws him at speed, bigger and more of them further on
-        if (d > 1800 && rand() < Math.min(0.85, 0.3 + d / 20000)) {
+        // humps: a short rise that throws him at speed, from 100 m, bigger and more of them further on
+        if (d > 3000 && rand() < Math.min(0.85, 0.3 + d / 20000)) {
           const x = x0 + 80 + rand() * (CH - 160), w = 70 + rand() * 80, a = Math.min(24, 6 + rand() * 5 + d / 2500);
           if (level(x, w / 2) < 0.1) c.humps.push({ x, w, a });
         }
-        // ramps from 40 m: a run-up curving to a lip 18 to 40 pixels up, then a drop; at speed it throws him far enough
+        // ramps from 120 m: a run-up curving to a lip 18 to 40 pixels up, then a drop; at speed it throws him far enough
         // to turn him over, and slow he goes over the edge
         if (d > 3600 && !c.humps.length && rand() < Math.min(0.6, 0.25 + d / 30000)) {
           const x = x0 + 100 + rand() * (CH - 220), a = Math.min(40, 18 + rand() * 8 + d / 2000), w = 70 + rand() * 40;
           if (level(x, w) < 0.12) c.ramps.push({ x, a, w, drop: a / 1.1 });
         }
-        // potholes: none at first, then up to two a chunk, wider and deeper further on
-        const nHole = d < 1500 ? 0 : rand() < Math.min(0.95, 0.35 + d / 30000) ? (rand() < Math.min(0.5, d / 60000) ? 2 : 1) : 0;
+        // potholes: none in the first 100 m, then up to two a chunk, wider and deeper further on
+        const nHole = d < 3000 ? 0 : rand() < Math.min(0.95, 0.35 + d / 30000) ? (rand() < Math.min(0.5, d / 60000) ? 2 : 1) : 0;
         for (let k = 0; k < nHole; k++) {
           const x = x0 + 60 + rand() * (CH - 120);
           if (level(x, 30) > 0.15) continue;
@@ -111,15 +111,15 @@
         // pebbles, only where the road is nearly level: on a climb one would stop him dead
         const nPeb = Math.floor(rand() * (1 + Math.min(4, d / 4000)) + (d > 800 ? 0.6 : 0));
         for (let k = 0; k < nPeb; k++) {
-          const x = x0 + rand() * CH, r = rand() < 0.6 ? 3 : 4.5;
+          const x = x0 + rand() * CH, r = rand() < 0.6 || d < 3000 ? 3 : 4.5;       // only the small ones in the first 100 m
           if (c.holes.some(p => Math.abs(p.x - x) < p.w / 2 + 14)) continue;
           if (c.humps.some(p => Math.abs(p.x - x) < p.w / 2 + 10)) continue;
           if (c.ramps.some(p => x > p.x - p.w - 20 && x < p.x + p.drop + 60)) continue;
           if (level(x, 24) > 0.12) continue;
           c.pebbles.push({ x, r, k: r > 4 ? "pebbleB" : "pebbleA" });
         }
-        // a bin bag now and then from 25 m, and from 65 m a dustbin too, on road that is nearly level
-        if (d > 2300 && rand() < Math.min(0.55, 0.3 + d / 40000)) {
+        // a bin bag now and then from 100 m, and from 200 m a dustbin too, on road that is nearly level
+        if (d > 3000 && rand() < Math.min(0.55, 0.3 + d / 40000)) {
           const x = x0 + 60 + rand() * (CH - 120), bin = d > 6000 && rand() < 0.4;
           const near = q => Math.abs(q.x - x) < (q.w ? q.w / 2 : 0) + 40;
           const onRamp = c.ramps.some(p => x > p.x - p.w - 40 && x < p.x + p.drop + 80);
@@ -226,14 +226,14 @@
 
     // Farrat: one rigid body, his wheel rolling free at the hub
     const F = { x: 0, y: 0, vx: 0, vy: 0, th: 0, om: 0, spin: 0, wv: 0, ground: false, toe: false, air: 0, run: 0,
-                hubX: 0, hubY: 0, tx: 1, ty: 0, stuck: 0, stuckX: 0, hop: 0, land: 0, airRot: 0, landed: null };
+                hubX: 0, hubY: 0, tx: 1, ty: 0, stuck: 0, stuckX: 0, hop: 0, land: 0, airRot: 0, landed: null, easy: 0 };
     const rot = (bx, by, th) => [bx * Math.cos(th) - by * Math.sin(th), bx * Math.sin(th) + by * Math.cos(th)];
     function hub() { const [ox, oy] = rot(C.COM[0], C.COM[1], F.th); return [F.x - ox, F.y - oy]; }
     function place(x, v) {
       ensure(x);
       const a = Math.atan(slopeBase(x));
       F.th = a + 0.12; F.om = 0; F.wv = v || 0; F.vx = (v || 0) * Math.cos(a); F.vy = (v || 0) * Math.sin(a);
-      F.air = 0; F.airRot = 0; F.landed = null; F.stuck = 0; F.stuckX = x;
+      F.air = 0; F.airRot = 0; F.landed = null; F.stuck = 0; F.stuckX = x; F.easy = 1;
       const hy = h(x) - C.WR - 0.5;
       const [ox, oy] = rot(C.COM[0], C.COM[1], F.th);
       F.x = x + ox; F.y = hy + oy; F.hubX = x; F.hubY = hy;
@@ -278,7 +278,7 @@
         const sl = (hBase(px + 4) - hBase(px - 4)) / 8, nl = Math.hypot(sl, 1), ttx = 1 / nl, tty = sl / nl;
         const ox = px - F.x, oy = py - F.y;
         const vt = (F.vx - F.om * oy) * ttx + (F.vy + F.om * ox) * tty;
-        const T = Math.max(0, Math.min(C.ACC, C.KD * (speed - vt)));
+        const T = Math.max(0, Math.min(C.ACC * (1 - 0.55 * F.easy), C.KD * (speed - vt)));   // gentler for his first second
         fx += T * ttx; fy += T * tty; tq += ox * (T * tty) - oy * (T * ttx);
         F.run = T;
       }
@@ -304,6 +304,7 @@
       } else if (flying) {
         tq -= C.I * 0.4 * F.om;
       }
+      F.easy = Math.max(0, F.easy - dt);
       F.vx += fx * dt; F.vy += fy * dt; F.om += (tq / C.I) * dt;
       F.x += F.vx * dt; F.y += F.vy * dt; F.th += F.om * dt;
       if (!F.ground && !F.toe) F.airRot += F.om * dt;
