@@ -248,6 +248,8 @@
     turn() { this.noise(0.006, 0.07, 3000, 8000); },
     crash() { this.noise(1.1, 0.35, 180, 7000); this.tone(220, 50, 0.5, "sawtooth", 0.1); },
   };
+  // on a phone, these sounds buzz in the hand too (../../assets/buzz.js)
+  window.rvBuzz?.on(audio, { appear: "tap", eat: "tap", bonus: "good", crash: "over" });
   audio.fetch();
 
   /* ---------- the game ---------- */
@@ -355,7 +357,7 @@
     best = Math.max(best, n); bestMap = Math.max(bestMap, pct);
     store.set("best", best); store.set("bestMap", bestMap);
     hud();
-    if (!filled) audio.crash();
+    if (!filled) audio.crash(); else window.rvBuzz?.("great");
     $("over-title").textContent = filled ? "The ducts ran out of corners." : "Nobody has seen him stop.";
     $("over-line").textContent = filled
       ? "What he does when a street runs out of corners is not on any map."

@@ -117,6 +117,8 @@
     stop() { this.tone(200, 90, 0.5, "sine", 0.2); this.noise(0.25, 0.08, 100, 700); },
     splash() { this.noise(0.7, 0.2, 120, 2200); this.tone(160, 70, 0.4, "sine", 0.18); },
   };
+  // on a phone, these sounds buzz in the hand too (../../assets/buzz.js)
+  window.rvBuzz?.on(audio, { bump: "bump", slide: "hit", gloop: "tap", mark: "tap", stop: "over", splash: "great" });
   audio.fetch();
 
   /* ---------- the drain ---------- */

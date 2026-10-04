@@ -212,6 +212,8 @@
       this.tone(1046, 1052, 0.45, "triangle", 0.1, 0.38); this.tone(1318, 1322, 0.45, "sine", 0.05, 0.38);
     },
   };
+  // on a phone, these sounds buzz in the hand too (../../assets/buzz.js)
+  window.rvBuzz?.on(audio, { flip: "tap", spring: "bump", sling: "tap", squeak: "bump", thud: v => v >= 900 ? "hit" : v >= 450 ? "bump" : 0, kickback: "bump", lane: "tap", rot: "good", chomp: "good", fanfare: "great", saved: "good", buzz: "hit" });
   audio.fetch();
 
   /* ---------- a little pixel font, three by five ---------- */
@@ -328,6 +330,7 @@
 
   function over() {
     state = "over"; overT = 0;
+    window.rvBuzz?.("over");
     if (score > best) { best = score; store.set("best", best); }
     const parts = [], n = eaten, total = n.crate + n.can + n.pipe;
     if (n.crate) parts.push(n.crate === 1 ? "a crate" : n.crate + " crates");
@@ -411,6 +414,7 @@
     }
     saveT = 0;
     state = "drain"; drainT = 0;
+    window.rvBuzz?.("lose");
     const bonus = tilted ? 0 : eatenBall * 300 * mult;
     score += bonus;
     show("BONUS", eatenBall + " EATEN x" + mult + " = " + fmt(bonus), 2.2, 2);

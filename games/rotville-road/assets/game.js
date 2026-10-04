@@ -432,6 +432,7 @@
   }
   function end(cause) {
     endCause = cause; state = "sitting"; stateT = 0;
+    window.rvBuzz?.("over");
     if (boosting) { boosting = false; audio.boostStop(); }
     say("end");
   }
@@ -1191,6 +1192,8 @@
     },
     tumble() { this.tone(170, 50, 0.3, "sine", 0.2); this.noise(0.35, 0.12, 60, 1200); this.tone(520, 130, 0.7, "triangle", 0.05, 0.12); },
   };
+  // on a phone, these sounds buzz in the hand too (../../assets/buzz.js)
+  window.rvBuzz?.on(audio, { tumble: "lose", thud: k => k > 0.35 ? Math.round(12 + 30 * k) : 0, flip: n => n >= 2 ? "great" : "good", air: "good", clang: "hit", crunch: "bump", glug: "tap", cheese: "good", low: "tap", empty: "hit", bell: "tap" });
   audio.fetch();
 
   /* ---------- input: hold back, forward, or the boost ---------- */

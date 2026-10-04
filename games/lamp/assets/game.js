@@ -101,6 +101,8 @@
     blown() { this.tone(1500, 900, 0.07, "square", 0.04); this.noise(0.05, 0.07, 2000, 7000); },
     buzz() { this.noise(0.04, 0.025, 90, 380); },
   };
+  // on a phone, these sounds buzz in the hand too (../../assets/buzz.js)
+  window.rvBuzz?.on(audio, { relit: "tap", blown: "bump" });
   audio.fetch();
 
   /* ---------- the house ---------- */
@@ -220,6 +222,7 @@
 
   function end() {
     state = "over";
+    window.rvBuzz?.("over");
     $("over-title").textContent = "The house went dark.";
     $("over-line").textContent = litCount === 0 ? "Fusegrin lit no rooms." : "Fusegrin lit " + litCount + (litCount === 1 ? " room." : " rooms.");
     $("over-stats").textContent = litCount > 0 && litCount === best ? "The most he has lit" : "Most rooms " + best;

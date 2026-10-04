@@ -110,6 +110,8 @@
     unanswered() { this.tone(330, 300, 0.25, "triangle", 0.1); this.tone(247, 220, 0.4, "triangle", 0.1, 0.2); },
     clank() { this.noise(0.18, 0.08, 1500, 7000); this.tone(190, 120, 0.2, "square", 0.04); this.tone(1400, 1320, 0.3, "sine", 0.03, 0.01); },
   };
+  // on a phone, these sounds buzz in the hand too (../../assets/buzz.js)
+  window.rvBuzz?.on(audio, { back: "tap", eep: "bump", unanswered: "hit" });
   audio.fetch();
 
   /* ---------- the chamber ---------- */
@@ -276,6 +278,7 @@
 
   function end() {
     state = "over";
+    window.rvBuzz?.("over");
     $("over-title").textContent = "Gil Lister went back in.";
     $("over-line").textContent = said === 0 ? "Nobody said it back." : said === 1 ? "You said it back once." : "You said it back " + said + " times.";
     $("over-stats").textContent = said > 0 && said === best ? "The most you have said it back" : "Most said back " + best;

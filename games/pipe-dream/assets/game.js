@@ -142,6 +142,8 @@
     },
     splash() { this.noise(0.4, 0.12, 300, 3000); this.tone(420, 180, 0.25, "sine", 0.06); this.tone(330, 300, 0.25, "triangle", 0.08, 0.3); this.tone(247, 220, 0.4, "triangle", 0.08, 0.5); },
   };
+  // on a phone, these sounds buzz in the hand too (../../assets/buzz.js)
+  window.rvBuzz?.on(audio, { thunk: "bump", clank: "tap", tick: "tap", gurgle: "bump", fanfare: "great", splash: "lose" });
   audio.fetch();
 
   /* ---------- puddles ---------- */
@@ -505,6 +507,7 @@
 
   function end() {
     state = "over";
+    window.rvBuzz?.("over");
     audio.run(false);
     $("over-title").textContent = "The night is over.";
     $("over-line").textContent = cleared === 0 ? "Knightley cleared no clogs." : "Knightley cleared " + (cleared === 1 ? "one clog." : cleared + " clogs.");

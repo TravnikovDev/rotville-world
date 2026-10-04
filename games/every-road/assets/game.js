@@ -671,6 +671,8 @@
     clear() { [523, 659, 784, 1047].forEach((f, k) => this.tone(f, f, 0.22, "sine", 0.07, k * 0.11)); },
     forget() { this.tone(520, 170, 1.5, "sine", 0.1); this.noise(0.7, 0.025, 400, 1300, 0.25); },
   };
+  // on a phone, these sounds buzz in the hand too (../../assets/buzz.js)
+  window.rvBuzz?.on(audio, { squeak: "bump", tick: "tap", chime: "good", clear: "great", forget: "over" });
   audio.fetch();
 
   /* ---------- input ---------- */

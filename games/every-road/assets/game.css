@@ -63,6 +63,7 @@
   border-radius: 16px / 20px;
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
+  container-type: size;   /* the cards size their text by the screen's height (cqh) */
 }
 .er-screen canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
 .er-ch { top: 10px; left: 12px; }
@@ -137,7 +138,7 @@
 }
 .er-play:hover { border-color: var(--window); }
 .er-play:active { transform: translateY(2px); box-shadow: 0 1px 0 #0e0b09; }
-.er-hint { margin: 0; max-width: 25ch; font: 400 1.25rem/1.2 var(--f-osd); color: var(--ink); text-shadow: 2px 2px 0 #000; }
+.er-hint { margin: 0; max-width: 25ch; font: 400 1.25rem/1.2 var(--f-osd); font-size: clamp(.95rem, 4.2cqh, 1.25rem); color: var(--ink); text-shadow: 2px 2px 0 #000; }
 .er-hint-touch { display: none; }
 .er-lore { color: var(--cream); }
 .er-over-title { margin: 0; max-width: 13ch; font-size: clamp(1.45rem, 5.4vw, 2.2rem); }
@@ -184,18 +185,27 @@
 /* a phone held upright: the game is the whole screen and never scrolls */
 @media (max-width: 599px) and (orientation: portrait) {
   html, body.er { height: 100%; overscroll-behavior: none; }
-  body.er { display: flex; flex-direction: column; min-height: 100dvh; }
+  body.er { display: flex; flex-direction: column; min-height: 100dvh; height: 100dvh; }
   .er-bar { grid-template-columns: auto 1fr auto; width: calc(100% - 16px); gap: 8px; padding: max(8px, env(safe-area-inset-top)) 0 8px; }
   .er-title { justify-self: center; font-size: clamp(1.1rem, 5.4vw, 1.7rem); }
   .er-back { padding: 7px 9px 6px 8px; font-size: .9rem; gap: 5px; }
   .er-back svg { width: 13px; height: 13px; }
   #sound { font-size: 1.1rem; padding: 7px 10px 6px; }
-  .er-main { flex: 1; width: calc(100% - 16px); align-content: start; padding-bottom: 8px; touch-action: none; }
+  .er-main { flex: 1; min-height: 0; width: calc(100% - 16px); align-content: start; padding-bottom: 8px; touch-action: none; container-type: size; }
   .er-set { padding: 8px 8px 30px; border-radius: 20px 20px 16px 16px; }
   .er-set .tv-plate { left: 14px; bottom: 8px; font-size: .95rem; }
   .er-set .tv-knob { right: 14px; bottom: 6px; width: 17px; height: 17px; }
   .er-set .tv-knob-2 { right: 38px; bottom: 9px; width: 12px; height: 12px; }
+  /* the screen takes all the height under the header: 181px is what else stands in .er-main - the set's
+     padding (38), the arrows (116) and the best line (27); the first line is for browsers without container units */
   .er-screen { height: min(calc(100dvh - 268px), calc((100vw - 32px) * 16 / 9)); }
+  .er-screen { height: min(calc(100cqh - 181px), calc((100cqw - 16px) * 16 / 9)); }
+  .er-card { padding: 14px 12px; }
+  .er-hint { max-width: 30ch; }
+  .er-play { font-size: clamp(1.25rem, 5.6cqh, 1.7rem); }
+  .er-over-title { font-size: clamp(1.15rem, 4.8cqh, 1.45rem); }
+  .er-over-line { font-size: clamp(1rem, 4.2cqh, 1.25rem); }
+  .er-over-stats { font-size: clamp(.95rem, 3.8cqh, 1.15rem); }
   .er-ch, .er-score { top: 8px; font-size: 1.25rem; }
   .er-ch { left: 10px; } .er-score { right: 10px; }
   .er-level { top: 30px; right: 10px; }

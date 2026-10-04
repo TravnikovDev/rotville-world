@@ -105,6 +105,8 @@
     miss() { this.tone(330, 300, 0.25, "triangle", 0.1); this.tone(247, 220, 0.4, "triangle", 0.1, 0.2); },
     step() { this.noise(0.03, 0.02, 200, 900); },
   };
+  // on a phone, these sounds buzz in the hand too (../../assets/buzz.js)
+  window.rvBuzz?.on(audio, { ping: "tap", pickup: "tap", splash: "bump", bump: "hit", miss: "bump" });
   audio.fetch();
 
   /* ---------- puddles ---------- */
@@ -296,6 +298,7 @@
 
   function end() {
     state = "over";
+    window.rvBuzz?.("over");
     $("over-title").textContent = "The round is over.";
     $("over-line").textContent = hellos === 0 ? "Sprouted Doris delivered no hellos." : "Sprouted Doris delivered " + hellos + (hellos === 1 ? " hello." : " hellos.");
     $("over-stats").textContent = hellos > 0 && hellos === best ? "The most she has delivered" : "Most hellos " + best;

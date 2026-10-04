@@ -90,6 +90,8 @@
     seen() { this.tone(311, 300, 0.45, "square", 0.08); this.tone(330, 318, 0.45, "square", 0.08); this.noise(0.2, 0.15, 400, 3000); },
     clink() { this.tone(2637, 2630, 0.35, "sine", 0.12); this.tone(3951, 3940, 0.25, "sine", 0.06); this.tone(2349, 2340, 0.3, "sine", 0.07, 0.08); },
   };
+  // on a phone, these sounds buzz in the hand too (../../assets/buzz.js)
+  window.rvBuzz?.on(audio, { opens: "tap", clink: "good", seen: "lose" });
   audio.fetch();
 
   /* ---------- the game ---------- */
@@ -174,6 +176,7 @@
 
   function end() {
     state = "over"; timer = 0;
+    window.rvBuzz?.("over");
     const cost = cents * 2 + 3;          // his crimes lose him money, whatever the player does
     $("over-title").textContent = cents === 0 ? "Nickelpig took nothing." : "Nickelpig took " + cents + (cents === 1 ? " cent." : " cents.");
     $("over-line").textContent = cents === 0 ? "It cost him 3 anyway." : "It cost him " + cost + ".";

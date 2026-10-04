@@ -133,6 +133,8 @@
     },
     sad() { [392, 349, 311, 262].forEach((f, i) => this.tone(f, f * 0.98, 0.3, "triangle", 0.09, 0.2 + i * 0.22)); },
   };
+  // on a phone, these sounds buzz in the hand too (../../assets/buzz.js)
+  window.rvBuzz?.on(audio, { clink: "tap", pop: i => i ? 0 : "good", glug: n => n ? 0 : "great", press: "hit", fanfare: "great", sad: "over" });
   audio.fetch();
 
   /* ---------- the board ---------- */
