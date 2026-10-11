@@ -74,6 +74,7 @@
   border-radius: 16px / 20px;
   touch-action: none;
   cursor: pointer;
+  container-type: size;   /* the cards size their text by the screen's height (cqh) */
 }
 .pr-screen canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
 .pr-ch { top: 10px; left: 12px; }
@@ -81,7 +82,36 @@
 .pr-hellos.bump { transform: scale(1.25); }
 .pr-letters { top: 36px; right: 12px; font-size: 1.15rem; letter-spacing: .06em; color: #fbefb2; }
 .pr-letters.low { color: #ff6b7d; }
-.pr-misses { top: 56px; right: 12px; font-size: 1.1rem; letter-spacing: .12em; color: #86dd4b; }
+.pr-misses { top: 56px; right: 12px; font-size: 1.15rem; letter-spacing: .1em; color: #86dd4b; }
+.pr-misses.hit, .pr-letters.hit { animation: pr-hit .5s steps(4) 1; }
+@keyframes pr-hit { 0%, 100% { transform: none; color: inherit; } 25%, 75% { transform: translateX(-3px); color: #ff6b7d; } 50% { transform: translateX(3px); color: #ff6b7d; } }
+
+/* a street's name as she turns into it: the town's brown sign, the narrator saying it */
+.pr-street {
+  position: absolute;
+  top: 58%;
+  left: 50%;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 10px 16px 9px;
+  border-radius: 8px;
+  background: var(--sign);
+  color: var(--sign-ink);
+  box-shadow: inset 0 0 0 3px var(--sign), inset 0 0 0 5px var(--sign-ink), 0 5px 0 -2px var(--sign-deep), 0 10px 24px rgba(0, 0, 0, .5);
+  transform: translate(-50%, 0);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.pr-street.in { animation: pr-street 2.8s steps(14) 1 both; }
+@keyframes pr-street {
+  0% { opacity: 0; transform: translate(-50%, -14px); }
+  12%, 82% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, 0); }
+}
+.pr-street-no { font: 400 .95rem/1 var(--f-osd); letter-spacing: .14em; opacity: .8; }
+.pr-street-name { font: 800 clamp(1.05rem, 4.6vw, 1.45rem)/1 var(--f-sign); }
 .pr-sub {
   position: absolute;
   left: 6%;
@@ -116,13 +146,15 @@
   background: #1b1634;
   color: #fff;
   font: 400 clamp(1.7rem, 6vw, 2.2rem)/1 var(--f-osd);
+  font-size: clamp(1.25rem, 6cqh, 2.2rem);
   letter-spacing: .08em;
+  white-space: nowrap;
   cursor: pointer;
   box-shadow: 0 3px 0 #0a0816, 0 0 24px rgba(134, 221, 75, .25);
 }
 .pr-play:hover { border-color: var(--window); }
 .pr-play:active { transform: translateY(2px); box-shadow: 0 1px 0 #0a0816; }
-.pr-hint { margin: 0; max-width: 24ch; font: 400 1.25rem/1.2 var(--f-osd); color: var(--ink); text-shadow: 2px 2px 0 #000; }
+.pr-hint { margin: 0; max-width: 25ch; font: 400 1.25rem/1.2 var(--f-osd); font-size: clamp(.95rem, 4.2cqh, 1.25rem); color: var(--ink); text-shadow: 2px 2px 0 #000; }
 .pr-lore { color: var(--cream); }
 .pr-over-title { margin: 0; max-width: 13ch; font-size: clamp(1.45rem, 5.4vw, 2.2rem); }
 .pr-over-line { margin: 0; max-width: 24ch; font: 400 clamp(1.25rem, 4.2vw, 1.5rem)/1.2 var(--f-osd); color: var(--ink); text-shadow: 2px 2px 0 #000; }
@@ -130,23 +162,34 @@
 .pr-over-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 4px; }
 .pr-share { align-self: stretch; }
 
-/* the one button, for a thumb: a hello to the nearest place that wants one */
-.pr-throw {
-  margin-top: 14px;
-  width: min(360px, 100%);
-  padding: 16px 20px 14px;
+/* two buttons under the set: a hello to the left, a hello to the right */
+.pr-pad {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: min(420px, 100%);
+  margin: 14px auto 0;
+}
+.pr-pad button {
+  height: 62px;
   border: 2px solid #3b3263;
   border-radius: 12px;
   background: #1b1634;
   color: var(--ink);
   font: 400 1.6rem/1 var(--f-osd);
-  letter-spacing: .14em;
+  letter-spacing: .1em;
   box-shadow: 0 4px 0 #0a0816;
-  touch-action: manipulation;
+  touch-action: none;
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
 }
-.pr-throw.on { transform: translateY(3px); box-shadow: 0 1px 0 #0a0816; border-color: #86dd4b; color: #d6ffb0; }
+.pr-pad button:hover { border-color: #5b4d91; }
+.pr-pad button:active, .pr-pad button.on { transform: translateY(3px); box-shadow: 0 1px 0 #0a0816; border-color: #86dd4b; color: #d6ffb0; }
+.pr-hint-touch { display: none; }
+@media (pointer: coarse) {
+  .pr-hint-keys { display: none; }
+  .pr-hint-touch { display: block; }
+}
 .pr-stats { margin: 12px 0 0; font: 400 1.3rem/1.2 var(--f-osd); letter-spacing: .03em; color: var(--muted); text-align: center; }
 .pr-about { max-width: 40ch; margin: 18px auto 0; text-align: center; }
 .pr .foot a { color: var(--muted); text-decoration: none; }
@@ -165,17 +208,23 @@
   .pr-back { padding: 7px 9px 6px 8px; font-size: .9rem; gap: 5px; }
   .pr-back svg { width: 13px; height: 13px; }
   #sound { font-size: 1.1rem; padding: 7px 10px 6px; }
-  .pr-main { flex: 1; width: calc(100% - 16px); align-content: start; padding-bottom: 8px; touch-action: none; }
+  body.pr { height: 100dvh; }
+  .pr-main { flex: 1; min-height: 0; width: calc(100% - 16px); align-content: start; padding-bottom: 8px; touch-action: none; container-type: size; }
   .pr-set { padding: 8px 8px 30px; border-radius: 20px 20px 16px 16px; }
   .pr-set .tv-plate { left: 14px; bottom: 8px; font-size: .95rem; }
   .pr-set .tv-knob { right: 14px; bottom: 6px; width: 17px; height: 17px; }
   .pr-set .tv-knob-2 { right: 38px; bottom: 9px; width: 12px; height: 12px; }
-  .pr-screen { height: min(calc(100dvh - 205px), calc((100vw - 32px) * 16 / 9)); }
+  /* the screen takes all the height under the header: 128px is what else stands in .pr-main - the set's
+     padding (38), the pad (62) and the best line (28); the first line is for browsers without container units */
+  .pr-screen { height: min(calc(100dvh - 250px), calc((100vw - 32px) * 16 / 9)); }
+  .pr-screen { height: min(calc(100cqh - 128px), calc((100cqw - 16px) * 16 / 9)); }
   .pr-ch, .pr-hellos { top: 8px; font-size: 1.25rem; }
   .pr-ch { left: 10px; } .pr-hellos { right: 10px; }
   .pr-letters { top: 30px; right: 10px; }
   .pr-misses { top: 48px; right: 10px; }
-  .pr-throw { margin-top: 10px; padding: 13px 16px 11px; font-size: 1.4rem; }
+  .pr-pad { margin-top: 8px; }
+  .pr-pad button { height: 54px; font-size: 1.35rem; }
+  .pr-street { top: 58%; }
   .pr-stats { margin-top: 6px; font-size: 1.1rem; }
   .pr-about, .pr .foot { display: none; }
 }

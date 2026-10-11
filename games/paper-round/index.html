@@ -12,7 +12,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Paper Round · Rotville</title>
-<meta name="description" content="Sprouted Doris delivers the hellos nobody sent. Walk her down the lane, throw a hello to every place with someone in, mind the puddles, and pick up more letters as you go.">
+<meta name="description" content="Sprouted Doris delivers the hellos nobody sent. Walk her down five streets of Rotville at night, aim a hello at every place with someone in, and mind the carts, the barrels and the puddles.">
 <link rel="canonical" href="https://rotville.world/games/paper-round/">
 <meta name="theme-color" content="#120d2a">
 <meta name="color-scheme" content="dark">
@@ -22,7 +22,7 @@
 <meta property="og:description" content="Sprouted Doris delivers the hellos nobody sent. Nobody sent them.">
 <meta property="og:url" content="https://rotville.world/games/paper-round/">
 <meta property="og:image" content="https://rotville.world/games/paper-round/assets/og.jpg">
-<meta property="og:image:alt" content="Sprouted Doris, a green flower with one red petal and a single gold eye, walking a lane on her roots with a satchel of envelopes, between a filing cabinet, a bench and a door that residents live in.">
+<meta property="og:image:alt" content="Sprouted Doris, a green flower with one red petal and a single gold eye, walking a lamplit street in Rotville at night on her roots, between picket fences and the mailboxes, doors and benches that residents live in.">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -50,20 +50,21 @@
 <main class="pr-main" id="area">
   <div class="tv-set pr-set">
     <div class="tv-screen pr-screen" id="screen">
-      <canvas id="c" width="270" height="480" aria-label="Sprouted Doris walking a lane with a satchel of envelopes"></canvas>
+      <canvas id="c" width="270" height="480" aria-label="Sprouted Doris walking a lamplit street at night with a satchel of envelopes"></canvas>
       <span class="static" id="static" aria-hidden="true"></span>
       <span class="osd pr-ch" aria-hidden="true">CH 11</span>
       <span class="osd pr-hellos" id="hellos">0 HELLOS</span>
       <span class="osd pr-letters" id="letters" aria-label="Letters in the satchel">✉ 12</span>
-      <span class="osd pr-misses" id="misses" aria-label="Misses left: 3 of 3">●●●</span>
+      <span class="osd pr-misses" id="misses" aria-label="Slips left: 3 of 3">✿✿✿</span>
+      <div class="pr-street" id="street" hidden aria-live="polite"><span class="pr-street-no">STREET 1</span><span class="pr-street-name">Mailbox Promenade</span></div>
       <p class="pr-sub" id="sub" aria-live="polite"></p>
 
       <div class="pr-card" id="ready">
         <button class="pr-play" id="play" type="button">▶ PLAY</button>
-        <p class="pr-hint">Tap a place with a green flower and she throws a hello there.</p>
-        <p class="pr-hint">Drag to steer round the puddles and what is left on the lane. Walk over letters to pick them up.</p>
-        <p class="pr-hint pr-hint-keys">Arrow keys to steer, Space to throw.</p>
-        <p class="pr-hint pr-lore">Three places missed and the round is over.</p>
+        <p class="pr-hint">◀ and ▶ throw a hello to that side. Throw a little before a place with a green flower: the hello keeps her pace.</p>
+        <p class="pr-hint pr-hint-keys">Arrows steer. ↓ hurries her, ↑ holds her back. Z and X throw.</p>
+        <p class="pr-hint pr-hint-touch">Drag on the street to steer: low hurries her, high holds her back.</p>
+        <p class="pr-hint pr-lore">Three slips end the round: a fall, a place passed by, or somebody busy.</p>
       </div>
 
       <div class="pr-card" id="over" hidden>
@@ -93,9 +94,12 @@
     <!-- /neighbours -->
   </div>
 
-  <button class="pr-throw" id="throw" type="button">THROW</button>
+  <div class="pr-pad" id="pad" aria-label="Throw a hello">
+    <button type="button" data-side="-1" aria-label="Throw a hello to the left">◀ HELLO</button>
+    <button type="button" data-side="1" aria-label="Throw a hello to the right">HELLO ▶</button>
+  </div>
   <p class="pr-stats"><span id="best">Most hellos 0</span></p>
-  <p class="narrator pr-about">Sprouted Doris used to watch from the puddles. Now she walks the lanes on her roots with a satchel of envelopes, and delivers the hellos nobody sent to everyone who lives in a post, a pipe, a bench or a file.</p>
+  <p class="narrator pr-about">Sprouted Doris used to watch from the puddles. Now she walks the streets of Rotville at night on her roots, with a satchel of envelopes, and delivers the hellos nobody sent to everyone who lives in a post, a pipe, a bench or a file.</p>
 </main>
 
 <footer class="foot">

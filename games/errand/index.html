@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SGZ7TMLQGM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-SGZ7TMLQGM');
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Errand · Rotville</title>
+<meta name="description" content="Clangus is a brass handbell with an ordinary errand. Walk him to the shop before its candle goes out, gently: a hurried step swings his clapper into the brass, and the whole street comes to its doors for bad news.">
+<link rel="canonical" href="https://rotville.world/games/errand/">
+<meta name="theme-color" content="#120d2a">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rotville">
+<meta property="og:title" content="Errand · Rotville">
+<meta property="og:description" content="Walk slowly enough to finish an ordinary errand.">
+<meta property="og:url" content="https://rotville.world/games/errand/">
+<meta property="og:image" content="https://rotville.world/games/errand/assets/og.jpg">
+<meta property="og:image:alt" content="Clangus, a brass handbell on heavy boots, walking a lamplit street of old town houses at night, his clapper swinging under his rim.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rotville.world/games/errand/assets/og.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" href="../../favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<script>try{if(sessionStorage.getItem("rv.ch")){sessionStorage.removeItem("rv.ch");document.documentElement.classList.add("ch-in")}}catch(e){}</script>
+<link rel="stylesheet" href="../../assets/gate.css">
+<link rel="stylesheet" href="assets/game.css">
+</head>
+<body class="er">
+
+<header class="er-bar">
+  <a class="er-back" href="../../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l8 7-8 7v-5H3z"/></svg>Rotville</a>
+  <h1 class="er-title"><span class="sr-only">Errand</span><span class="ert" aria-hidden="true"><span>E</span><span class="ert-swing">R</span><span>R</span><span>A</span><span>N</span><span>D</span></span></h1>
+  <button class="tape" id="sound" type="button" aria-pressed="true"><span class="led" aria-hidden="true"></span><span class="tape-label">Sound: on</span></button>
+</header>
+
+<main class="er-main" id="area">
+  <div class="tv-set er-set">
+    <div class="tv-screen er-screen" id="screen">
+      <canvas id="c" width="270" height="480" aria-label="Clangus, a brass handbell, walking a lamplit street of town houses at night"></canvas>
+      <span class="static" id="static" aria-hidden="true"></span>
+      <span class="osd er-ch" aria-hidden="true">CH 25</span>
+      <span class="osd er-errand" id="errand">ERRAND 1</span>
+      <span class="osd er-bells" id="bells" aria-label="Rings left: 3 of 3"></span>
+      <p class="er-sub" id="sub" aria-live="polite"></p>
+      <div class="er-street" id="street" hidden aria-live="polite"><span class="er-street-no">ERRAND 1</span><span class="er-street-name">A loaf</span><span class="er-street-where">the Bakery District</span></div>
+
+      <div class="er-card" id="ready">
+        <button class="er-play" id="play" type="button">▶ PLAY</button>
+        <p class="er-hint">Hold WALK to walk, let go to slow down. Get him to the shop before its candle goes out.</p>
+        <p class="er-hint er-hint-keys">Hold → or Space to walk, ← to stop short.</p>
+        <p class="er-hint">Speed up, slow down or stop too sharply and his clapper rings the brass. Watch it swing at the top.</p>
+        <p class="er-hint er-lore">Three rings and the whole street is at its door.</p>
+      </div>
+
+      <div class="er-card" id="over" hidden>
+        <h2 class="title er-over-title" id="over-title">Everyone came to the door.</h2>
+        <p class="er-over-line" id="over-line">Clangus ran no errands.</p>
+        <p class="er-over-stats" id="over-stats"></p>
+        <div class="er-over-actions">
+          <button class="er-play" id="again" type="button">▶ AGAIN</button>
+          <button class="tape er-share" id="share" type="button"><span class="tape-label">Share</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
+    <span class="tv-knob" aria-hidden="true"></span>
+    <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+    <!-- neighbours -->
+    <nav class="nb" aria-label="Other games">
+      <a class="nb-link nb-prev" href="../rotville-road/" data-ch="23" aria-label="Previous channel: Rotville Road, he keeps going">
+        <span class="nb-tv"><img src="../rotville-road/assets/preview.webp" width="216" height="384" alt="Rotville Road: he keeps going" loading="lazy" decoding="async"><span class="nb-osd" aria-hidden="true">CH 23</span></span>
+        <span class="nb-name" aria-hidden="true">◀ Rotville Road</span>
+      </a>
+      <a class="nb-link nb-next" href="../megabite/" data-ch="04" aria-label="Next channel: Megabite, a game under the town">
+        <span class="nb-tv"><img src="../megabite/assets/preview.webp" width="216" height="384" alt="Megabite: a game under the town" loading="lazy" decoding="async"><span class="nb-osd" aria-hidden="true">CH 04</span></span>
+        <span class="nb-name" aria-hidden="true">Megabite ▶</span>
+      </a>
+    </nav>
+    <!-- /neighbours -->
+  </div>
+
+  <div class="er-pad" id="pad" aria-label="Walk and stop">
+    <button type="button" data-d="stop" aria-label="Stop short">■ STOP</button>
+    <button type="button" data-d="walk" aria-label="Walk, held">WALK ▶</button>
+  </div>
+  <p class="er-stats"><span id="best">Most errands 0</span></p>
+  <p class="narrator er-about">Clangus is a tarnished brass handbell with thin arms, heavy boots and a clapper that hangs below his rim. He no longer has a post, but a hurried step still sends the clapper against the brass, and people come to their doors expecting bad news. They find him halfway down the street, trying to walk slowly enough to finish an ordinary errand.</p>
+</main>
+
+<footer class="foot">
+  <p><a href="../../">Rotville. A perfectly normal town.</a></p>
+</footer>
+
+<script src="../../assets/buzz.js" defer></script>
+<script src="assets/game.js" defer></script>
+<script src="../../assets/neighbours.js" defer></script>
+</body>
+</html>
