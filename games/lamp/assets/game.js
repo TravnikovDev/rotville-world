@@ -5,9 +5,12 @@
    in a corner, and he is pleased to be asked." He has never gone off, and nothing here builds toward it: the only
    things that run out are the bulbs.
 
-   Six rooms, one bulb each, and every bulb dims. A room comes back up while Fusegrin stands in it, and a little
-   while he rolls through. Tap a room and he goes there, along the floors and up and down the ladders between them.
-   Three rooms dark at once and the house has gone dark.
+   Six rooms, one bulb each, and every bulb dims. A room comes back up while Fusegrin stands in it; rolling through,
+   it gets only a little of his light. Tap a room and he goes there, along the floors and up and down the ladders
+   between them, so the order he is sent in is the game. The first twenty seconds are a quiet start, the bulbs lasting
+   half a minute; then they burn a little shorter as the evening goes on, and from the forty-fifth second a window now
+   and then blows open, and that room fades twice as fast until he goes and stands in it. Three rooms dark at once and
+   the house has gone dark.
 
    Only pre-rendered pictures ship (assets/lit.png, dark.png, front.png, sprites.png). Fusegrin is drawn at 15 fps
    under the 60 fps page, the way the clips hold residents (R819, R1070). */
@@ -28,9 +31,13 @@
   const DARK_LIMIT = 3;                  // three rooms dark at once and the house has gone dark
   const RESIDENT_STEP = 1 / 15;          // Fusegrin updates 15 times a second
   const ROLL = 2.8, CLIMB = 1.6;         // metres a second, along a floor and up or down a ladder
-  const FILL = 0.7;                      // seconds for a room to come up while he stands in it
-  const PASS = 0.3;                      // the share of that he gives a room he only rolls through
+  const FILL = 0.55;                     // seconds for a room to come up while he stands in it
+  const PASS = 0.15;                     // the share of that he gives a room he only rolls through
+  const EASY = 20;                       // seconds of quiet start, the bulbs lasting their longest
+  const DRAFT = 2, DRAFT_FROM = 45;      // a window blown open: its room fades this many times as fast; the first, when
+  const SHUT = 0.4;                      // seconds he stands in the room to shut it
   const LOW = 0.3;                       // under this a bulb flickers
+  const COUNTS = 0.6;                    // a room that had faded under this and is brought back up counts as lit
   const R_M = 0.2;                       // his radius in metres, for how far he turns as he rolls
   const TREAD = 0.25;                    // a ladder's rise per tread
 
@@ -100,9 +107,23 @@
     relit() { this.tone(262, 523, 0.22, "sine", 0.1); this.tone(392, 784, 0.3, "sine", 0.05, 0.06); this.noise(0.1, 0.04, 200, 900); },
     blown() { this.tone(1500, 900, 0.07, "square", 0.04); this.noise(0.05, 0.07, 2000, 7000); },
     buzz() { this.noise(0.04, 0.025, 90, 380); },
+    // the wind through the open windows, louder the more of them there are
+    wind(n) {
+      if (!this.ctx) return;
+      if (!this.windG) {
+        const c = this.ctx, src = c.createBufferSource(), f = c.createBiquadFilter(), lfo = c.createOscillator(), lg = c.createGain();
+        src.buffer = this.noiseBuf; src.loop = true; f.type = "bandpass"; f.frequency.value = 700; f.Q.value = 0.8;
+        lfo.frequency.value = 0.35; lg.gain.value = 260; lfo.connect(lg).connect(f.frequency);
+        this.windG = c.createGain(); this.windG.gain.value = 0;
+        src.connect(f).connect(this.windG).connect(this.fxg); src.start(); lfo.start();
+      }
+      this.windG.gain.setTargetAtTime(Math.min(0.12, 0.06 * n), this.ctx.currentTime, 0.25);
+    },
+    bang() { this.tone(150, 70, 0.14, "square", 0.06); this.noise(0.12, 0.09, 150, 1200); this.noise(0.9, 0.035, 700, 3200, 0.05); },
+    shut() { this.tone(240, 170, 0.08, "square", 0.05); this.noise(0.05, 0.05, 400, 1800); },
   };
   // on a phone, these sounds buzz in the hand too (../../assets/buzz.js)
-  window.rvBuzz?.on(audio, { relit: "tap", blown: "bump" });
+  window.rvBuzz?.on(audio, { relit: "tap", blown: "bump", bang: "bump" });
   audio.fetch();
 
   /* ---------- the house ---------- */
@@ -127,8 +148,26 @@
     const P = SC.path, rise = Math.abs(P[i + 1].at[1] - P[i].at[1]) / SC.px_per_m;
     return (P[i + 1].s - P[i].s) / Math.max(1, Math.round(rise / TREAD));
   }
+  // each window's glass, the pale pixels of night sky in it, as a cold white shape the size of the window
+  let GLASS = [];
+  function cutGlass() {
+    const [c0, x0] = (() => { const c = document.createElement("canvas"); c.width = W; c.height = H; return [c, c.getContext("2d")]; })();
+    x0.drawImage(lit, 0, 0);
+    GLASS = SC.rooms.map(r => {
+      const [x, y, w, h] = r.window, src = x0.getImageData(x, y, w, h), c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      const cx = c.getContext("2d"), out = cx.createImageData(w, h);
+      for (let k = 0; k < w * h; k++) {
+        const R = src.data[k * 4], G = src.data[k * 4 + 1], B = src.data[k * 4 + 2];
+        if (B > 130 && B > R + 22 && B >= G) { out.data[k * 4] = 226; out.data[k * 4 + 1] = 238; out.data[k * 4 + 2] = 255; out.data[k * 4 + 3] = 255; }
+      }
+      cx.putImageData(out, 0, 0);
+      return c;
+    });
+  }
   function prepare() {
     N = SC.rooms.length; S = SC.path[SC.path.length - 1].s;
+    cutGlass();
     const got = SC.rooms.map(() => []);
     for (let s = 0; s <= S; s += 0.02) {
       const p = posAt(s);
@@ -148,11 +187,12 @@
   let state = "ready";                   // ready, play, pause, over
   let s = 0, sT = 0, moving = false, ang = 0, here = 0, clock = 0, T = 0, litCount = 0, saidStart = false, saidDark = false;
   let L = [], pace = [], low = [], darkNow = [], flash = [], flick = [], sel = null, rollAcc = 0, treadAcc = 0;
-  let best = store.get("best", 0);
+  let draft = [], shutT = [], nextDraft = DRAFT_FROM, windN = 0;    // the windows blown open, how long he has stood at each, the next
+  let best = store.get("best2", 0);      // the record since rolling through stopped lighting rooms
   const rnd = (a, b) => a + Math.random() * (b - a);
-  // how long a full bulb lasts now: shorter the longer the evening goes on, for every bulb in the house, and
-  // each bulb at a pace of its own that changes whenever it is filled back up
-  const lasts = () => Math.max(4.5, 22 - 0.075 * T);
+  // how long a full bulb lasts now: half a minute through the quiet start, then shorter the longer the evening goes
+  // on, for every bulb in the house, and each bulb at a pace of its own that changes whenever it is filled back up
+  const lasts = () => (T < EASY ? 30 : Math.max(6, 30 - 0.07 * (T - EASY)));
   const newPace = () => rnd(0.8, 1.3);
   const idOf = id => SC.rooms.findIndex(r => r.id === id);
 
@@ -169,11 +209,12 @@
   function reset() {
     T = 0; clock = 0; litCount = 0; saidDark = false; sel = null; rollAcc = 0; treadAcc = 0;
     // the rooms start at different levels, so they go dark one after another
-    const start = [1, 0.9, 0.8, 0.7, 0.62, 0.55].sort(() => Math.random() - 0.5);
+    const start = [1, 0.96, 0.92, 0.88, 0.84, 0.8].sort(() => Math.random() - 0.5);
     L = SC.rooms.map((r, i) => start[i % start.length]);
     here = Math.max(0, idOf("parlour")); L[here] = 1;
     pace = SC.rooms.map(() => newPace());
-    low = L.map(v => v < LOW); darkNow = L.map(() => false); flash = L.map(() => 0); flick = L.map(() => true);
+    low = L.map(v => v < COUNTS); darkNow = L.map(() => false); flash = L.map(() => 0); flick = L.map(() => true);
+    draft = L.map(() => 0); shutT = L.map(() => 0); nextDraft = DRAFT_FROM; windN = 0; audio.wind(0);
     s = sT = stand[here]; moving = false; ang = 0;
     res.s = s; res.ang = 0; res.bump = 0;
     hud();
@@ -208,7 +249,7 @@
     audio.relit();
     const el = $("lit"); el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
     setTimeout(() => el.classList.remove("bump"), 160);
-    if (litCount > best) { best = litCount; store.set("best", best); }
+    if (litCount > best) { best = litCount; store.set("best2", best); }
     hud();
   }
 
@@ -222,6 +263,7 @@
 
   function end() {
     state = "over";
+    windN = 0; audio.wind(0);
     window.rvBuzz?.("over");
     $("over-title").textContent = "The house went dark.";
     $("over-line").textContent = litCount === 0 ? "Fusegrin lit no rooms." : "Fusegrin lit " + litCount + (litCount === 1 ? " room." : " rooms.");
@@ -262,20 +304,36 @@
     }
     const p = posAt(s), r = roomOf(p.x, p.y);
     if (r >= 0) here = r;
-    // the bulbs
+    // the bulbs: a room comes up while he stands in it, holds while he rolls through, and fades otherwise
     for (let i = 0; i < N; i++) {
       flash[i] = Math.max(0, flash[i] - dt);
-      if (i === here) {
+      if (draft[i] > 0) draft[i] += dt;
+      if (i === here && !moving) {
         const was = L[i];
-        L[i] = Math.min(1, L[i] + ((moving ? PASS : 1) / FILL) * dt);
+        L[i] = Math.min(1, L[i] + dt / FILL);
         if (L[i] > 0 && darkNow[i]) { darkNow[i] = false; audio.bed(darkNow.filter(Boolean).length); hud(); }
         if (L[i] >= 1 && was < 1) { pace[i] = newPace(); if (low[i]) { low[i] = false; relit(i); } }
+        if (draft[i] > 0 && (shutT[i] += dt) >= SHUT) { draft[i] = 0; shutT[i] = 0; audio.shut(); }
+      } else if (i === here) {
+        L[i] = Math.min(1, L[i] + PASS * dt / FILL);                   // rolling through: a little of his light
+        if (L[i] > 0 && darkNow[i]) { darkNow[i] = false; audio.bed(darkNow.filter(Boolean).length); hud(); }
+        shutT[i] = 0;
       } else {
-        L[i] = Math.max(0, L[i] - dt / (pace[i] * lasts()));
-        if (L[i] < LOW) low[i] = true;
+        L[i] = Math.max(0, L[i] - (draft[i] > 0 ? DRAFT : 1) * dt / (pace[i] * lasts()));
+        if (L[i] < COUNTS) low[i] = true;
         if (L[i] <= 0 && !darkNow[i]) { darkNow[i] = true; wentDark(i); }
+        shutT[i] = 0;
       }
     }
+    // now and then a window blows open in a lit room he is not in; more often as the evening goes on
+    if (T >= nextDraft) {
+      const can = [];
+      for (let i = 0; i < N; i++) if (i !== here && !draft[i] && L[i] > 0.25) can.push(i);
+      if (can.length) { const i = can[Math.floor(Math.random() * can.length)]; draft[i] = 1e-6; shutT[i] = 0; audio.bang(); }
+      nextDraft = T + rnd(0.8, 1.2) * Math.max(14, 26 - 0.05 * (T - DRAFT_FROM));
+    }
+    const nOpen = draft.filter(d => d > 0).length;
+    if (nOpen !== windN) { windN = nOpen; audio.wind(nOpen); }
     if (darkNow.filter(Boolean).length >= DARK_LIMIT) end();
   }
 
@@ -302,6 +360,30 @@
       const a = roomAlpha(i);
       if (a <= 0.004) continue;
       g.save(); clip(SC.rooms[i].poly); g.globalAlpha = a; g.drawImage(lit, 0, 0); g.restore();
+    }
+    // a window blown open: the cold comes into the room, the glass goes white with it in gusts, and the draught
+    // streams across the room from it; it eases as he stands there shutting it. Only the glass itself is lit, so a
+    // chair or a desk standing in front of a window stays in front of it
+    for (let i = 0; i < N; i++) {
+      if (!(draft[i] > 0)) continue;
+      const R = SC.rooms[i], w = R.window, k = 1 - shutT[i] / SHUT;
+      const gust = reduce ? 0.5 : 0.5 + 0.5 * Math.sin(clock * 3.1 + i) * Math.sin(clock * 7.3 + 2 * i);
+      g.save(); clip(R.poly);
+      g.fillStyle = "rgba(110,150,255," + ((0.1 + 0.08 * gust) * k).toFixed(3) + ")";
+      g.fillRect(R.box[0], R.box[2], R.box[1] - R.box[0], R.box[3] - R.box[2]);
+      g.globalAlpha = (0.45 + 0.45 * gust) * k; g.drawImage(GLASS[i], w[0], w[1]); g.globalAlpha = 1;
+      if (!reduce) {
+        const toRight = w[0] + w[2] / 2 < (R.box[0] + R.box[1]) / 2, dir = toRight ? 1 : -1;
+        const wx = toRight ? w[0] + w[2] : w[0], wy = w[1] + Math.min(w[3], 22) / 2, span = (R.box[1] - R.box[0]) * 0.8;
+        g.fillStyle = "#eef5ff";
+        for (let j = 0; j < 7; j++) {
+          const u = (clock * (0.7 + 0.3 * gust) + j / 7) % 1, len = Math.round(10 * (1 - u)) + 3;
+          const x = wx + dir * u * span, y = wy + (j - 3) * 4 + Math.sin(clock * 4 + j) * 2;
+          g.globalAlpha = (1 - u) * 0.85 * k; g.fillRect(Math.round(dir > 0 ? x : x - len), Math.round(y), len, 1);
+        }
+        g.globalAlpha = 1;
+      }
+      g.restore();
     }
     const C = SC.fg.centre, P = res.pos || posAt(s), cx = P.x, cy = P.y + res.bump;
     // his lamp: a pool of the lit house round him, inside the room he is in
@@ -377,7 +459,7 @@
     const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));   // a frame can be stamped before the clock started
     last = now;
     if (!ready) return;
-    if (state !== "pause") update(dt);
+    if (state !== "pause" && !frozen) update(dt);
     sample(dt);
     draw();
   }
@@ -457,6 +539,16 @@
   soundBtn.addEventListener("click", () => { audio.unlock(); audio.set(!audio.on); sayVolume(); });
   addEventListener("resize", sayVolume);
   sayVolume();
+
+  // a bot can read the house through this, on a page opened with #debug, and step it
+  let frozen = false;
+  if (location.hash === "#debug") {
+    window.__lp = {
+      get: () => ({ state, T, here, moving, L: L.slice(), dark: darkNow.slice(), draft: draft.map(d => d > 0), litCount, lasts: lasts(), stand: stand.slice(), s, ids: SC.rooms.map(r => r.id) }),
+      go: r => goTo(r), start, freeze: on => { frozen = on; }, step: dt => { update(dt); sample(dt); }, draw: () => draw(), shot: () => cv.toDataURL(),
+      blow: i => { draft[i] = 1e-6; shutT[i] = 0; }, fill: () => { L = L.map(() => 1); darkNow = darkNow.map(() => false); },
+    };
+  }
 
   Promise.all([fetch("assets/scene.json").then(r => r.json()), load("assets/lit.png"), load("assets/dark.png"), load("assets/front.png"), load("assets/sprites.png")])
     .then(([sc, a, b, c, d]) => { SC = sc; lit = a; dark = b; front = c; atlas = d; prepare(); reset(); ready = true; })
