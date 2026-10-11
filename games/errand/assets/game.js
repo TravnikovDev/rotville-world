@@ -11,8 +11,8 @@
    the rim it rings: the doors along the street open with the light behind them, windows light up and people look out,
    and three rings bring everyone out. An errand is a street of town houses with the shop at the far end, and the
    candle in its window burns down while he walks; if it goes out first the shop has shut. A quiet errand, with no
-   ring in it, gives a ring back. The first errand is short and empty and forgiving; each one after it brings one new
-   thing and asks a little more; then the five again, harder.
+   ring in it, gives a ring back. Five errands, each its own street, then the five again with a shorter swing to the
+   rim and a shorter candle; the very first errand is half a street long.
 
    His walk is his kept take (library/characters/handbell/anim/walk.blend) at 15 fps, side on and turned a little to
    us so his face shows; his modelled clapper is taken out of it and drawn here, where it can swing. The houses are
@@ -53,36 +53,34 @@
   const toX = x => CLX + (x - xC) * PPM;
 
   /* ---------- the clapper: a pendulum in the bell ---------- */
-  const GRAV = 9.81, LEN = 0.48, DAMP = 0.5, KNOCK = 0.4, STEP = 0.36;    // KNOCK is scaled by each errand's knock
-  const A_WALK = 0.75, A_COAST = 0.6, A_STOP = 2.0;                         // his top speed is each errand's vmax
-  const JERK = 3.0, JERK_STOP = 7.0;           // how fast his speeding up and slowing down can change: a body, not a switch
+  const GRAV = 9.81, LEN = 0.48, DAMP = 0.5, KNOCK = 0.4, STEP = 0.36;
+  const A_WALK = 0.75, A_COAST = 1.0, A_STOP = 2.4, V_MAX = 1.6;
   const RINGS = 3;
 
-  /* ---------- the errands: a street each, the shop at its end ----------
-     The first errand is a short, empty street with a wide bell and a slow stride: hold WALK and he gets there. Each
-     errand after it brings one new thing - a side street's kerbs, then puddles in the rain, then cobbles and a cart,
-     then the wind - and asks a little more: a narrower swing to the rim (rim), heavier knocks from his steps (knock),
-     a longer stride he can reach (vmax) and less time on the candle (slack, seconds over the walk at pace). */
+  /* ---------- the errands: a street each, the shop at its end ---------- */
   const ERRANDS = [
-    { item: "A loaf", far: "#7a6e98", mid: "#5c5278", shop: "BAKER", where: "the Bakery District", len: 16, rim: 0.62, pace: 0.45,
-      slack: 18, knock: 0.55, vmax: 1.05, sides: 0, cobbles: 0, puddles: 0, carts: 0, wind: 0, rain: 0, sign: "loaf",
+    { item: "A loaf", far: "#7a6e98", mid: "#5c5278", shop: "BAKER", where: "the Bakery District", len: 24, rim: 0.42, pace: 0.55,
+      sides: 1, cobbles: 0, puddles: 0, carts: 0, wind: 0, rain: 0, sign: "loaf", first: { len: 12, sides: 0 },
       tint: [222, 196, 214], sky: ["#2c2050", "#a8607a"], lamp: [255, 196, 120] },
-    { item: "A stamp", far: "#6e6890", mid: "#504a70", shop: "POST", where: "Mailbox Promenade", len: 22, rim: 0.56, pace: 0.48,
-      slack: 14, knock: 0.7, vmax: 1.2, sides: 1, cobbles: 0, puddles: 0, carts: 0, wind: 0, rain: 0, sign: "stamp",
+    { item: "A stamp", far: "#6e6890", mid: "#504a70", shop: "POST", where: "Mailbox Promenade", len: 30, rim: 0.40, pace: 0.6,
+      sides: 2, cobbles: 1, puddles: 1, carts: 0, wind: 0, rain: 0, sign: "stamp",
       tint: [196, 180, 216], sky: ["#211a46", "#7a5a8e"], lamp: [255, 200, 130] },
-    { item: "Milk", far: "#625e84", mid: "#46425f", shop: "DAIRY", where: "Rothill", len: 26, rim: 0.52, pace: 0.5,
-      slack: 12, knock: 0.8, vmax: 1.3, sides: 1, cobbles: 0, puddles: 2, carts: 0, wind: 0, rain: 1, sign: "milk",
+    { item: "Milk", far: "#625e84", mid: "#46425f", shop: "DAIRY", where: "Rothill", len: 34, rim: 0.38, pace: 0.64,
+      sides: 2, cobbles: 1, puddles: 2, carts: 1, wind: 0, rain: 1, sign: "milk",
       tint: [176, 166, 196], sky: ["#1a1838", "#4c4a78"], lamp: [255, 184, 110] },
-    { item: "A nail", far: "#5a6a86", mid: "#3e4a62", shop: "IRONMONGER", where: "the Canal District", len: 30, rim: 0.48, pace: 0.52,
-      slack: 11, knock: 0.9, vmax: 1.45, sides: 2, cobbles: 1, puddles: 1, carts: 1, wind: 0, rain: 0, sign: "nail",
+    { item: "A nail", far: "#5a6a86", mid: "#3e4a62", shop: "IRONMONGER", where: "the Canal District", len: 38, rim: 0.37, pace: 0.67,
+      sides: 2, cobbles: 1, puddles: 2, carts: 1, wind: 1, rain: 0, sign: "nail",
       tint: [150, 168, 190], sky: ["#121a30", "#2e4c66"], lamp: [210, 236, 200] },
-    { item: "Matches", far: "#545680", mid: "#3a3c5e", shop: "CHANDLER", where: "Rotville Town Centre", len: 34, rim: 0.45, pace: 0.55,
-      slack: 10, knock: 0.95, vmax: 1.6, sides: 2, cobbles: 1, puddles: 2, carts: 2, wind: 1, rain: 0, sign: "match",
+    { item: "Matches", far: "#545680", mid: "#3a3c5e", shop: "CHANDLER", where: "Rotville Town Centre", len: 42, rim: 0.36, pace: 0.7,
+      sides: 3, cobbles: 2, puddles: 2, carts: 2, wind: 1, rain: 0, sign: "match",
       tint: [140, 140, 190], sky: ["#0e0e26", "#28285a"], lamp: [255, 214, 150] },
   ];
-  // the five again, and again: each round harder than the last errand of the round before
-  const tuneOf = (E, lap) => lap === 0 ? { len: E.len, rim: E.rim, pace: E.pace, slack: E.slack, knock: E.knock, vmax: E.vmax }
-    : { len: E.len + 6, rim: 0.44 * Math.pow(0.95, lap), pace: E.pace + 0.06 + 0.04 * lap, slack: 8, knock: Math.min(1.25, 0.95 + 0.08 * lap), vmax: 1.6 };
+  // a street's numbers: each round after the first a longer street, a narrower swing and a quicker candle. The first
+  // errand of a game is half of itself: half the street, too short for its side street (first); round again, it is whole
+  const tuneOf = (E, lap) => {
+    const T = { len: E.len + 4 * lap, rim: E.rim * Math.pow(0.93, lap), pace: E.pace + 0.05 * lap, slack: lap ? 6 : 8, sides: E.sides };
+    return lap === 0 && E.first ? Object.assign(T, E.first) : T;
+  };
   const errandOf = k => ERRANDS[k % ERRANDS.length];
   const lapOf = k => Math.floor(k / ERRANDS.length);
 
@@ -228,7 +226,7 @@
   let SC, sprites, housesImg, groundImg, lightsImg, ready = false;
   let state = "ready";                                   // ready, play, between, stopped, pause, over
   let k = 0, streetData = null, clock = 0, endT = 0, betweenT = 0;
-  let v = 0, aCur = 0, th = 0, om = 0, stepPhase = 0, walkKey = false, stopKey = false, padWalk = false, padStop = false;
+  let v = 0, th = 0, om = 0, stepPhase = 0, walkKey = false, stopKey = false, padWalk = false, padStop = false;
   let rings = RINGS, errandsDone = 0, quiet = true, candle = 1, candleTotal = 30, ringCool = 0, tinkCool = 0;
   let best = store.get("best", 0), saidOnly = false, saidStart = false, titleT = 9, shakeT = 9, wind = 0, windT = 3, windGoal = 0;
   let pops = [], drops = [], leaves = [], rain = [], splashes = [], ripples = [];
@@ -273,11 +271,9 @@
     for (let i = 0; i < 2; i++) { const n = pick(names); back -= wallW(n); put(n, back); }
     let x = put(home, homeWall);
     // houses shoulder to shoulder with an alley now and then; a few of the gaps open into side streets
-    let sidesLeft = E.sides + (lap && !E.sides ? 1 : 0), lastSide = 0, guard = 0;
+    let sidesLeft = T.sides, lastSide = 0, guard = 0;
     while (x < target - 3 && guard++ < 80) {
-      // a side street when one is due: by chance, or surely once the street is half walked
-      const room = x > 5 && x - lastSide > 6 && x < target - 6;
-      const wantSide = sidesLeft > 0 && room && (R() < 0.55 || x > target * (0.45 + 0.25 * (E.sides + (lap && !E.sides ? 1 : 0) - sidesLeft)));
+      const wantSide = sidesLeft > 0 && x > 5 && x - lastSide > 6 && x < target - 6 && R() < 0.55;
       if (wantSide) { sides.push({ x0: x, x1: x + 2.4, r0: x + 0.44, r1: x + 1.96, far: pick(names), fo: R(), lit: [R(), R()] }); x += 2.4; lastSide = x; sidesLeft -= 1; }
       else if (R() < 0.2) { const w = 0.4 + 0.4 * R(); passages.push({ x0: x, x1: x + w, prev: houses.length - 1 }); x += w; }
       let n = pick(names), tries = 0;
@@ -326,7 +322,7 @@
       carts.push({ x: (sd.x0 + sd.x1) / 2, side: sd, state: "wait", y: 0 });
     }
     const S = { E, lap, len, houses, doors, lamps, props, sides, passages, cobbles, puddles, carts, shopDoor, shopWin, rim: T.rim, pace: T.pace, slack: T.slack,
-                knock: T.knock, vmax: T.vmax, sign: E.sign, shopName };
+                sign: E.sign, shopName };
     // the roofs of the streets behind, the far one hazier
     S.sky = [makeSkyline(S, 77 * kk + 3, 0.22, E.far, 150, 230), makeSkyline(S, 77 * kk + 11, 0.45, E.mid, 90, 170)];
     return S;
@@ -341,7 +337,7 @@
   }
 
   function reset(first = 0) {
-    k = first; xC = 0; v = 0; aCur = 0; th = 0; om = 0; stepPhase = 0; rings = RINGS; errandsDone = 0; quiet = true; ringCool = 0;
+    k = first; xC = 0; v = 0; th = 0; om = 0; stepPhase = 0; rings = RINGS; errandsDone = 0; quiet = true; ringCool = 0;
     pops = []; drops = []; leaves = []; rain = []; splashes = []; ripples = []; wind = 0; windGoal = 0; windT = 3; endT = 0;
     streetData = buildStreet(k);
     candleTotal = streetData.len / streetData.pace + streetData.slack; candle = 1;
@@ -420,7 +416,7 @@
   }
 
   function nextErrand() {
-    k += 1; xC = 0; v = 0; aCur = 0; th = 0; om = 0; quiet = true; stepPhase = 0;
+    k += 1; xC = 0; v = 0; th = 0; om = 0; quiet = true; stepPhase = 0;
     streetData = buildStreet(k);
     candleTotal = streetData.len / streetData.pace + streetData.slack; candle = 1;
     state = "play"; title(true);
@@ -483,18 +479,12 @@
     const walking = walkKey || padWalk, stopping = stopKey || padStop;
     const inPuddle = S.puddles.find(q => Math.abs(q.x - xC) < q.rx * 0.8);
     const cart = S.carts.find(c => c.state === "rolling" && Math.abs(c.x - xC) < 0.55 && c.y > -0.3 && c.y < 0.5);
-    // what he means to do, eased: he leans into a walk, eases off his top speed, and comes to rest gently when he lets go
-    const slow = Math.max(0.15, Math.min(1, v / 0.3));
-    let aT = stopping ? -A_STOP * slow : walking ? A_WALK * (inPuddle ? 0.5 : 1) * clamp((S.vmax - v) / 0.3, 0, 1) : -A_COAST * slow;
-    if (v <= 0 && aT < 0) aT = 0;
-    const J = stopping ? JERK_STOP : JERK;
-    aCur += clamp(aT - aCur, -J * h, J * h);
+    let a = stopping ? -A_STOP : walking ? A_WALK * (inPuddle ? 0.5 : 1) : -A_COAST;
     const v0 = v;
-    v = clamp(v + aCur * h, 0, S.vmax + 0.05);
-    if (v <= 0 && aCur < 0) aCur = 0;
+    v = clamp(v + a * h, 0, V_MAX);
     if (cart && v > 0) {
       // he walks into the cart: stopped dead, all at once
-      ev("cart"); audio.thud(); v = 0; aCur = 0;
+      ev("cart"); audio.thud(); v = 0;
     }
     xC += v * h;
     const acc = (v - v0) / h;
@@ -518,7 +508,7 @@
     if (stepPhase >= 1) {
       stepPhase -= 1;
       const cob = S.cobbles.some(c => xC > c.x0 && xC < c.x1);
-      om += (KNOCK * S.knock * v * v + (cob ? 0.2 * v : 0)) * (Math.random() < 0.5 ? 1 : -1);
+      om += (KNOCK * v * v + (cob ? 0.2 * v : 0)) * (Math.random() < 0.5 ? 1 : -1);
       audio.step(v);
     }
     // the pendulum: gravity, his speeding up or slowing down, the air, and the wind on it
