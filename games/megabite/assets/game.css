@@ -79,6 +79,7 @@
   aspect-ratio: 300 / 264;
   border-radius: 14px / 16px;
   touch-action: none;
+  -webkit-tap-highlight-color: transparent;   /* no flash over the game on a phone when it is pressed */
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;

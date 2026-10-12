@@ -67,6 +67,7 @@
   width: auto;
   border-radius: 16px / 20px;
   touch-action: none;
+  -webkit-tap-highlight-color: transparent;   /* no flash over the game on a phone when it is pressed */
 }
 .oc-screen canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
 .oc-ch { top: 10px; left: 12px; }
