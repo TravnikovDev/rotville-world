@@ -30,6 +30,8 @@ The main page has the town, the ways to watch it, and a small TV on Channel 3 th
 
 [Errand](https://rotville.world/games/errand/) is the twelfth: an egg-and-spoon race with a bell. Clangus is a tarnished brass handbell with thin arms and heavy boots, and a hurried step still sends his clapper against the brass. Hold WALK and he walks, let go and he slows down, STOP stops him short. His clapper swings back as he speeds up and forward as he slows, and every heavy step knocks it a little, harder the faster he goes; cobbles, kerbs, puddles, carts out of the side streets and the wind knock it too. If it reaches the rim it rings: the doors along the street open, windows light up, and people look out for the bad news. Get him to the shop before the candle in its window goes out. Three rings and everyone has come to the door, and an errand with no ring in it gives one back. Five errands, each its own street, and then the five again with less swing to spare; the very first errand is half a street.
 
+[Tea Cup Ride](https://rotville.world/games/tea-cup-ride/) is the thirteenth. Uncle Brewster, a cream teapot with rosy cheeks, runs the Tea Cup Ride and stands on its hub pouring for every cup that goes round. Hold to pour and let go at the line, a little early, since the tea already in the air still lands. Over the rim and the cup is lost; under the mark and its visitor has gone without; three of those and the ride stops. The ride turns slowly at first and faster as the evening goes on, and his funny mugs join it, worth twice.
+
 Rotville is on [YouTube](https://www.youtube.com/@Rotville), [TikTok](https://www.tiktok.com/@rotville.world) and [Instagram](https://www.instagram.com/rotville.world/).
 
 ## How it is made
