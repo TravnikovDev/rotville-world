@@ -9,13 +9,21 @@
    nearest one in reach, and sticks; he swings on it, his mouth turned to it, and a treat licked too long is eaten
    and drops him. Let go and he flies on, tumbling, his tongue hanging out. The treats hang on strings from the
    bunting over the street; a stale one he will not lick, so it leaves a gap to fly. The first stretch is close and
-   even; further on the treats spread out and rise and fall, stale ones appear, and some swing on their strings. Up
-   high is the cheese moon, which he can lick too, and nothing above it. Fall into the street and a baker flips him
-   back up with a peel; the third time the run is over. The score is how far he has gone.
+   even; further on the treats spread out and rise and fall, stale ones appear, and some swing on their strings.
+   Any part of him that touches the street costs a fall, flying or swinging round a treat; a baker flips him back
+   up with a peel, and the third time the run is over. The score is how far he has gone.
+
+   Up in the sky, rarely (the user, 2026-10-12): now and then Misery Peter, the cloud from over the rooftops, or
+   Boss Edna, the cow on six balloons, drifts by two to three times as high as the roofs. He can lick either and
+   swing from it until it shakes him off, and gets nothing for it. Somewhere a player has to go out of the way for,
+   up over the bunting or down by the cobbles, floats a power-up: a paprika that sends him straight up, a lollipop
+   that makes his tongue half as long again for a while, a golden ring that gives back a fall. Far up, three times
+   as high as the first moon hung and a quarter as often, is the moon of the series, the crescent of cheese from
+   001 and 175: whoever gets up there can lick it, and nothing is higher.
 
    Only pre-rendered sprites ship (assets/sprites.png): Booblick from his model in twenty-four turns, his tongue
-   taken off it, and the library's treats; the street, the bakeries, the moon, the tongue and the bunting are
-   drawn here. */
+   taken off it, the library's treats, the moon from the swamp mooring's set, Misery Peter, Boss Edna, a paprika
+   and a lollipop; the street, the bakeries, the stars, the tongue and the bunting are drawn here. */
 (() => {
   "use strict";
 
@@ -42,7 +50,7 @@
   const STREET = 452;                             // where the cobbles meet the shopfronts on the screen, the camera at rest
   const G = 15;                                   // metres a second, a second
   const DRAG = 0.04;
-  const BODY = 0.6;                               // his ring's reach from its middle, for the street
+  const BODY = 0.72;                              // his ring's reach from its middle, to the edge of his drawing: what touches the street
   const REACH = 4.4;                              // the furthest his tongue goes
   const MIN_LEN = 1.6;                            // the shortest his tongue holds him at
   const PUMP = 4.2;                               // swinging forward under a treat, he throws his weight into it
@@ -50,8 +58,15 @@
   const BUFFER = 0.3;                             // a press just before a treat comes in reach still licks it
   const SHOOT = 0.07;                             // seconds the tongue takes to reach a treat
   const BUNTING = 10.9;                           // the height of the bunting the treats hang from
-  // the cheese moon, low over the district: whoever goes up that high finds it there, can lick it, and goes no higher
-  const MOON_Y = 17.4, MOON_R = 1.9, CEIL = 20.5;
+  // the moon of the series, the crescent of cheese, three times as high as the first moon hung and a quarter as
+  // often: due every couple of hundred metres (the person bot met the first moon every 59 m), it waits up there for
+  // the first climb that could reach it, and nothing is higher
+  const MOON_Y = 52, MOON_EVERY = [200, 280], CEIL = 58.5;
+  // Misery Peter or Boss Edna drifts by now and then, high in the sky, two to three times as high as the rooftops:
+  // he can lick either and swing from it a while, and gets nothing for it, no points and no power
+  const FLYER_EVERY = [130, 230], FLYER_Y = [12, 14.5], FLYER_LASTS = 5;
+  // the power-ups: rare, and never where the treats lead him - up over the bunting or down by the cobbles
+  const POWER_EVERY = [110, 190], LONG_FOR = 20, ROCKET_FOR = 1.1, ROCKET_VY = 24;
   const LIVES = 3;
   const LICKABLE = ["donut-sprinkles", "donut-chocolate", "donut", "croissant", "cupcake", "muffin", "honey", "ginger-bread", "ice-cream"];
   const CAKE_EVERY = 160;                         // metres between birthday cakes
@@ -59,7 +74,7 @@
   const lastsAt = d => lerp(8.0, 4.0, clamp((d - 30) / 370, 0, 1));
 
   /* ---------- sound ---------- */
-  const LINES = [["start", "line-start"], ["tumble", "line-tumble"], ["end", "line-end"], ["cake", "line-cake"], ["moon", "line-moon"]];
+  const LINES = [["start", "line-start"], ["tumble", "line-tumble"], ["end", "line-end"], ["cake", "line-cake"], ["moon", "line-moon"], ["peter", "line-peter"], ["edna", "line-edna"]];
   const audio = {
     ctx: null, on: store.get("sound", true), raw: {}, buf: {}, music: null,
     fetch() {
@@ -151,9 +166,14 @@
     pfft() { this.tone(260, 190, 0.16, "sawtooth", 0.025); },
     bonk() { this.tone(180, 120, 0.2, "triangle", 0.1); this.noise(0.12, 0.05, 200, 1400); },
     moon() { [392, 523, 659, 784, 1047].forEach((f, i) => this.tone(f, f * 1.003, 0.4, "sine", 0.05, i * 0.1)); },
+    // Misery Peter licked: a disapproving rumble; Boss Edna licked: her balloons squeak against each other
+    grumble() { this.noise(0.5, 0.06, 60, 500); this.tone(110, 90, 0.4, "sawtooth", 0.03); },
+    squeak() { this.tone(820, 1240, 0.12, "sine", 0.04); this.tone(1180, 760, 0.16, "triangle", 0.03, 0.09); },
+    power() { [660, 880, 1320].forEach((f, i) => this.tone(f, f, 0.16, "square", 0.03, i * 0.06)); },
+    rocket() { this.noise(1.1, 0.12, 200, 3000); this.tone(90, 420, 1.0, "sawtooth", 0.05); },
     gulp() { this.tone(240, 110, 0.14, "sine", 0.1); this.noise(0.06, 0.04, 400, 1800, 0.02); },
   };
-  window.rvBuzz?.on(audio, { lick: "tap", thump: "lose", cake: "great", bell: "tap", gulp: "bump", bonk: "bump", moon: "great" });
+  window.rvBuzz?.on(audio, { lick: "tap", thump: "lose", cake: "great", bell: "tap", gulp: "bump", bonk: "bump", moon: "great", grumble: "tap", squeak: "tap", power: "great" });
   audio.fetch();
 
   /* ---------- state ---------- */
@@ -167,8 +187,10 @@
   let treats = [], genX = 0, lives = LIVES, best = store.get("best", 0), metres = 0, x0 = 0, licks = 0, nextSign = 100, nextCake = 0;
   let camX = 0, camY = 0, tumbleT = 0, endT = 0, peelT = -1, missT = 0, shake = 0;
   let pops = [], bits = [], puffs = [], tipX = 0, tipY = 0;     // tipX/tipY: where the tongue last touched, in metres
-  let saidStart = false, saidTumble = false, saidCake = false, saidMoon = false;
-  let moonX = null, moonC = null, moonLicked = 0, bonkAt = -9;     // where the moon is along the street, once he has gone up to it
+  let saidStart = false, saidTumble = false, saidCake = false, saidMoon = false, saidPeter = false, saidEdna = false;
+  let moonX = null, nextMoon = 0, moonLicked = 0, bonkAt = -9;   // where the moon hangs along the street, and where the next will
+  let flyer = null, nextFlyer = 0, lastFlyer = "", powers = [], nextPower = 0, longT = 0, rocketT = 0, groundAt = 0;
+  let MO = null, BOTTOM = [], starC = null, goldImg = null;   // the moon's circles; how far each drawing of him reaches down
   const LOG = location.hash === "#debug" ? [] : null;
   const ev = (type, more) => { if (LOG) LOG.push(Object.assign({ type, t: +T.toFixed(2), m: metres }, more || {})); };
 
@@ -207,29 +229,66 @@
     const L = BUNTING - t.y, a = Math.asin(clamp(t.swing.amp / L, -0.9, 0.9)) * Math.sin(t.swing.w * T + t.swing.ph);
     t.ax = t.x + L * Math.sin(a); t.ay = BUNTING - L * Math.cos(a);
   }
+  // how far his tongue goes: half as far again for a while after a lollipop
+  const reach = () => (longT > 0 ? REACH * 1.5 : REACH);
   // the treat his tongue goes to: the nearest one he would lick, in reach, not far behind him
+  let forced = null;                              // #debug only: the treat a test wants licked next
   function target() {
+    if (rocketT > 0) return null;
+    if (forced) return forced;
+    const R = reach();
     let best = null, bd = 1e9;
     for (const t of treats) {
       if (t.stale || (t === lastT && clock - lastAt < 0.6)) continue;
       const dx = t.ax - px, dy = t.ay - py, d = Math.hypot(dx, dy);
-      if (d > REACH || dx < -1.2) continue;
+      if (d > R || dx < -1.2) continue;
       const cost = d + (dy < -0.6 ? 1.2 : 0) + (dx < 0 ? 2.5 : 0);
       if (cost < bd) { bd = cost; best = t; }
     }
-    if (moonX !== null) {
-      const dx = px - moonX, dy = py - MOON_Y, d = Math.hypot(dx, dy) - MOON_R;
-      if (d <= REACH && d + 0.4 < bd) {
-        const k = MOON_R / Math.max(0.01, d + MOON_R);
-        best = { moon: true, kind: "moon", ax: moonX + dx * k, ay: MOON_Y + dy * k, licked: 0 };
-      }
+    if (flyer && !(flyer === lastT && clock - lastAt < 0.6)) {
+      const dx = flyer.ax - px, dy = flyer.ay - py, d = Math.hypot(dx, dy);
+      if (d <= R && dx >= -1.2) { const cost = d + (dx < 0 ? 2.5 : 0); if (cost < bd) { bd = cost; best = flyer; } }
+    }
+    if (moonX !== null && MO) {
+      const [qx, qy] = moonNearest(px, py), d = Math.hypot(qx - px, qy - py);
+      if (d <= R && d + 0.4 < bd) best = { moon: true, kind: "moon", ax: qx, ay: qy, licked: 0 };
     }
     return best;
   }
 
+  /* ---------- the moon ---------- */
+  // the crescent is what lies inside its outer circle and outside its inner one; both come from its drawing
+  // (scene.json "air"), in metres from the outer one's middle, which is where the moon is said to be
+  function moonGeo() {
+    const m = SC.air.moon, ro = m.outer[2] / PPM, ix = (m.inner[0] - m.outer[0]) / PPM, iy = -(m.inner[1] - m.outer[1]) / PPM, ri = m.inner[2] / PPM;
+    const d = Math.hypot(ix, iy), a = (ro * ro - ri * ri + d * d) / (2 * d), h = Math.sqrt(Math.max(0, ro * ro - a * a));
+    const bx = ix * a / d, by = iy * a / d;
+    MO = { ro, ix, iy, ri, tips: [[bx - iy * h / d, by + ix * h / d], [bx + iy * h / d, by - ix * h / d]] };
+  }
+  // how far a point is outside the crescent (below nothing, inside it), and which way is out
+  function moonDist(x, y) {
+    const ox = x - moonX, oy = y - MOON_Y, lo = Math.hypot(ox, oy) || 1e-6, ux = ox - MO.ix, uy = oy - MO.iy, li = Math.hypot(ux, uy) || 1e-6;
+    const dOut = lo - MO.ro, dIn = MO.ri - li;
+    return dOut > dIn ? [dOut, ox / lo, oy / lo] : [dIn, -ux / li, -uy / li];
+  }
+  // the nearest point of the crescent's edge to a point outside it: on the outer arc, on the inner one, or a horn
+  function moonNearest(x, y) {
+    const ox = x - moonX, oy = y - MOON_Y, c = [...MO.tips];
+    const lo = Math.hypot(ox, oy) || 1e-6, ax = ox / lo * MO.ro, ay = oy / lo * MO.ro;
+    if (Math.hypot(ax - MO.ix, ay - MO.iy) >= MO.ri - 1e-3) c.push([ax, ay]);
+    const ux = ox - MO.ix, uy = oy - MO.iy, li = Math.hypot(ux, uy) || 1e-6, bx = MO.ix + ux / li * MO.ri, by = MO.iy + uy / li * MO.ri;
+    if (Math.hypot(bx, by) <= MO.ro + 1e-3) c.push([bx, by]);
+    let best = c[0], bd = 1e9;
+    for (const q of c) { const d = Math.hypot(q[0] - ox, q[1] - oy); if (d < bd) { bd = d; best = q; } }
+    return [moonX + best[0], MOON_Y + best[1]];
+  }
+  // how far the drawing of him reaches below his middle, turned as he is now: what touches the street
+  const bottomNow = () => BOTTOM[((Math.round(psi / (2 * Math.PI / 24)) % 24) + 24) % 24] || BODY;
+
   function reset() {
     T = 0; lives = LIVES; metres = 0; licks = 0; nextSign = 100; tumbleT = 0; endT = 0; peelT = -1; missT = 0; shake = 0;
     pops = []; bits = []; puffs = []; treats = []; tongue = null; back = 0; lastT = null; pressAt = -9; moonX = null;
+    nextMoon = rnd(80, 160); flyer = null; nextFlyer = rnd(50, 110); powers = []; nextPower = rnd(60, 120); longT = 0; rocketT = 0;
     x0 = 0; px = 1.2; py = BODY; vx = 0; vy = 0; psi = 0; spin = 0;
     genX = 2.4; nextCake = 70 + rnd(0, 40);
     camX = px - 0.36 * W / PPM; camY = 0;
@@ -243,7 +302,7 @@
     reset();
     state = "play"; wasHeld = false;
     // he hops up off the cobbles
-    vx = 4.0; vy = 10.8; spin = 5;
+    vx = 4.0; vy = 10.8; spin = 5; groundAt = clock + 0.15;
     $("ready").hidden = true; $("over").hidden = true;
     $("static").classList.remove("on");
     if (!saidStart) { saidStart = true; say("start", "Booblick licks what he craves."); }
@@ -267,15 +326,16 @@
 
   /* ---------- the tongue ---------- */
   function lick() {
+    if (rocketT > 0) return false;
     const t = target();
     if (!t) {
       // nothing in reach he would lick: the tongue comes back with nothing
       if (missT <= 0) { audio.miss(); missT = 0.25; ev("miss"); }
       // a stale one close by gets his irritated noise
-      if (treats.some(s => s.stale && Math.hypot(s.ax - px, s.ay - py) < REACH)) audio.pfft();
+      if (treats.some(s => s.stale && Math.hypot(s.ax - px, s.ay - py) < reach())) audio.pfft();
       return false;
     }
-    tongue = { t, len: clamp(Math.hypot(t.ax - px, t.ay - py), MIN_LEN, REACH), out: 0, held: 0, lasts: lastsAt(metres) };
+    tongue = { t, len: clamp(Math.hypot(t.ax - px, t.ay - py), MIN_LEN, reach()), out: 0, held: 0, lasts: lastsAt(metres) };
     // his speed goes into the swing round the treat, the way he was already going round it, and forward if he hardly
     // moved: a lick never stops him dead
     const dx = px - t.ax, dy = py - t.ay, L = Math.max(0.01, Math.hypot(dx, dy)), tx = -dy / L, ty = dx / L;
@@ -283,8 +343,14 @@
     let dir = Math.sign(vx * tx + vy * ty);
     if (Math.abs(vx * tx + vy * ty) < 0.8) dir = Math.sign(tx) || 1;
     vx = tx * sp * dir; vy = ty * sp * dir;
-    back = 0; t.licked = 1; licks += 1;
+    back = 0; t.licked = 1; forced = null;
+    if (!t.moon && !t.flyer) licks += 1;
     audio.lick(); ev("lick", { kind: t.kind });
+    if (t.flyer) {
+      tongue.lasts = FLYER_LASTS;
+      if (t.kind === "peter") { audio.grumble(); if (!saidPeter) { saidPeter = true; setTimeout(() => say("peter", "Misery Peter did not approve."), 300); } }
+      else { audio.squeak(); if (!saidEdna) { saidEdna = true; setTimeout(() => say("edna", "Boss Edna did not mind."), 300); } }
+    }
     if (t.moon) {
       moonLicked = 1; tongue.lasts = 6;
       audio.moon(); pop(t.ax, t.ay - 0.5, "★ MOON", "#ffe08a");
@@ -306,11 +372,27 @@
     spin = clamp(vx * 1.7, -10, 10) + (vy > 0 ? 1 : -1);
   }
 
+  /* ---------- what helps him ---------- */
+  // a power-up he flew into: a paprika sends him straight up, a lollipop makes his tongue longer for a while, a golden
+  // ring gives back a fall
+  function power(p) {
+    audio.power(); ev("power", { kind: p.kind });
+    for (let i = 0; i < 16; i++) bits.push({ x: p.x, y: p.y, vx: rnd(-3, 3), vy: rnd(-2, 3), t: 0, life: 1, c: i % 2 ? "#fff3c0" : "#ffd36a" });
+    if (p.kind === "rocket") {
+      if (tongue) letGo();
+      rocketT = ROCKET_FOR; vy = ROCKET_VY; vx = clamp(vx, 3, 9); spin = 2; audio.rocket(); pop(p.x, p.y + 0.8, "PAPRIKA!", "#ff8a5a");
+    } else if (p.kind === "long") {
+      longT = LONG_FOR; pop(p.x, p.y + 0.8, "LOLLIPOP", "#ff9ed8");
+    } else {
+      lives = Math.min(LIVES + 1, lives + 1); pop(p.x, p.y + 0.8, "+1 RING", "#ffd36a");
+    }
+  }
   /* ---------- falling into the street ---------- */
   function tumble() {
+    const swing = !!tongue;
     state = "tumble"; tumbleT = 0; lives -= 1; shake = 0.35; tongue = null; back = 0;
     vy = Math.abs(vy) * 0.25; vx *= 0.5; py = BODY;
-    audio.thump(); ev("tumble", { lives });
+    audio.thump(); ev("tumble", { lives, swing });
     for (let i = 0; i < 14; i++) puffs.push({ x: px + rnd(-0.5, 0.5), y: 0.1, vx: rnd(-1.5, 1.5), vy: rnd(0.2, 1.2), t: 0, life: rnd(0.6, 1.1), r: rnd(2, 4) });
     if (lives <= 0) { state = "stopping"; endT = 0; audio.windDown(); return; }
     if (!saidTumble) { saidTumble = true; setTimeout(() => say("tumble", "Bakers tolerate him."), 350); }
@@ -340,6 +422,8 @@
     if (back > 0) back = Math.max(0, back - dt / 0.12);
     for (const t of treats) { place(t); if (t.licked > 0) t.licked = Math.max(0, t.licked - dt / 1.2); }
     if (moonLicked > 0) moonLicked = Math.max(0, moonLicked - dt / 2);
+    if (flyer) moveFlyer(dt);
+    for (const p of powers) p.t += dt;
     const held = holding || padHold || keyHold;
 
     if (state === "stopping") {
@@ -356,7 +440,7 @@
       if (peelT >= 0) {
         peelT += dt;
         if (peelT > 0.28 && state === "tumble") {
-          state = "play"; vx = 4.0; vy = 10.5; spin = 6; peelT = 0.28; audio.peel(); ev("peel");
+          state = "play"; vx = 4.0; vy = 10.5; spin = 6; peelT = 0.28; groundAt = clock + 0.15; audio.peel(); ev("peel");
           for (let i = 0; i < 10; i++) puffs.push({ x: px + rnd(-0.4, 0.4), y: 0.3, vx: rnd(-1, 1), vy: rnd(0.4, 1.6), t: 0, life: rnd(0.5, 0.9), r: rnd(2, 3.5) });
         }
       }
@@ -373,10 +457,14 @@
     if (!held && wasHeld) { letGo(); pressAt = -9; }
     wasHeld = held;
 
-    // the step, in small pieces so the tongue holds him steady
+    if (longT > 0) longT = Math.max(0, longT - dt);
+    // a tongue that went out long draws him in to the length it always holds him at
+    if (tongue && tongue.len > REACH) tongue.len = Math.max(REACH, tongue.len - 9 * dt);
+    // the step, in small pieces so the tongue holds him steady; the paprika's push holds him on its way up
     const N = 4, h = dt / N;
+    let hit = false;
     for (let i = 0; i < N; i++) {
-      vy -= G * h;
+      if (rocketT > 0) vy = ROCKET_VY; else vy -= G * h;
       vx *= 1 - DRAG * h; vy *= 1 - DRAG * h;
       px += vx * h; py += vy * h;
       if (tongue) {
@@ -393,12 +481,20 @@
           vx = vr * nx - vt * ny; vy = vr * ny + vt * nx;
         }
       }
+      // any part of him touching the street costs a fall, flying or swinging round a treat
+      if (clock > groundAt && py - bottomNow() <= 0) { hit = true; break; }
+    }
+    if (hit) { tumble(); camera(dt); return; }
+    if (rocketT > 0) {
+      rocketT = Math.max(0, rocketT - dt);
+      vx += (6.5 - vx) * Math.min(1, dt * 1.5);
+      for (let k = 0; k < 5; k++) bits.push({ x: px + rnd(-0.25, 0.25), y: py - 0.75, vx: rnd(-1.2, 1.2) - vx * 0.15, vy: rnd(-8, -3), t: 0, life: rnd(0.15, 0.4), c: ["#fff4b0", "#ffd36a", "#ff9a3a", "#ff7a2a", "#e8452a"][k], w: k < 2 ? 2 : 3 });
     }
     if (tongue) {
       tongue.out = Math.min(1, tongue.out + dt / SHOOT);
       // licked long enough, the treat is eaten: crumbs, and he flies on whether he meant to or not
       tongue.held += dt;
-      if (tongue.held >= tongue.lasts && tongue.t.moon) letGo();
+      if (tongue.held >= tongue.lasts && (tongue.t.moon || tongue.t.flyer)) letGo();
       else if (tongue.held >= tongue.lasts) {
         const t = tongue.t;
         for (let i = 0; i < 12; i++) bits.push({ x: t.ax + rnd(-0.2, 0.2), y: t.ay + rnd(-0.2, 0.2), vx: rnd(-1.5, 1.5), vy: rnd(-1, 2), t: 0, life: rnd(0.5, 1), c: i % 3 ? "#c98a4e" : "#f6ecd2" });
@@ -431,13 +527,18 @@
       if (metres > best) { best = metres; store.set("best", best); hud(); }
       if (metres >= nextSign) { news(nextSign + " metres", "and still licking", "BAKERY DISTRICT"); audio.bell(); bump(); nextSign += 100; ev("sign", { at: metres }); }
     }
-    // going up high, he finds the moon a little ahead of him, where it stays until he has left it behind
-    if ((moonX === null || moonX + MOON_R < camX - 2) && py > 10 && camY + H / PPM < MOON_Y - MOON_R - 0.5) moonX = px + rnd(1.5, 3.5);
+    // the moon, once it is due, waits for the first climb that could reach it, a little ahead of where the climb will
+    // top out; when he has left it behind, the next is a couple of hundred metres off
+    if (moonX === null && MO && metres >= nextMoon && !tongue && (vy > 0 || rocketT > 0)) {
+      const up = rocketT > 0 ? ROCKET_VY : vy, tUp = rocketT + up / G, top = py + ROCKET_VY * rocketT + up * up / (2 * G);
+      if (top > MOON_Y - MO.ro - REACH + 0.5) { moonX = px + clamp(vx * tUp, 1, 14) + 1.2; ev("moon-up", { x: +moonX.toFixed(1) }); }
+    }
+    if (moonX !== null && moonX + MO.ro < camX - 2) { moonX = null; nextMoon = metres + rnd(MOON_EVERY[0], MOON_EVERY[1]); }
     if (moonX !== null) {
-      const dx = px - moonX, dy = py - MOON_Y, d = Math.hypot(dx, dy), touch = MOON_R + BODY * 0.8;
+      const [d, nx, ny] = moonDist(px, py), touch = BODY * 0.8;
       if (d < touch) {
-        const nx = dx / d, ny = dy / d, vn = vx * nx + vy * ny;
-        px = moonX + nx * touch; py = MOON_Y + ny * touch;
+        const vn = vx * nx + vy * ny;
+        px += nx * (touch - d); py += ny * (touch - d);
         // a real knock bounces him off with a bonk; brushing it, he only slides off
         if (vn < -2 && clock - bonkAt > 0.5) {
           bonkAt = clock; vx -= 1.4 * vn * nx; vy -= 1.4 * vn * ny; audio.bonk(); shake = 0.2; ev("bonk");
@@ -446,18 +547,53 @@
       }
     }
     if (py > CEIL) { py = CEIL; vy = Math.min(vy, 0); }
-    if (py - BODY <= 0 && vy < 0) tumble();
+    // Misery Peter or Boss Edna, now and then, ahead and high up, the other one next time; a power-up, now and then,
+    // somewhere he has to go out of his way for
+    if (!flyer && metres >= nextFlyer) {
+      const kind = lastFlyer === "peter" ? "edna" : lastFlyer === "edna" ? "peter" : Math.random() < 0.5 ? "peter" : "edna", y0 = rnd(FLYER_Y[0], FLYER_Y[1]);
+      lastFlyer = kind;
+      flyer = { flyer: true, kind, x: camX + W / PPM + rnd(3, 8), y0, vx: kind === "edna" ? 0.7 : 0.35, t: 0, ph: rnd(0, 6.3), licked: 0 };
+      moveFlyer(0);
+    }
+    if (metres >= nextPower) {
+      nextPower = metres + rnd(POWER_EVERY[0], POWER_EVERY[1]);
+      const kinds = lives <= LIVES ? ["rocket", "long", "ring"] : ["rocket", "long"], high = Math.random() < 0.55;
+      powers.push({ kind: kinds[Math.floor(Math.random() * kinds.length)], x: px + rnd(16, 24), y: high ? rnd(13, 16) : rnd(1.7, 2.3), t: rnd(0, 6) });
+    }
+    for (const p of powers) if (!p.got && Math.hypot(p.x - px, p.y + Math.sin(p.t * 3) * 0.12 - py) < 0.95) { p.got = true; power(p); }
+    powers = powers.filter(p => !p.got && p.x > camX - 4);
     generate(camX + 30);
     camera(dt);
   }
-  // the camera keeps him a third of the way in and rises when he goes high
+  // the one up there drifts slowly along the street, bobbing; his tongue sticks to the cloud's middle or the cow
+  // under the balloons. Left behind, it is gone, and the next comes a good way on.
+  function moveFlyer(dt) {
+    const F = flyer;
+    F.t += dt; F.x += F.vx * dt;
+    F.ax = F.x; F.ay = F.y0 + Math.sin(F.t * 1.3 + F.ph) * 0.22;
+    if (F.x < camX - 6 && !(tongue && tongue.t === F)) { flyer = null; nextFlyer = metres + rnd(FLYER_EVERY[0], FLYER_EVERY[1]); }
+  }
+  // the camera keeps him a third of the way in and rises when he goes high, quicker the faster he goes up or down
   function camera(dt) {
-    let ty = clamp(py - 8.4, 0, CEIL + 1 - H / PPM);
+    const lead = Math.sign(vy) * clamp((Math.abs(vy) - 12) * 0.4, 0, 6);
+    let ty = clamp(py - 8.4 + lead, 0, CEIL + 1.6 - STREET / PPM);
     // up by the moon, the camera rises far enough to show all of it
-    if (moonX !== null && (py > 11 || (tongue && tongue.t.moon)) && Math.abs(px - moonX) < 7) ty = Math.max(ty, MOON_Y + MOON_R + 0.6 - STREET / PPM);
-    const tx = px - 0.36 * W / PPM;
+    if (moonX !== null && MO && py > MOON_Y - 6.5 && Math.abs(px - moonX) < 8) ty = Math.max(ty, Math.min(CEIL + 1.6 - STREET / PPM, MOON_Y + MO.ro + 0.6 - STREET / PPM));
+    let tx = px - 0.36 * W / PPM;
+    // up high near the one in the sky, or hanging from it, the camera rises to show it, keeping him well in the
+    // picture; down by the street it stays down
+    if (flyer && SC) {
+      const k = flyer.kind === "edna" ? SC.air.edna : SC.air.peter, s1 = SC.sprites[k.frame], top = flyer.ay + (k.centre[1] - s1[5]) / PPM;
+      const on = tongue && tongue.t === flyer;
+      if (on || (py > 7 && Math.abs(flyer.ax - px) < 8)) {
+        ty = Math.max(ty, Math.min(top + 1.3 - STREET / PPM, py - (on ? 1.6 : 3)));
+        // and along: hanging from it, halfway between the two; coming up to it, far enough for all of it, him still
+        // well in from the left
+        tx = on ? (px + flyer.ax) / 2 - W / PPM / 2 : Math.min(Math.max(tx, flyer.ax + (s1[2] - k.centre[0]) / PPM + 0.3 - W / PPM), px - 1.1);
+      }
+    }
     camX += (tx - camX) * Math.min(1, dt * 4.5);
-    camY += (ty - camY) * Math.min(1, dt * 3);
+    camY += (ty - camY) * Math.min(1, dt * (3 + Math.abs(vy) * 0.25));
   }
   const sx = x => Math.round((x - camX) * PPM);
   const sy = y => Math.round(STREET - (y - camY) * PPM);
@@ -502,44 +638,16 @@
     }
     cobC = k;
   }
-  // the cheese moon: a round of cheese lit from the upper left, its holes shadowed above and lit below, a bite out of
-  // its side, a dark rim and a faint glow round it
-  function buildMoon() {
-    const R = Math.round(MOON_R * PPM), S = R * 2 + 28, c0 = S / 2, [c, x] = off(S, S), img = x.createImageData(S, S), d = img.data;
-    const holes = [[-0.42, -0.3, 0.14], [0.12, -0.5, 0.09], [0.3, 0.14, 0.16], [-0.2, 0.36, 0.1], [-0.6, 0.18, 0.07], [0.42, -0.2, 0.06], [0.02, 0.6, 0.07], [-0.1, -0.08, 0.06], [0.58, 0.42, 0.05]];
-    const bites = [[0.98, -0.18, 0.2], [0.9, 0.06, 0.17], [1.0, 0.3, 0.15]];
-    const put = (i, j, r, g2, b, a) => { const k = (j * S + i) * 4; d[k] = r; d[k + 1] = g2; d[k + 2] = b; d[k + 3] = a; };
-    const hex = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
-    const inBite = (u, v) => bites.some(([bx, by, br]) => Math.hypot(u - bx, v - by) < br);
-    for (let j = 0; j < S; j++) for (let i = 0; i < S; i++) {
-      const u = (i + 0.5 - c0) / R, v = (j + 0.5 - c0) / R, r = Math.hypot(u, v);
-      if (r > 1 || inBite(u, v)) {
-        // the glow, faint and fading out
-        const gl = r > 1 ? Math.max(0, 1 - (r - 1) * R / 13) : 0;
-        if (gl > 0 && !inBite(u, v)) put(i, j, 255, 214, 120, Math.round(46 * gl * gl));
-        continue;
-      }
-      const lit = (-u * 0.6 - v * 0.8);
-      let col = hex(lit > 0.4 ? "#fbe08c" : lit > -0.15 ? "#f2c45a" : lit > -0.6 ? "#e2a944" : "#c98c34");
-      for (const [hx, hy, hr] of holes) {
-        const hd = Math.hypot(u - hx, v - hy);
-        if (hd < hr) {
-          // inside a hole: the far side lit, the near side in shadow
-          const side = ((u - hx) * 0.6 + (v - hy) * 0.8) / hr;
-          col = hex(side > 0.35 ? "#fde6a6" : side < -0.3 ? "#9a6620" : "#b9802c");
-        }
-      }
-      // the bitten edge shows paler cheese
-      if (bites.some(([bx, by, br]) => Math.hypot(u - bx, v - by) < br + 0.06)) col = hex("#fbe9b0");
-      put(i, j, col[0], col[1], col[2], 255);
+  // the night still up there over the dawn: stars, a few of them bigger, for when he goes up high
+  function buildStars() {
+    const [c, x] = off(W, H);
+    for (let i = 0; i < 140; i++) {
+      const X = Math.floor(hash(i * 5 + 101) * W), Y = Math.floor(hash(i * 9 + 77) * H), k = hash(i * 13 + 3);
+      x.fillStyle = k < 0.15 ? "#fff3c8" : "rgba(240,236,255," + (0.45 + 0.5 * hash(i * 17 + 1)).toFixed(2) + ")";
+      x.fillRect(X, Y, 1, 1);
+      if (k < 0.12) { x.fillRect(X - 1, Y, 3, 1); x.fillRect(X, Y - 1, 1, 3); }
     }
-    // the rim: a dark line round the cheese
-    const solid = (i, j) => i >= 0 && j >= 0 && i < S && j < S && d[(j * S + i) * 4 + 3] === 255;
-    const rim = [];
-    for (let j = 0; j < S; j++) for (let i = 0; i < S; i++) if (solid(i, j) && (!solid(i - 1, j) || !solid(i + 1, j) || !solid(i, j - 1) || !solid(i, j + 1))) rim.push([i, j]);
-    for (const [i, j] of rim) put(i, j, 138, 90, 28, 255);
-    x.putImageData(img, 0, 0);
-    moonC = c;
+    starC = c;
   }
 
   // a bakery of the row at dawn, its walls still in the night's shade so the treats and the lit windows stand out:
@@ -713,6 +821,7 @@
   // where his tongue touches a treat: a little short of its middle, on his side; on the moon, the rim
   function tipOf(t) {
     if (t.moon) return [t.ax, t.ay];
+    if (t.flyer) { const dx = px - t.ax, dy = py - t.ay, d = Math.hypot(dx, dy) || 1; return [t.ax + dx / d * 0.3, t.ay + dy / d * 0.3]; }
     const fr = SC.treats[t.kind].frame, s2 = SC.sprites[fr], c = SC.treats[t.kind].centre;
     const cx = t.ax + (c[0] - s2[4]) / PPM, cy = t.ay - (c[1] - s2[5]) / PPM, dx = px - cx, dy = py - cy, d = Math.hypot(dx, dy) || 1, k = Math.min(s2[2], s2[3]) * 0.22 / PPM;
     return [cx + dx / d * k, cy + dy / d * k];
@@ -729,12 +838,19 @@
     const sh = shake > 0 && !reduce ? Math.round(Math.sin(clock * 70) * 2 * shake / 0.35) : 0;
     g.setTransform(1, 0, 0, 1, 0, sh);
     g.drawImage(skyC, 0, 0);
+    // the higher he goes, the more of the night is still up there: the sky darkens and the stars come out
+    const night = clamp((camY - 4) / 34, 0, 1);
+    if (night > 0) {
+      g.globalAlpha = night * 0.9; g.fillStyle = "#07061a"; g.fillRect(0, 0, W, H);
+      const so = ((Math.floor(camY * PPM * 0.12) % H) + H) % H;
+      g.globalAlpha = night; g.drawImage(starC, 0, so - H); g.drawImage(starC, 0, so); g.globalAlpha = 1;
+    }
     const aim = state === "play" && !tongue ? target() : null;
-    // the cheese moon, once he has gone up high enough to find it
-    if (moonX !== null && moonC) {
-      const mx = sx(moonX), my = sy(MOON_Y), hw = moonC.width / 2;
-      if (my + hw > 0 && my - hw < H && mx + hw > 0 && mx - hw < W) {
-        g.drawImage(moonC, mx - hw, my - hw);
+    // the moon of the series, once it is up there
+    if (moonX !== null && MO) {
+      const m = SC.air.moon, s0 = SC.sprites[m.frame], mx = sx(moonX), my = sy(MOON_Y);
+      if (my + 120 > 0 && my - 120 < H && mx + 120 > 0 && mx - 120 < W) {
+        g.drawImage(atlas, s0[0], s0[1], s0[2], s0[3], Math.round(mx - m.outer[0]), Math.round(my - m.outer[1]), s0[2], s0[3]);
         if (moonLicked > 0 && tipX) { g.globalAlpha = moonLicked; g.fillStyle = "#fffaf0"; g.fillRect(sx(tipX) - 3, sy(tipY) - 2, 3, 1); g.globalAlpha = 1; }
       }
       if (aim && aim.moon) {
@@ -778,7 +894,7 @@
     // the bunting the treats hang from: a rope from string to string, little flags on it
     const ty = sy(BUNTING);
     const vis = treats.filter(t => sx(t.x) > -60 && sx(t.x) < W + 60);
-    if (ty > -20) {
+    if (ty > -20 && ty < H + 20) {
       for (let k = 0; k + 1 < vis.length; k++) {
         const a = vis[k], b = vis[k + 1], ax = sx(a.x), bx = sx(b.x);
         for (let x = ax; x <= bx; x++) {
@@ -817,6 +933,34 @@
 
     // a baker's peel coming out of a door to flip him back up
     if (peelT >= 0) drawPeel();
+    // Misery Peter or Boss Edna up in the sky; shaking him off when his time on it is nearly up
+    if (flyer) {
+      const F = flyer, k = F.kind === "edna" ? SC.air.edna : SC.air.peter, s1 = SC.sprites[k.frame];
+      const left = tongue && tongue.t === F ? tongue.lasts - tongue.held : 9, wob = left < 1.2 && !reduce ? Math.round(Math.sin(clock * 45)) : 0;
+      const x = Math.round(sx(F.ax) - k.centre[0]) + wob, y = Math.round(sy(F.ay) - k.centre[1]);
+      if (x + s1[2] > 0 && x < W && y + s1[3] > 0 && y < H) {
+        g.drawImage(atlas, s1[0], s1[1], s1[2], s1[3], x, y, s1[2], s1[3]);
+        if (F === aim) {
+          const pulse = 0.5 + 0.5 * Math.sin(clock * 10), cx = sx(F.ax), cy = sy(F.ay), r = (F.kind === "edna" ? 20 : 24) + pulse;
+          g.fillStyle = "rgba(255,240,190,.9)"; ring(cx, cy, r); g.fillStyle = "rgba(42,16,40,.8)"; ring(cx, cy, r + 1);
+        }
+      }
+    }
+    // the power-ups: no string, a glow and a twinkle round each, so none is taken for a treat
+    for (const p of powers) {
+      const x = sx(p.x), y = sy(p.y + Math.sin(p.t * 3) * 0.12);
+      if (x < -30 || x > W + 30 || y < -40 || y > H + 40) continue;
+      const pulse = 0.5 + 0.5 * Math.sin(clock * 6 + p.t);
+      g.fillStyle = "rgba(255,240,170," + (0.08 + 0.07 * pulse).toFixed(2) + ")"; disc(x, y, 15 + pulse * 2);
+      g.fillStyle = "rgba(255,240,170,.14)"; disc(x, y, 10);
+      const k = p.kind === "rocket" ? SC.air.paprika : p.kind === "long" ? SC.air.lollypop : SC.treats.donut, s2 = SC.sprites[k.frame];
+      g.drawImage(p.kind === "ring" ? goldImg : atlas, s2[0], s2[1], s2[2], s2[3], Math.round(x - k.centre[0]), Math.round(y - k.centre[1]), s2[2], s2[3]);
+      for (let j = 0; j < 4; j++) {
+        if (Math.sin(clock * 9 + j * 2 + p.t) < 0.2) continue;
+        const a = clock * 2.4 + j * Math.PI / 2 + p.t, r = 14 + 3 * Math.sin(clock * 5 + j);
+        g.fillStyle = "#fff8d8"; g.fillRect(Math.round(x + Math.cos(a) * r), Math.round(y + Math.sin(a) * r), 1, 1);
+      }
+    }
 
     // him: the inside of his mouth shows through the hole of the ring
     const fi = ((Math.round(psi / (2 * Math.PI / 24)) % 24) + 24) % 24, f = SC.booblick.frames[fi], s = SC.sprites[f];
@@ -840,7 +984,7 @@
     drawTongue(mx0, my0, tx1, ty1, sag, 6, wave);
 
     // crumbs, seeds and flour
-    for (const b of bits) { g.fillStyle = b.c; g.fillRect(sx(b.x), sy(b.y), 1, 1); }
+    for (const b of bits) { const w = b.w || 1; g.fillStyle = b.c; g.fillRect(sx(b.x) - (w >> 1), sy(b.y) - (w >> 1), w, b.h || w); }
     for (const f2 of puffs) { g.fillStyle = "rgba(246,236,214," + (0.7 * (1 - f2.t / f2.life)).toFixed(2) + ")"; const r = Math.round(f2.r * (0.6 + f2.t / f2.life)); g.fillRect(sx(f2.x) - r, sy(f2.y) - r, r * 2, r * 2); }
     // the ground at the bottom when the camera has risen: nothing more to draw
     g.setTransform(1, 0, 0, 1, 0, 0);
@@ -859,12 +1003,29 @@
   }
 
   function hudCanvas() {
-    // the falls he has left: three little bread rings under the channel
-    for (let i = 0; i < LIVES; i++) {
+    // the falls he has left: three little bread rings under the channel, and a golden one if he found one
+    const NR = Math.max(LIVES, lives);
+    for (let i = 0; i < NR; i++) {
       const x = 15 + i * 14, y = 37, ok = i < lives;
-      g.fillStyle = ok ? "#d99a4a" : "rgba(217,154,74,.22)"; disc(x, y, 5);
+      g.fillStyle = i >= LIVES ? "#ffd84a" : ok ? "#d99a4a" : "rgba(217,154,74,.22)"; disc(x, y, 5);
       g.fillStyle = ok ? "#120d27" : "rgba(18,13,39,.5)"; disc(x, y, 2);
       if (ok) { g.fillStyle = "#fff3d8"; g.fillRect(x - 3, y - 3, 1, 1); g.fillRect(x + 2, y - 2, 1, 1); }
+    }
+    // the lollipop's time running out, beside them
+    if (longT > 0) {
+      const x = 15 + NR * 14 + 2, y = 37;
+      g.fillStyle = "#3a1830"; disc(x, y, 5); g.fillStyle = "#ff9ed8"; disc(x, y, 4); g.fillStyle = "#fff0f8"; disc(x - 1, y - 1, 1.6);
+      g.fillStyle = "rgba(18,13,39,.6)"; g.fillRect(x + 8, y - 1, 26, 3);
+      g.fillStyle = longT < 3 && Math.floor(clock * 8) % 2 ? "#fff0f8" : "#ff9ed8"; g.fillRect(x + 8, y - 1, Math.ceil(26 * longT / LONG_FOR), 3);
+    }
+    // the moon up there, above the top of the screen: a little crescent where it is
+    if (moonX !== null && MO && sy(MOON_Y - MO.ro) < 0) {
+      const x = clamp(sx(moonX), 10, W - 10), y = 62 + Math.round(Math.sin(clock * 5) * 1.5);
+      for (let j = -6; j <= 6; j++) for (let i = -6; i <= 6; i++) {
+        const on = Math.hypot(i, j) <= 6.2 && Math.hypot(i - 3, j + 0.3) > 5, edge = !on && Math.hypot(i, j) <= 7.2 && Math.hypot(i - 3, j + 0.3) > 4;
+        if (on || edge) { g.fillStyle = on ? "#f2c84a" : "#120d27"; g.fillRect(x + i, y + j, 1, 1); }
+      }
+      g.fillStyle = "#120d27"; g.fillRect(x - 3, y - 13, 7, 4); g.fillStyle = "#f2c84a"; g.fillRect(x - 2, y - 11, 5, 1); g.fillRect(x - 1, y - 12, 3, 1); g.fillRect(x, y - 13, 1, 1);
     }
     g.font = "16px VT323, monospace"; g.textAlign = "center";
     for (const p of pops) { const x = sx(p.x), y = sy(p.y); g.globalAlpha = Math.max(0, 1 - p.t / 1.1); g.fillStyle = "#000"; g.fillText(p.text, x + 1, y + 1); g.fillStyle = p.col; g.fillText(p.text, x, y); g.globalAlpha = 1; }
@@ -948,12 +1109,20 @@
   // a bot can read the street through this, on a page opened with #debug, and step it
   if (location.hash === "#debug") {
     window.__ls = {
-      get: () => ({ state, T, px, py, vx, vy, lives, metres, licks, held: wasHeld, sx: sx(px), sy: sy(py), tongue: tongue ? { x: tongue.t.ax, y: tongue.t.ay, len: tongue.len, left: tongue.lasts - tongue.held } : null,
+      get: () => ({ state, T, px, py, vx, vy, lives, metres, licks, held: wasHeld, sx: sx(px), sy: sy(py), camY, longT, rocketT, bottom: bottomNow(), tongue: tongue ? { x: tongue.t.ax, y: tongue.t.ay, len: tongue.len, left: tongue.lasts - tongue.held } : null,
                     aim: (() => { const t = target(); return t ? { x: t.ax, y: t.ay } : null; })(),
                     treats: treats.map(t => ({ x: t.ax, y: t.ay, stale: t.stale })) }),
       hold: on => { keyHold = on; }, start, freeze: on => { frozen = on; }, step: dt => update(dt), draw: () => draw(), shot: () => cv.toDataURL(),
       put: (x, y, vx2, vy2) => { px = x; py = y; vx = vx2; vy = vy2; },
-      moon: () => (moonX === null ? null : { x: moonX, y: MOON_Y, r: MOON_R }),
+      moon: () => (moonX === null || !MO ? null : { x: moonX, y: MOON_Y, ro: MO.ro, ix: MO.ix, iy: MO.iy, ri: MO.ri, tips: MO.tips }),
+      flyer: () => (flyer ? { kind: flyer.kind, x: flyer.ax, y: flyer.ay } : null),
+      powers: () => powers.map(p => ({ kind: p.kind, x: p.x, y: p.y })),
+      give: (kind, x, y) => { powers.push({ kind, x: x === undefined ? px + 3 : x, y: y === undefined ? py : y, t: 0 }); },
+      due: (what, m) => { if (what === "moon") nextMoon = m; else if (what === "flyer") nextFlyer = m; else nextPower = m; },
+      setLives: n => { lives = n; },
+      force: (x, y) => { let b = null, d = 1e9; for (const t of flyer ? treats.concat([flyer]) : treats) { const e = Math.hypot(t.ax - x, t.ay - y); if (e < d) { d = e; b = t; } } forced = b; },
+      snap: () => { camX = px - 0.36 * W / PPM; camY = clamp(py - 8.4, 0, CEIL + 1.6 - STREET / PPM); },
+      nearest: (x, y) => moonNearest(x, y), dist: (x, y) => moonDist(x, y),
       log: LOG, REACH, G, BODY,
     };
   }
@@ -968,7 +1137,17 @@
       x.globalCompositeOperation = "multiply"; x.fillStyle = "rgb(150,170,130)"; x.fillRect(0, 0, a.width, a.height);
       x.globalCompositeOperation = "destination-in"; x.drawImage(a, 0, 0);
       staleImg = c;
-      buildSky(); buildMoon();
+      // the golden one: the plain donut's drawing in gold
+      const [c2, x2] = off(a.width, a.height);
+      x2.drawImage(a, 0, 0);
+      x2.globalCompositeOperation = "saturation"; x2.fillStyle = "hsl(0,0%,50%)"; x2.fillRect(0, 0, a.width, a.height);
+      x2.globalCompositeOperation = "multiply"; x2.fillStyle = "rgb(255,205,80)"; x2.fillRect(0, 0, a.width, a.height);
+      x2.globalCompositeOperation = "screen"; x2.fillStyle = "rgb(70,46,0)"; x2.fillRect(0, 0, a.width, a.height);
+      x2.globalCompositeOperation = "destination-in"; x2.drawImage(a, 0, 0);
+      goldImg = c2;
+      // how far below his middle each of his drawings reaches: its lowest pixel
+      BOTTOM = SC.booblick.frames.map(f => (SC.sprites[f][3] - 2 - SC.sprites[f][5]) / PPM);
+      moonGeo(); buildSky(); buildStars();
       reset(); ready = true;
     })
     .catch(() => { $("sub").textContent = "The tape would not load. Try the page again."; });
