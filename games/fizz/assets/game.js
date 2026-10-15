@@ -20,8 +20,8 @@
   g.imageSmoothingEnabled = false;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const store = {
-    get(k, d) { try { const v = localStorage.getItem("fizz." + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
-    set(k, v) { try { localStorage.setItem("fizz." + k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
+    get(k, d) { try { const v = localStorage.getItem(k === "sound" ? "rotville.sound" : "fizz." + k) ?? (k === "sound" ? localStorage.getItem("fizz.sound") : null); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k === "sound" ? "rotville.sound" : "fizz." + k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
   };
   const load = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
   const rnd = (a, b) => a + Math.random() * (b - a);

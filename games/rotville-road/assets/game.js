@@ -11,8 +11,8 @@
   const cv = $("c"), g = cv.getContext("2d");
   g.imageSmoothingEnabled = false;
   const store = {
-    get(k, d) { try { const v = localStorage.getItem("rotvilleroad." + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
-    set(k, v) { try { localStorage.setItem("rotvilleroad." + k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
+    get(k, d) { try { const v = localStorage.getItem(k === "sound" ? "rotville.sound" : "rotvilleroad." + k) ?? (k === "sound" ? localStorage.getItem("rotvilleroad.sound") : null); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k === "sound" ? "rotville.sound" : "rotvilleroad." + k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
   };
   const LINES = {
     start: "Farrat sets off down Rotville Road. He cannot recall where to.",

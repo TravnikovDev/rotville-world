@@ -32,8 +32,8 @@
   g.imageSmoothingEnabled = false;
   const screen = $("screen");
   const store = {
-    get(k, d) { try { const v = localStorage.getItem("everyroad." + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
-    set(k, v) { try { localStorage.setItem("everyroad." + k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
+    get(k, d) { try { const v = localStorage.getItem(k === "sound" ? "rotville.sound" : "everyroad." + k) ?? (k === "sound" ? localStorage.getItem("everyroad.sound") : null); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k === "sound" ? "rotville.sound" : "everyroad." + k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
   };
 
   /* ---------- the roads, from a stroll round nine blocks to the whole town, then a less patient town ---------- */

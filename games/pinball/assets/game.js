@@ -27,8 +27,8 @@
   g.imageSmoothingEnabled = false;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const store = {
-    get(k, d) { try { const v = localStorage.getItem("pinball." + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
-    set(k, v) { try { localStorage.setItem("pinball." + k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
+    get(k, d) { try { const v = localStorage.getItem(k === "sound" ? "rotville.sound" : "pinball." + k) ?? (k === "sound" ? localStorage.getItem("pinball.sound") : null); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k === "sound" ? "rotville.sound" : "pinball." + k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
   };
   const load = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
   const off = (w, h) => { const c = document.createElement("canvas"); c.width = w; c.height = h; const x = c.getContext("2d"); x.imageSmoothingEnabled = false; return [c, x]; };

@@ -31,8 +31,8 @@
   atlas.src = "assets/sprites.png";
 
   const store = {
-    get(k, d) { try { const v = localStorage.getItem("megabite." + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
-    set(k, v) { try { localStorage.setItem("megabite." + k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
+    get(k, d) { try { const v = localStorage.getItem(k === "sound" ? "rotville.sound" : "megabite." + k) ?? (k === "sound" ? localStorage.getItem("megabite.sound") : null); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k === "sound" ? "rotville.sound" : "megabite." + k, JSON.stringify(v)); } catch (e) { /* private mode */ } },
   };
   const rng = seed => () => {
     seed = (seed + 0x6d2b79f5) | 0;
