@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SGZ7TMLQGM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-SGZ7TMLQGM');
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Slots · Rotville</title>
+<meta name="description" content="The slot machine of the Lower Sewers Casino. The reels are Rotville's residents. Three of one face on the line, and that resident comes out of the machine for you. Nobody leaves.">
+<link rel="canonical" href="https://rotville.world/games/slots/">
+<meta name="theme-color" content="#14050f">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rotville">
+<meta property="og:title" content="Slots · Rotville">
+<meta property="og:description" content="Three of one face on the line, and that resident comes out of the machine for you.">
+<meta property="og:url" content="https://rotville.world/games/slots/">
+<meta property="og:image" content="https://rotville.world/games/slots/assets/og.jpg">
+<meta property="og:image:alt" content="A red and gold slot machine whose reels are Rotville's residents, and Shushworth's skull grin bursting out of it.">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rotville.world/games/slots/assets/og.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" href="../../favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Bungee+Inline&family=Rye&display=swap">
+<script>try{if(sessionStorage.getItem("rv.ch")){sessionStorage.removeItem("rv.ch");document.documentElement.classList.add("ch-in")}}catch(e){}</script>
+<link rel="stylesheet" href="../../assets/gate.css">
+<link rel="stylesheet" href="assets/game.css">
+</head>
+<body class="sl">
+
+<header class="sl-bar">
+  <a class="sl-back" href="../../"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10h11V5l8 7-8 7v-5H3z"/></svg>Rotville</a>
+  <h1 class="sl-title"><span class="sr-only">Slots</span><span class="slt" aria-hidden="true"><span>S</span><span>L</span><span class="slt-o">O</span><span>T</span><span>S</span></span></h1>
+  <button class="tape" id="sound" type="button" aria-pressed="true"><span class="led" aria-hidden="true"></span><span class="tape-label">Sound: on</span></button>
+</header>
+
+<main class="sl-main" id="area">
+  <div class="tv-set sl-set">
+    <div class="tv-screen sl-screen" id="screen">
+      <div class="stage" id="stage">
+        <div class="room" aria-hidden="true">
+          <span class="bokeh" style="left:-30px;top:110px;width:80px;height:80px;background:#ff3d9e"></span>
+          <span class="bokeh" style="right:-24px;top:50px;width:64px;height:64px;background:#35d6ff"></span>
+          <span class="bokeh" style="left:30px;bottom:120px;width:44px;height:44px;background:#ffb300"></span>
+          <span class="bokeh" style="right:24px;bottom:190px;width:54px;height:54px;background:#b14dff"></span>
+          <span class="carpet"></span>
+          <span class="csign">✦ THE LOWER SEWERS CASINO ✦</span>
+        </div>
+        <div class="cab" id="cab">
+          <div class="crown" aria-hidden="true"><img src="assets/faces/the-eyemare.webp" alt=""></div>
+          <div class="marquee" aria-hidden="true"><span class="bulbs"></span>
+            <div class="mtitle"><b>ROTVILLE</b><i>THE SLOTS NOBODY LEAVES</i></div>
+            <div class="eyes"><span></span><span></span></div></div>
+          <div class="bezel"><div class="window" id="window" role="img" aria-label="Three reels">
+            <div class="reels" id="reels"></div><span class="payline" aria-hidden="true"></span><span class="glass" aria-hidden="true"></span></div>
+            <span class="gem l" aria-hidden="true"></span><span class="gem r" aria-hidden="true"></span></div>
+          <div class="banner" id="banner" aria-hidden="true"></div>
+          <div class="readout">
+            <div class="lcd"><small>CENTS</small><b id="cents">100</b></div>
+            <div class="lcd"><small>BET</small><b id="bet">5</b></div>
+            <div class="lcd win"><small>WIN</small><b id="win">0</b></div>
+          </div>
+          <div class="controls">
+            <div class="pill"><button class="round" id="less" type="button" aria-label="Bet less">−</button><span class="lab">BET</span></div>
+            <div class="pill"><button class="round" id="more" type="button" aria-label="Bet more">+</button><span class="lab">BET</span></div>
+            <button class="spin" id="spin" type="button">SPIN</button>
+            <div class="pill"><button class="round round-s" id="max" type="button" aria-label="Bet the most">MAX</button><span class="lab">BET</span></div>
+            <div class="pill"><button class="round" id="pays" type="button" aria-label="What pays">?</button><span class="lab">PAYS</span></div>
+          </div>
+          <div class="tray" aria-hidden="true"><i style="left:28px"></i><i style="left:52px;bottom:6px"></i><i style="left:176px"></i><i style="left:198px;bottom:5px"></i></div>
+          <button class="lever" id="lever" type="button" aria-label="Pull the lever"></button>
+        </div>
+        <div class="coins" id="coins" aria-hidden="true"></div>
+        <div class="peek" id="peek" aria-hidden="true"><img alt=""></div>
+        <div class="scream" id="scream" aria-hidden="true"><div class="face" id="face"></div><p class="shout" id="shout"></p></div>
+      </div>
+      <span class="static" id="static" aria-hidden="true"></span>
+      <span class="osd sl-ch" aria-hidden="true">CH 31</span>
+      <p class="sl-say" id="say" aria-live="polite"></p>
+
+      <div class="sl-card" id="table" hidden>
+        <h2 class="title sl-card-title">What pays</h2>
+        <ul class="sl-pays" id="paylist"></ul>
+        <p class="sl-hint">Three of one face, and that resident comes out for you. Two, and one of them looks out.</p>
+        <button class="sl-play" id="close" type="button">◀ BACK</button>
+      </div>
+
+      <div class="sl-card" id="ready">
+        <button class="sl-play" id="play" type="button">▶ PLAY</button>
+        <p class="sl-hint">Pull the lever or press SPIN. Press it again to stop the reels sooner.</p>
+        <p class="sl-hint">Three of one face on the line, and that resident comes out of the machine for you.</p>
+        <p class="sl-hint sl-hint-keys">Space spins. ↑ and ↓ change the bet.</p>
+        <p class="sl-hint sl-lore">Some of the faces scream. Turn the sound down if you would rather not hear them.</p>
+      </div>
+
+      <div class="sl-card" id="over" hidden>
+        <h2 class="title sl-over-title">The machine kept your cents.</h2>
+        <p class="sl-over-line" id="over-line">Nobody leaves.</p>
+        <p class="sl-over-stats" id="over-stats"></p>
+        <div class="sl-over-actions">
+          <button class="sl-play" id="again" type="button">▶ AGAIN</button>
+          <button class="tape sl-share" id="share" type="button"><span class="tape-label">Share</span></button>
+        </div>
+      </div>
+    </div>
+    <span class="tv-plate" aria-hidden="true">ROTVILLE TV</span>
+    <span class="tv-knob" aria-hidden="true"></span>
+    <span class="tv-knob tv-knob-2" aria-hidden="true"></span>
+    <!-- neighbours -->
+    <nav class="nb" aria-label="Other games">
+      <a class="nb-link nb-prev" href="../lickety-split/" data-ch="29" aria-label="Previous channel: Lickety-Split, one lick and he&#x27;s gone">
+        <span class="nb-tv"><img src="../lickety-split/assets/preview.webp" width="216" height="384" alt="Lickety-Split: one lick and he&#x27;s gone" loading="lazy" decoding="async"><span class="nb-osd" aria-hidden="true">CH 29</span></span>
+        <span class="nb-name" aria-hidden="true">◀ Lickety-Split</span>
+      </a>
+      <a class="nb-link nb-next" href="../megabite/" data-ch="04" aria-label="Next channel: Megabite, a game under the town">
+        <span class="nb-tv"><img src="../megabite/assets/preview.webp" width="216" height="384" alt="Megabite: a game under the town" loading="lazy" decoding="async"><span class="nb-osd" aria-hidden="true">CH 04</span></span>
+        <span class="nb-name" aria-hidden="true">Megabite ▶</span>
+      </a>
+    </nav>
+    <!-- /neighbours -->
+  </div>
+
+  <p class="sl-stats"><span id="best">Most cents 100</span> · <span id="seen">Screamers seen 0</span></p>
+  <p class="narrator sl-about">The Lower Sewers Casino has one machine. Its reels are the town's residents, and when three of one of them line up, that one comes out to see who is playing. It pays in cents. Nobody has left with any.</p>
+</main>
+
+<footer class="foot">
+  <p><a href="../../">Rotville. A perfectly normal town.</a></p>
+</footer>
+
+<script src="../../assets/buzz.js" defer></script>
+<script src="assets/game.js" defer></script>
+<script src="../../assets/neighbours.js" defer></script>
+</body>
+</html>
