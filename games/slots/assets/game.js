@@ -80,13 +80,17 @@
     }
   }
 
-  /* ---------- sound: the casino's bed and the vine boom, the rest made on the spot ---------- */
+  /* ---------- sound: two lines. The cabinet sounds like a slot machine and nothing else; the scare line - the near
+     miss, the peek and the screamers - is horror, played much louder, out of a quiet the game makes for it. Every
+     sound is a recording made on DawDreamer (library/sfx/slots/, tools/make-music/slots_sfx.py). ---------- */
+  const SFX = ["lever", "spin", "stop", "coin", "win-small", "win-big", "click", "tension", "peek", "scream-1", "scream-2", "scream-3"];
+  const BED = 0.16;
   const audio = {
-    ctx: null, on: store.get("sound", true), raw: {}, buf: {}, music: null,
+    ctx: null, on: store.get("sound", true), raw: {}, buf: {}, music: null, loop: null, held: null,
     fetch() {
-      for (const [k, f] of [["music", "assets/ka-ching.mp3"], ["boom", "assets/boom.mp3"]]) {
-        this.raw[k] = fetch(f).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
-      }
+      this.raw.music = fetch("assets/ka-ching.mp3").then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
+      // the spin is a loop, and an mp3 pads its ends, so it comes as a short wav
+      for (const k of SFX) this.raw[k] = fetch(`assets/sfx/${k}.${k === "spin" ? "wav" : "mp3"}`).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
     },
     unlock() {
       if (this.ctx) { this.ctx.resume(); return; }
@@ -95,16 +99,14 @@
       try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) { /* older Safari */ }
       const c = (this.ctx = new AC());
       c.resume();
-      this.master = c.createGain(); this.master.gain.value = this.on ? 1 : 0; this.master.connect(c.destination);
-      this.fxg = c.createGain(); this.fxg.gain.value = 0.5; this.fxg.connect(this.master);
-      this.mus = c.createGain(); this.mus.gain.value = 0.16; this.mus.connect(this.master);
-      this.yell = c.createGain(); this.yell.gain.value = 0.55; this.yell.connect(this.master);
-      const n = c.createBuffer(1, c.sampleRate, c.sampleRate), d = n.getChannelData(0);
-      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-      this.noiseBuf = n;
-      const curve = new Float32Array(1024);
-      for (let i = 0; i < curve.length; i++) { const x = i / 512 - 1; curve[i] = Math.tanh(x * 6); }
-      this.curve = curve;
+      // a limiter last, so a screamer can be as loud as the page allows without breaking up
+      const lim = c.createDynamicsCompressor();
+      lim.threshold.value = -3; lim.knee.value = 0; lim.ratio.value = 20; lim.attack.value = 0.001; lim.release.value = 0.12;
+      lim.connect(c.destination);
+      this.master = c.createGain(); this.master.gain.value = this.on ? 1 : 0; this.master.connect(lim);
+      this.cab = c.createGain(); this.cab.gain.value = 0.32; this.cab.connect(this.master);      // the cabinet
+      this.fear = c.createGain(); this.fear.gain.value = 1; this.fear.connect(this.master);      // the scare line
+      this.mus = c.createGain(); this.mus.gain.value = BED; this.mus.connect(this.master);
       for (const k of Object.keys(this.raw)) {
         this.buf[k] = this.raw[k].then(b => (b ? new Promise(ok => {
           const p = c.decodeAudioData(b, ok, () => ok(null));
@@ -117,74 +119,48 @@
       });
     },
     set(on) { this.on = on; store.set("sound", on); if (this.master) this.master.gain.setTargetAtTime(on ? 1 : 0, this.ctx.currentTime, 0.04); },
-    duck(to, back) {
-      if (!this.ctx) return;
-      const g = this.mus.gain, t = this.ctx.currentTime;
-      g.cancelScheduledValues(t); g.setTargetAtTime(to, t, 0.03); g.setTargetAtTime(0.16, t + back, 0.3);
+    // play one recording on a bus; returns its source, so a held one can be cut
+    play(k, bus, { vol = 1, rate = 1, loop = false } = {}) {
+      if (!this.ctx) return null;
+      const c = this.ctx, s = c.createBufferSource(), e = c.createGain();
+      e.gain.value = vol; s.playbackRate.value = rate; s.loop = loop; s.connect(e).connect(bus);
+      const h = { s, e, dead: false };
+      this.buf[k].then(b => { if (!b || h.dead) return; s.buffer = b; s.start(); });
+      return h;
     },
-    tone(f0, f1, dur, type = "square", vol = 0.12, when = 0, out = this.fxg) {
-      if (!this.ctx) return;
-      const c = this.ctx, t = c.currentTime + when, o = c.createOscillator(), e = c.createGain();
-      o.type = type; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur);
-      e.gain.setValueAtTime(0.0008, t); e.gain.exponentialRampToValueAtTime(vol, t + 0.012); e.gain.exponentialRampToValueAtTime(0.0008, t + dur);
-      o.connect(e).connect(out); o.start(t); o.stop(t + dur + 0.03);
+    cut(h, t = 0.04) {
+      if (!h || h.dead) return;
+      h.dead = true;
+      const n = this.ctx.currentTime;
+      h.e.gain.setTargetAtTime(0, n, t);
+      try { h.s.stop(n + t * 6); } catch (e) { /* never started */ }
     },
-    noise(dur, vol, lo, hi, when = 0, out = this.fxg) {
-      if (!this.ctx) return;
-      const c = this.ctx, t = c.currentTime + when, s = c.createBufferSource(), a = c.createBiquadFilter(), b = c.createBiquadFilter(), e = c.createGain();
-      s.buffer = this.noiseBuf; s.loop = true; a.type = "highpass"; a.frequency.value = lo; b.type = "lowpass"; b.frequency.value = hi;
-      e.gain.setValueAtTime(vol, t); e.gain.exponentialRampToValueAtTime(0.0008, t + dur);
-      s.connect(a).connect(b).connect(e).connect(out); s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.03);
+    bed(to, tau = 0.05) { if (this.ctx) this.mus.gain.setTargetAtTime(to, this.ctx.currentTime, tau); },
+    // the cabinet
+    lever() { this.play("lever", this.cab); },
+    spinning(on) {
+      if (on && !this.loop) this.loop = this.play("spin", this.cab, { loop: true, vol: 0.7 });
+      if (!on && this.loop) { this.cut(this.loop, 0.06); this.loop = null; }
     },
-    play(k, vol = 1) {
-      if (!this.ctx) return;
-      this.buf[k].then(b => {
-        if (!b) return;
-        const s = this.ctx.createBufferSource(), e = this.ctx.createGain(); e.gain.value = vol;
-        s.buffer = b; s.connect(e).connect(this.yell); s.start();
-      });
+    stop(r = 0) { this.play("stop", this.cab, { rate: [1, 0.95, 0.9][r] || 1 }); },
+    coin() { this.play("coin", this.cab, { rate: 0.94 + Math.random() * 0.12, vol: 0.8 }); },
+    win(big) { this.play(big ? "win-big" : "win-small", this.cab); },
+    click() { this.play("click", this.cab, { vol: 0.8 }); },
+    // the scare line: the cabinet and the bed drop away for it
+    tension() {
+      this.spinning(false); this.bed(0, 0.08);
+      this.held = this.play("tension", this.fear, { vol: 0.8 });
     },
-    lever() { this.noise(0.14, 0.09, 600, 5000); this.tone(220, 90, 0.18, "square", 0.05); this.tone(1700, 1500, 0.1, "sine", 0.03, 0.12); },
-    tick() { this.noise(0.018, 0.035, 2500, 8000); },
-    thunk() { this.tone(150, 55, 0.14, "square", 0.1); this.noise(0.06, 0.07, 200, 1800); },
-    tension(dur) {
-      if (!this.ctx) return;
-      const c = this.ctx, t = c.currentTime;
-      for (const det of [0, 7]) {
-        const o = c.createOscillator(), e = c.createGain();
-        o.type = "sawtooth"; o.frequency.setValueAtTime(70 + det, t); o.frequency.exponentialRampToValueAtTime(190 + det, t + dur);
-        e.gain.setValueAtTime(0.0008, t); e.gain.exponentialRampToValueAtTime(0.05, t + dur * 0.8); e.gain.exponentialRampToValueAtTime(0.0008, t + dur + 0.05);
-        o.connect(e).connect(this.fxg); o.start(t); o.stop(t + dur + 0.1);
-      }
-      for (let b = 0; b < dur - 0.2; b += 0.42) { this.tone(70, 40, 0.12, "sine", 0.3, b); this.tone(64, 38, 0.12, "sine", 0.22, b + 0.16); }
-    },
-    // the screamer: a shriek of detuned saws through a hard clip, a burst of noise and the boom
+    calm() { this.cut(this.held, 0.08); this.held = null; this.bed(BED, 0.4); },
     scream() {
-      if (!this.ctx) return;
-      const c = this.ctx, t = c.currentTime, ws = c.createWaveShaper(), e = c.createGain(), lp = c.createBiquadFilter();
-      ws.curve = this.curve; lp.type = "lowpass"; lp.frequency.value = 5200;
-      e.gain.setValueAtTime(0.0008, t); e.gain.exponentialRampToValueAtTime(0.5, t + 0.02); e.gain.setValueAtTime(0.5, t + 0.6); e.gain.exponentialRampToValueAtTime(0.0008, t + 1.05);
-      ws.connect(lp).connect(e).connect(this.yell);
-      for (const [f, d] of [[620, 0], [655, 0.004], [930, 0.01], [1240, 0.006]]) {
-        const o = c.createOscillator(), l = c.createOscillator(), lg = c.createGain();
-        o.type = "sawtooth"; o.frequency.setValueAtTime(f * 0.7, t + d); o.frequency.exponentialRampToValueAtTime(f * 1.35, t + 0.12); o.frequency.exponentialRampToValueAtTime(f * 0.8, t + 1);
-        l.frequency.value = 23; lg.gain.value = f * 0.06; l.connect(lg).connect(o.frequency);
-        o.connect(ws); o.start(t + d); l.start(t); o.stop(t + 1.1); l.stop(t + 1.1);
-      }
-      this.noise(0.5, 0.35, 900, 9000, 0, this.yell);
-      this.play("boom", 0.9);
-      this.duck(0.02, 1.4);
+      this.cut(this.held, 0.005); this.held = null;
+      this.spinning(false); this.bed(0, 0.005);
+      this.play("scream-" + (1 + Math.floor(Math.random() * 3)), this.fear);
+      if (this.ctx) this.mus.gain.setTargetAtTime(BED, this.ctx.currentTime + 2.2, 0.6);
     },
-    peek() { this.tone(1500, 320, 0.22, "square", 0.07); this.noise(0.12, 0.06, 1500, 6000); this.tone(90, 50, 0.25, "sine", 0.25); },
-    coin(i = 0) { this.tone(1975, 1975, 0.07, "triangle", 0.07, i * 0.07); this.tone(2637, 2637, 0.12, "triangle", 0.06, i * 0.07 + 0.05); },
-    win(big) {
-      const notes = big ? [523, 659, 784, 1047, 784, 1047, 1319] : [659, 784, 1047];
-      notes.forEach((f, i) => this.tone(f, f, 0.14, "square", 0.06, i * 0.09));
-    },
-    nothing() { this.tone(330, 300, 0.12, "triangle", 0.05); },
-    bet() { this.tone(880, 900, 0.05, "square", 0.04); },
+    peek() { this.cut(this.held, 0.01); this.held = null; this.play("peek", this.fear, { vol: 0.85 }); this.bed(BED, 0.5); },
   };
-  window.rvBuzz?.on(audio, { scream: "hit", peek: "bump", thunk: 8, win: "good" });
+  window.rvBuzz?.on(audio, { scream: [60, 30, 120], peek: "bump", stop: 8, win: "good" });
   audio.fetch();
 
   /* ---------- the reels ---------- */
@@ -224,7 +200,7 @@
     R.mode = "stopping"; R.t = 0; R.from = R.pos; R.to = land * ROW; R.dur = 2 * (R.to - R.from) / V;
   }
 
-  let last = performance.now(), tickT = 0;
+  let last = performance.now();
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     for (const R of reels) {
@@ -236,17 +212,14 @@
       } else if (R.mode === "stopping") {
         R.t += dt; const u = Math.min(1, R.t / R.dur);
         R.pos = R.from + (R.to - R.from) * (1 - (1 - u) * (1 - u)); R.v = V * (1 - u);
-        if (u >= 1) { R.mode = "bounce"; R.t = 0; R.v = 0; audio.thunk(); R.onLand?.(); }
+        if (u >= 1) { R.mode = "bounce"; R.t = 0; R.v = 0; audio.stop(reels.indexOf(R)); R.onLand?.(); }
       } else if (R.mode === "bounce") {
         R.t += dt; const u = Math.min(1, R.t / 0.22);
         R.pos = R.to + 10 * Math.sin(u * Math.PI) * (1 - u);
         if (u >= 1) { R.mode = "still"; R.pos = R.to; }
       }
       if (R.mode !== "still" || R.dirty) { paint(R); R.dirty = false; }
-      const cell = Math.floor(R.pos / ROW);
-      if (cell !== R.lastCell) { R.lastCell = cell; if (R.v > 200 && (tickT -= 1) <= 0) { audio.tick(); tickT = 1; } }
     }
-    tickT = Math.max(0, tickT - dt * 30);
     requestAnimationFrame(frame);
   }
 
@@ -271,7 +244,7 @@
     i = Math.max(0, Math.min(BETS.length - 1, i));
     while (i > 0 && BETS[i] > cents) i--;
     if (i === betI) return;
-    betI = i; audio.bet(); bump("bet"); hud();
+    betI = i; audio.click(); bump("bet"); hud();
   }
   function fitBet() { while (betI > 0 && BETS[betI] > cents) betI--; }
 
@@ -300,20 +273,26 @@
     for (const R of reels) R.cells.forEach(c => c.el.classList.remove("won", "hot"));
     $("spin").textContent = "STOP"; $("spin").classList.add("stop");
     const lev = $("lever"); lev.classList.add("pulled"); setTimeout(() => lev.classList.remove("pulled"), 260);
-    audio.lever(); hud();
+    audio.lever(); audio.spinning(true); hud();
 
     outcome = roll();
     const o = outcome, tense = isFace(o.line[0]) && o.line[0] === o.line[1];
-    const stops = [0.8, 1.15, tense ? 2.75 : 1.5];
+    const stops = [0.8, 1.15, 1.5];
+    const TENSE = 1.25;                       // the near miss: the third reel lands this long after the second
     let landed = 0, slammed = false;
     const t0 = performance.now(), timers = [];
     reels.forEach((R, r) => {
       R.mode = "wind"; R.t = 0; R.from = R.pos;
       R.onLand = () => {
         landed++;
-        if (r === 1 && tense && !slammed) { stage.classList.add("tense"); audio.tension(stops[2] - stops[1]); markHot(); }
-        if (landed === 3) { R.onLand = null; finish(bet); }
+        if (r === 1 && tense && !slammed) {
+          stage.classList.add("tense"); audio.tension(); markHot();
+          const R3 = reels[2], lead = 2 * 7 * ROW / V;    // how long a stop over seven rows takes
+          timers.push(setTimeout(() => { if (R3.mode === "run") stopReel(R3, o.line[2], 7); }, (TENSE - lead) * 1000));
+        }
+        if (landed === 3) { R.onLand = null; audio.spinning(false); finish(bet); }
       };
+      if (r === 2 && tense) return;           // the second reel's landing times this one
       timers.push(setTimeout(() => { if (R.mode === "run" || R.mode === "wind") stopReel(R, o.line[r], 7); }, stops[r] * 1000));
     });
     slam = () => {
@@ -335,6 +314,7 @@
     stage.classList.remove("tense");
     if (o.kind === "scream") await screamer(o.face);
     else if (o.kind === "peek") peek(o.face);
+    else audio.calm();
     if (won > 0) {
       reels.forEach(R => { const c = middle(R); c?.el.classList.add("won"); c?.el.classList.remove("hot"); });
       $("banner").textContent = o.kind === "scream" ? FACES[o.face].name.toUpperCase() + " · " + won : "WIN " + won;
@@ -343,7 +323,7 @@
       coins(Math.min(18, 4 + won));
       await countUp(won);
       setTimeout(() => { $("banner").classList.remove("on"); stage.classList.remove("won"); }, 1400);
-    } else if (o.kind === "nothing") audio.nothing();
+    }
     if (cents > best) { best = cents; store.set("best", best); }
     fitBet();
     if (cents < BETS[0]) { await wait(o.kind === "peek" ? 900 : 400); return over(); }
