@@ -3,7 +3,7 @@
    Three reels that spin as reels do. Most of the symbols are residents' faces - Old Parp, the Eyemare, Shushworth,
    Still Clive, Sackary, Kentut, Major Pain, Holloring and Masturbek - and the rest are a slot's own: 7, BAR, a bell and a cherry.
    Three of one face on the line, and that resident comes out of the machine, over the game, at full size: the
-   screamer. Two of one face, and one of them looks up from the bottom of the screen. All nine are in it by the
+   screamer. Two of one face is nothing at all. All nine are in it by the
    user's word, an exception to the one-to-three of R1090, as Pinball's was (R1100): eight on 2026-10-18, and on
    2026-10-19 the four who were not scary enough swapped for five who are.
 
@@ -52,7 +52,7 @@
   // the result of a spin, drawn before the reels move; the pays are times the bet, and two faces pay nothing
   const OUTCOMES = [
     { kind: "scream", w: 0.14, pays: 3 },
-    { kind: "peek",   w: 0.22, pays: 0 },
+    { kind: "pair",   w: 0.22, pays: 0 },      // two of one face: it pays nothing and nothing happens
     { kind: "seven",  w: 0.008, pays: 20 },
     { kind: "bar",    w: 0.015, pays: 8 },
     { kind: "bell",   w: 0.025, pays: 4 },
@@ -67,7 +67,7 @@
   }
   function draw(o, face) {
     if (o.kind === "scream") { const f = face || pick(FACE_IDS); return { ...o, face: f, line: [f, f, f] }; }
-    if (o.kind === "peek") {
+    if (o.kind === "pair") {
       const f = face || pick(FACE_IDS), other = pick(FILL.filter(s => s !== f)), r = Math.random();
       const line = r < 0.5 ? [f, f, other] : r < 0.75 ? [f, other, f] : [other, f, f];
       return { ...o, face: f, line };
@@ -83,9 +83,9 @@
   }
 
   /* ---------- sound: two lines. The cabinet sounds like a slot machine and nothing else; the scare line - the near
-     miss, the peek and the screamers - is horror, played much louder, out of a quiet the game makes for it. Every
+     miss and the screamers - is horror, played much louder, out of a quiet the game makes for it. Every
      sound is a recording made on DawDreamer (library/sfx/slots/, tools/make-music/slots_sfx.py). ---------- */
-  const SFX = ["lever", "spin", "stop", "coin", "win-small", "win-big", "click", "tension", "peek", "scream-1", "scream-2", "scream-3"];
+  const SFX = ["lever", "spin", "stop", "coin", "win-small", "win-big", "click", "tension", "scream-1", "scream-2", "scream-3"];
   const BED = 0.16;
   const audio = {
     ctx: null, on: store.get("sound", true), raw: {}, buf: {}, music: null, loop: null, held: null,
@@ -148,7 +148,6 @@
     coin() { this.play("coin", this.cab, { rate: 0.94 + Math.random() * 0.12, vol: 0.8 }); },
     win(big) { this.play(big ? "win-big" : "win-small", this.cab); },
     click() { this.play("click", this.cab, { vol: 0.8 }); },
-    near() { this.play("stop", this.cab, { rate: 1.5, vol: 0.7 }); setTimeout(() => this.play("stop", this.cab, { rate: 1.8, vol: 0.7 }), 110); },
     // the scare line: the cabinet and the bed drop away for it
     tension() {
       this.spinning(false); this.bed(0, 0.08);
@@ -161,9 +160,8 @@
       this.play("scream-" + (1 + Math.floor(Math.random() * 3)), this.fear);
       if (this.ctx) this.mus.gain.setTargetAtTime(BED, this.ctx.currentTime + 2.2, 0.6);
     },
-    peek() { this.cut(this.held, 0.01); this.held = null; this.play("peek", this.fear, { vol: 0.85 }); this.bed(BED, 0.5); },
   };
-  window.rvBuzz?.on(audio, { scream: [60, 30, 120], peek: "bump", stop: 8, win: "good" });
+  window.rvBuzz?.on(audio, { scream: [60, 30, 120], stop: 8, win: "good" });
   audio.fetch();
 
   /* ---------- the reels ---------- */
@@ -187,7 +185,7 @@
     const base = Math.round(R.pos / ROW);
     R.cells.forEach((c, k) => {
       const i = base - 2 + k, s = symAt(R, i);
-      if (c.i !== i || c.sym !== s) { c.el.innerHTML = symHTML(s); c.sym = s; c.i = i; c.el.classList.remove("won", "hot", "pair"); }
+      if (c.i !== i || c.sym !== s) { c.el.innerHTML = symHTML(s); c.sym = s; c.i = i; c.el.classList.remove("won", "hot"); }
       c.el.style.transform = `translateY(${CENTER + R.pos - i * ROW - ROW / 2}px)`;
     });
     R.strip.classList.toggle("fast", R.v > 1200);
@@ -273,7 +271,7 @@
     if (cents < bet) { fitBet(); hud(); return; }
     cents -= bet; spins++; state = "spinning";
     $("win").textContent = "0"; $("banner").classList.remove("on"); stage.classList.remove("won", "tense");
-    for (const R of reels) R.cells.forEach(c => c.el.classList.remove("won", "hot", "pair"));
+    for (const R of reels) R.cells.forEach(c => c.el.classList.remove("won", "hot"));
     $("spin").textContent = "STOP"; $("spin").classList.add("stop");
     const lev = $("lever"); lev.classList.add("pulled"); setTimeout(() => lev.classList.remove("pulled"), 260);
     audio.lever(); audio.spinning(true); hud();
@@ -315,12 +313,9 @@
     $("spin").textContent = "SPIN"; $("spin").classList.remove("stop");
     const o = outcome, won = o.pays * bet;
     stage.classList.remove("tense");
-    // two of one symbol on the line: they are ringed, and a face pair brings that resident up to look
-    const pair = o.kind === "peek" || o.kind === "nothing" ? [...new Set(o.line)].find(x => o.line.filter(y => y === x).length === 2) : null;
-    if (pair) reels.forEach((R, r) => { if (o.line[r] === pair) middle(R)?.el.classList.add(isFace(pair) ? "hot" : "pair"); });
+    // two of a kind is nothing: no ring, no face, no sound (the user, 2026-10-19)
     if (o.kind === "scream") await screamer(o.face);
-    else if (o.kind === "peek") peek(o.face);
-    else { audio.calm(); if (pair) { audio.near(); say("Two. The machine wants three.", 1800); } }
+    else { audio.calm(); reels.forEach(R => R.cells.forEach(c => c.el.classList.remove("hot"))); }
     if (won > 0) {
       reels.forEach(R => { const c = middle(R); c?.el.classList.add("won"); c?.el.classList.remove("hot"); });
       $("banner").textContent = o.kind === "scream" ? FACES[o.face].name.toUpperCase() + " · " + won : "WIN " + won;
@@ -332,7 +327,7 @@
     }
     if (cents > best) { best = cents; store.set("best", best); }
     fitBet();
-    if (cents < BETS[0]) { await wait(o.kind === "peek" ? 900 : 400); return over(); }
+    if (cents < BETS[0]) { await wait(400); return over(); }
     state = "idle"; hud();
   }
 
@@ -386,17 +381,6 @@
       say(cap(FACES[f].name) + " came out to see who was playing.");
       hud();
     });
-  }
-
-  function peek(f) {
-    const p = $("peek"), img = p.querySelector("img");
-    img.src = `assets/scream/${f}.webp`;
-    p.classList.remove("on", "off"); stage.classList.remove("jolt"); void p.offsetWidth;
-    p.classList.add("on"); stage.classList.add("jolt");
-    audio.peek();
-    setTimeout(() => stage.classList.remove("jolt"), 450);
-    setTimeout(() => { p.classList.remove("on"); p.classList.add("off"); }, 1150);
-    setTimeout(() => say(cap(FACES[f].name) + " looked out of the machine.", 2600), 300);
   }
 
   function over() {
