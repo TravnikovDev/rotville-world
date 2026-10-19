@@ -114,6 +114,8 @@
 .sym .seven { font: 400 58px/1 'Lilita One', sans-serif; color: #e01b2b; -webkit-text-stroke: 2.5px #ffe08a; text-shadow: 0 3px 0 #6d0a10, 0 0 10px #ff6a6a88; }
 .sym .bar { font: 400 18px/1 'Bungee', sans-serif; color: #ffe08a; background: linear-gradient(#2a2a2a, #0e0e0e); border: 2px solid #ffe08a; border-radius: 7px; padding: 5px 7px; box-shadow: 0 3px 0 #000; }
 .sym.hot img { box-shadow: 0 0 0 3px #ff2a2a, 0 0 18px #ff2a2a; }
+.sym.hot::before, .sym.pair::before { content: ""; position: absolute; inset: 3px 4px; border-radius: 14px; border: 3px solid #ff2a2a; box-shadow: 0 0 16px #ff2a2a, inset 0 0 12px rgba(255, 42, 42, .5); animation: sl-pulse .42s ease-in-out infinite; pointer-events: none; }
+.sym.pair::before { border-color: #ffd36a; box-shadow: 0 0 16px #ffb300, inset 0 0 12px rgba(255, 190, 60, .5); }
 .sym.won .c, .sym.won img { animation: sl-won .5s ease-in-out 3; }
 @keyframes sl-won { 50% { transform: scale(1.14); filter: drop-shadow(0 0 12px #ffd36a); } }
 .payline { position: absolute; left: 4px; right: 4px; top: 50%; height: 3px; margin-top: -1.5px; background: linear-gradient(90deg, transparent, #ff3b3b 8%, #ffb0b0 50%, #ff3b3b 92%, transparent); box-shadow: 0 0 10px #ff2a2a; opacity: .9; pointer-events: none; }
@@ -170,9 +172,11 @@
 .banner.on { transform: scale(1); }
 
 /* two of a face: one looks out of the bottom of the screen */
-.peek { position: absolute; left: 50%; bottom: 0; width: 290px; height: 290px; margin-left: -145px; z-index: 4; pointer-events: none; transform: translateY(100%); }
+.peek { position: absolute; left: 50%; bottom: 0; width: 340px; height: 340px; margin-left: -170px; z-index: 4; pointer-events: none; transform: translateY(100%); }
 .peek img { width: 100%; height: 100%; filter: contrast(1.3) saturate(1.2) drop-shadow(0 0 18px rgba(255, 0, 0, .7)); }
-.peek.on { transition: transform .12s cubic-bezier(.2, 1.4, .5, 1); transform: translateY(14%) rotate(-5deg); }
+.peek.on { transition: transform .1s cubic-bezier(.2, 1.4, .5, 1); transform: translateY(6%) rotate(-5deg); }
+.jolt .cab { animation: sl-shake .45s linear 1; }
+.jolt .room::after { content: ""; position: absolute; inset: 0; background: radial-gradient(70% 55% at 50% 60%, rgba(255, 0, 0, .15) 30%, rgba(140, 0, 0, .65)); }
 .peek.off { transition: transform .25s ease-in; transform: translateY(100%); }
 
 /* three of a face: the screamer. It has no frame of its own - the face lands on the game itself */
@@ -253,5 +257,5 @@
   .scream.on .face { animation: sl-fade .9s both; }
   @keyframes sl-fade { 0% { opacity: 0; } 15%, 80% { opacity: 1; } 100% { opacity: 0; } }
   .screaming .cab { animation: none; }
-  .peek.on, .peek.off { transition: opacity .3s; } .peek { transform: translateY(14%); opacity: 0; } .peek.on { opacity: 1; } .peek.off { opacity: 0; }
+  .peek.on, .peek.off { transition: opacity .3s; } .peek { transform: translateY(6%); opacity: 0; } .jolt .cab { animation: none; } .peek.on { opacity: 1; } .peek.off { opacity: 0; }
 }

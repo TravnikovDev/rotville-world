@@ -1,10 +1,11 @@
 /* Slots: the one machine of the Lower Sewers Casino.
 
    Three reels that spin as reels do. Most of the symbols are residents' faces - Old Parp, the Eyemare, Shushworth,
-   Nickelpig, Still Clive, Big Barry, CCPP and Shytan - and the rest are a slot's own: 7, BAR, a bell and a cherry.
+   Still Clive, Sackary, Kentut, Major Pain, Holloring and Masturbek - and the rest are a slot's own: 7, BAR, a bell and a cherry.
    Three of one face on the line, and that resident comes out of the machine, over the game, at full size: the
-   screamer. Two of one face, and one of them looks up from the bottom of the screen. All eight are in it by the
-   user's word of 2026-10-18, an exception to the one-to-three of R1090, as Pinball's was (R1100).
+   screamer. Two of one face, and one of them looks up from the bottom of the screen. All nine are in it by the
+   user's word, an exception to the one-to-three of R1090, as Pinball's was (R1100): eight on 2026-10-18, and on
+   2026-10-19 the four who were not scary enough swapped for five who are.
 
    Each spin's result is drawn first, by weight, and the reels are then stopped on it. The faces and the screamers
    are pre-rendered stills of the residents' models; only those ship. */
@@ -24,14 +25,15 @@
 
   /* ---------- the symbols ---------- */
   const FACES = {
-    "old-parp":    { name: "Old Parp",    shout: "YOU INTERRUPTED HIM" },
-    "the-eyemare": { name: "the Eyemare", shout: "IT TURNED TO YOU" },
-    "shushworth":  { name: "Shushworth",  shout: "PAY FOR THE QUIET" },
-    "nickelpig":   { name: "Nickelpig",   shout: "IT CLINKED. IT IS HIS." },
-    "still-clive": { name: "Still Clive", shout: "HE WAS ALWAYS HERE" },
-    "big-barry":   { name: "Big Barry",   shout: "YOU STARED TOO LONG" },
-    "ccpp":        { name: "CCPP",        shout: "IT IS SHOWING YOU NOW" },
-    "shytan":      { name: "Shytan",      shout: "YOU LOOKED AT HIM" },
+    "old-parp":     { name: "Old Parp",    shout: "YOU INTERRUPTED HIM" },
+    "the-eyemare":  { name: "the Eyemare", shout: "IT TURNED TO YOU" },
+    "shushworth":   { name: "Shushworth",  shout: "PAY FOR THE QUIET" },
+    "still-clive":  { name: "Still Clive", shout: "HE WAS ALWAYS HERE" },
+    "hessian-hugh": { name: "Sackary",     shout: "NOW YOU CARRY HIM" },
+    "kentut":       { name: "Kentut",      shout: "IT WAS NOT HIM" },
+    "major-pain":   { name: "Major Pain",  shout: "WORK FOREVER" },
+    "sludgewink":   { name: "Holloring",   shout: "YOU ARE SAFER INSIDE" },
+    "masturbek":    { name: "Masturbek",   shout: "HE WAS HERE EARLY" },
   };
   const FACE_IDS = Object.keys(FACES);
   const CLASSIC = ["seven", "bar", "bell", "cherry"];
@@ -146,6 +148,7 @@
     coin() { this.play("coin", this.cab, { rate: 0.94 + Math.random() * 0.12, vol: 0.8 }); },
     win(big) { this.play(big ? "win-big" : "win-small", this.cab); },
     click() { this.play("click", this.cab, { vol: 0.8 }); },
+    near() { this.play("stop", this.cab, { rate: 1.5, vol: 0.7 }); setTimeout(() => this.play("stop", this.cab, { rate: 1.8, vol: 0.7 }), 110); },
     // the scare line: the cabinet and the bed drop away for it
     tension() {
       this.spinning(false); this.bed(0, 0.08);
@@ -184,7 +187,7 @@
     const base = Math.round(R.pos / ROW);
     R.cells.forEach((c, k) => {
       const i = base - 2 + k, s = symAt(R, i);
-      if (c.i !== i || c.sym !== s) { c.el.innerHTML = symHTML(s); c.sym = s; c.i = i; c.el.classList.remove("won", "hot"); }
+      if (c.i !== i || c.sym !== s) { c.el.innerHTML = symHTML(s); c.sym = s; c.i = i; c.el.classList.remove("won", "hot", "pair"); }
       c.el.style.transform = `translateY(${CENTER + R.pos - i * ROW - ROW / 2}px)`;
     });
     R.strip.classList.toggle("fast", R.v > 1200);
@@ -270,7 +273,7 @@
     if (cents < bet) { fitBet(); hud(); return; }
     cents -= bet; spins++; state = "spinning";
     $("win").textContent = "0"; $("banner").classList.remove("on"); stage.classList.remove("won", "tense");
-    for (const R of reels) R.cells.forEach(c => c.el.classList.remove("won", "hot"));
+    for (const R of reels) R.cells.forEach(c => c.el.classList.remove("won", "hot", "pair"));
     $("spin").textContent = "STOP"; $("spin").classList.add("stop");
     const lev = $("lever"); lev.classList.add("pulled"); setTimeout(() => lev.classList.remove("pulled"), 260);
     audio.lever(); audio.spinning(true); hud();
@@ -312,9 +315,12 @@
     $("spin").textContent = "SPIN"; $("spin").classList.remove("stop");
     const o = outcome, won = o.pays * bet;
     stage.classList.remove("tense");
+    // two of one symbol on the line: they are ringed, and a face pair brings that resident up to look
+    const pair = o.kind === "peek" || o.kind === "nothing" ? [...new Set(o.line)].find(x => o.line.filter(y => y === x).length === 2) : null;
+    if (pair) reels.forEach((R, r) => { if (o.line[r] === pair) middle(R)?.el.classList.add(isFace(pair) ? "hot" : "pair"); });
     if (o.kind === "scream") await screamer(o.face);
     else if (o.kind === "peek") peek(o.face);
-    else audio.calm();
+    else { audio.calm(); if (pair) { audio.near(); say("Two. The machine wants three.", 1800); } }
     if (won > 0) {
       reels.forEach(R => { const c = middle(R); c?.el.classList.add("won"); c?.el.classList.remove("hot"); });
       $("banner").textContent = o.kind === "scream" ? FACES[o.face].name.toUpperCase() + " · " + won : "WIN " + won;
@@ -385,10 +391,12 @@
   function peek(f) {
     const p = $("peek"), img = p.querySelector("img");
     img.src = `assets/scream/${f}.webp`;
-    p.classList.remove("on", "off"); void p.offsetWidth; p.classList.add("on");
+    p.classList.remove("on", "off"); stage.classList.remove("jolt"); void p.offsetWidth;
+    p.classList.add("on"); stage.classList.add("jolt");
     audio.peek();
-    setTimeout(() => { p.classList.remove("on"); p.classList.add("off"); }, 650);
-    setTimeout(() => say(cap(FACES[f].name) + " looked out of the machine.", 2200), 300);
+    setTimeout(() => stage.classList.remove("jolt"), 450);
+    setTimeout(() => { p.classList.remove("on"); p.classList.add("off"); }, 1150);
+    setTimeout(() => say(cap(FACES[f].name) + " looked out of the machine.", 2600), 300);
   }
 
   function over() {
