@@ -165,7 +165,7 @@
   audio.fetch();
 
   /* ---------- the reels ---------- */
-  const ROW = 80, CENTER = 126, V = 1900;    // a row's height, the payline's height in the window, and the spin's speed
+  const ROW = 80, V = 1900;                  // a row's height and the spin's speed
   const reels = [];
   function makeReels() {
     const host = $("reels");
@@ -176,7 +176,7 @@
       const cells = [];
       for (let k = 0; k < 5; k++) { const c = document.createElement("div"); c.className = "sym"; c.style.position = "absolute"; c.style.left = "0"; c.style.right = "0"; strip.append(c); cells.push({ el: c, sym: null, i: null }); }
       host.append(el);
-      // cell i sits at CENTER + pos - i * ROW; a bigger i is higher up, so the symbols come down from the top
+      // cell i sits at the reel's middle + pos - i * ROW; a bigger i is higher up, so the symbols come down from the top
       reels.push({ el, strip, cells, pos: 0, map: new Map(), mode: "still", v: 0, t: 0, from: 0, to: 0, dur: 0, stopAt: 0, lastCell: 0 });
     }
   }
@@ -186,7 +186,7 @@
     R.cells.forEach((c, k) => {
       const i = base - 2 + k, s = symAt(R, i);
       if (c.i !== i || c.sym !== s) { c.el.innerHTML = symHTML(s); c.sym = s; c.i = i; c.el.classList.remove("won", "hot"); }
-      c.el.style.transform = `translateY(${CENTER + R.pos - i * ROW - ROW / 2}px)`;
+      c.el.style.transform = `translateY(${R.el.clientHeight / 2 + R.pos - i * ROW - ROW / 2}px)`;
     });
     R.strip.classList.toggle("fast", R.v > 1200);
     R.strip.classList.toggle("slow", R.v > 300 && R.v <= 1200);
