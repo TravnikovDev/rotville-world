@@ -8,7 +8,8 @@
    down and the shift is over. Empty the vat and the next shift starts: more flavours, more rows, a busier press.
 
    The first shift is plain: three flavours, four rows, a long guide and a slow press. Every shift after it adds one
-   notch. The residents stand beside the board, upright, as part of the screen: rigid figurines turned, tipped and bowed
+   notch. Until the seventh, what falls is a bonus; from the seventh on, every bubble that falls costs ten, so a big
+   chunk brought down is a loss and the vat has to be taken apart from below. The residents stand beside the board, upright, as part of the screen: rigid figurines turned, tipped and bowed
    whole, drawn at 15 fps under the 60 fps page like the clips' residents (R819, R1070). Only pre-rendered sprites and
    a pre-rendered backdrop ship. */
 (() => {
@@ -42,6 +43,8 @@
   const SPEED = 560, AIM_MAX = 78 * Math.PI / 180;
   const FLAVOURS = ["cherry", "lemon", "blue", "lime", "orange", "grape"];
   const TINT = { cherry: "#e0303f", lemon: "#f2cc2c", blue: "#3a6df0", lime: "#5fc232", orange: "#f07a1e", grape: "#9c42d6" };
+  // FROM THE SEVENTH SHIFT, WHAT FALLS COSTS: ten a bubble, the pops still paying, the score never under nothing
+  const COST_FROM = 6, COST = 10;
   // HOW HARD A SHIFT IS. The first is plain; each after it adds one notch: a flavour, a row, a busier press, less guide.
   const flavoursOf = n => Math.min(6, 3 + Math.floor(n / 2));
   const rowsOf = n => Math.min(8, 4 + Math.floor((n + 1) / 2));
@@ -198,6 +201,12 @@
     cur = nextFlavour(); nxt = nextFlavour();
     fly = null; falls = []; pops = [];
     hud();
+    // the seventh shift says what changes, on the screen, once
+    if (shift === COST_FROM) {
+      const sub = $("sub"), text = "From now on, what falls costs ten.";
+      sub.textContent = text;
+      setTimeout(() => { if (sub.textContent === text) sub.textContent = ""; }, 3200);
+    }
   }
 
   function start() {
@@ -301,9 +310,11 @@
           grid[a][b] = null; audio.glug(fell); fell++;
         }
       }));
-      const got = popped * 10 + (fell ? 20 * fell * (1 + Math.floor(fell / 4)) : 0);
-      score += got;
+      const cost = shift >= COST_FROM ? COST * fell : 0;
+      const got = popped * 10 + (fell && !cost ? 20 * fell * (1 + Math.floor(fell / 4)) : 0);
+      score = Math.max(0, score + got - cost);
       notes.push({ x, y: y - 8, s: "+" + got, t: 0 });
+      if (cost) notes.push({ x, y: y + 6, s: "-" + cost, t: 0, bad: true });
       if (popped + fell >= 6) act(wh, "hop");
       if (fell >= 4) act(kf, "note");
       while (grid.length && !grid[grid.length - 1].some(Boolean)) grid.pop();
@@ -522,6 +533,7 @@
     "3": ["XXX", "..X", ".XX", "..X", "XXX"], "4": ["X.X", "X.X", "XXX", "..X", "..X"], "5": ["XXX", "X..", "XXX", "..X", "XXX"],
     "6": ["XXX", "X..", "XXX", "X.X", "XXX"], "7": ["XXX", "..X", ".X.", ".X.", ".X."], "8": ["XXX", "X.X", "XXX", "X.X", "XXX"],
     "9": ["XXX", "X.X", "XXX", "..X", "XXX"], "+": ["...", ".X.", "XXX", ".X.", "..."], ",": ["...", "...", "...", ".X.", "X.."],
+    "-": ["...", "...", "XXX", "...", "..."],
   };
   function text(str, x, y, k, col, shadow) {
     const w = str.length * 4 * k - k;
@@ -667,7 +679,7 @@
     for (const n of notes) {
       const u = n.t / (n.big ? 1.6 : 0.9), k = n.big ? 2 : 1;
       g.globalAlpha = Math.min(1, 2 * (1 - u));
-      text(n.s, n.x, Math.round(n.y - 18 * u), k, n.big ? "#fff0a8" : "#ffffff", "#1a1020");
+      text(n.s, n.x, Math.round(n.y - 18 * u), k, n.bad ? "#ff6b7d" : n.big ? "#fff0a8" : "#ffffff", "#1a1020");
       g.globalAlpha = 1;
     }
     for (const c of confetti) {
