@@ -45,18 +45,22 @@
   const TINT = { cherry: "#e0303f", lemon: "#f2cc2c", blue: "#3a6df0", lime: "#5fc232", orange: "#f07a1e", grape: "#9c42d6" };
   // FROM THE SEVENTH SHIFT, WHAT FALLS COSTS: ten a bubble, the pops still paying, the score never under nothing
   const COST_FROM = 6, COST = 10;
+  // THE SIGN LIGHTS UP AS YOU LEARN: each of the six shifts before it puts a letter of FIZZCO on in white neon, so the
+  // seventh, with all six alight, is the whole game. neon.png holds each letter lit, with its glow, in a 40 px tile of its
+  // own; SIGN is where each tile goes on bg.png.
+  const SIGN = [[229, 159], [229, 181], [229, 203], [229, 225], [229, 247], [229, 269]], NEON = 40;
   // HOW HARD A SHIFT IS. The first is plain; each after it adds one notch: a flavour, a row, a busier press, less guide.
   const flavoursOf = n => Math.min(6, 3 + Math.floor(n / 2));
   const rowsOf = n => Math.min(8, 4 + Math.floor((n + 1) / 2));
   const pressOf = n => Math.max(5, Math.round(14 - 1.5 * n));
   const guideOf = n => (n === 0 ? 220 : n < 3 ? 150 : 90);
 
-  /* ---------- sound: the bed, four lines, the rest made on the spot ---------- */
+  /* ---------- sound: the bed, five lines, the rest made on the spot ---------- */
   const audio = {
     ctx: null, on: store.get("sound", true), raw: {}, buf: {}, music: null,
     fetch() {
       for (const [k, f] of [["start", "assets/line-start.mp3"], ["press", "assets/line-press.mp3"], ["clear", "assets/line-clear.mp3"],
-                            ["end", "assets/line-end.mp3"], ["music", "assets/carousel-slow.mp3"]]) {
+                            ["end", "assets/line-end.mp3"], ["cost", "assets/line-cost.mp3"], ["music", "assets/carousel-slow.mp3"]]) {
         this.raw[k] = fetch(f).then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null);
       }
     },
@@ -127,6 +131,8 @@
     creak() { this.tone(180, 210, 0.08, "sawtooth", 0.025); },
     swap() { this.tone(660, 990, 0.06, "triangle", 0.06); this.tone(990, 660, 0.06, "triangle", 0.04, 0.06); },
     tick() { this.tone(1500, 1490, 0.025, "square", 0.025); },
+    // a neon tube striking: a click, a buzz, a click
+    neon() { this.noise(0.02, 0.08, 2000, 8000); this.tone(120, 120, 0.35, "sawtooth", 0.025, 0.04); this.noise(0.02, 0.06, 2000, 8000, 0.36); },
     // a pen on a clipboard
     scratch(k) { for (let i = 0; i < k; i++) this.noise(0.07, 0.05, 2500, 7000, i * 0.11 + rnd(0, 0.03)); },
     fanfare() {
@@ -142,7 +148,7 @@
 
   /* ---------- the board ---------- */
   const cols = r => (r & 1 ? 7 : 8);
-  let SC = null, atlas = null, bg = null, ready = false;
+  let SC = null, atlas = null, bg = null, neon = null, neonT = -99, ready = false;
   let state = "ready", shift = 0, score = 0, best = store.get("best", 0), shots = 0, pressShots = 0, drops = 0;
   let grid = [], top = TOP0, topDraw = TOP0, palette = [], cur = null, nxt = null, fly = null;
   let aim = 0, aiming = false, keyAim = 0, clock = 0, acc = 0, overT = 0, clearT = 0, shake = 0;
@@ -201,12 +207,10 @@
     cur = nextFlavour(); nxt = nextFlavour();
     fly = null; falls = []; pops = [];
     hud();
-    // the seventh shift says what changes, on the screen, once
-    if (shift === COST_FROM) {
-      const sub = $("sub"), text = "From now on, what falls costs ten.";
-      sub.textContent = text;
-      setTimeout(() => { if (sub.textContent === text) sub.textContent = ""; }, 3200);
-    }
+    // a letter of the sign comes on for each shift passed
+    if (shift >= 1 && shift <= SIGN.length) { neonT = clock; audio.neon(); }
+    // the seventh shift says what changes, once
+    if (shift === COST_FROM) say("cost", "From now on, what falls costs ten.");
   }
 
   function start() {
@@ -306,7 +310,7 @@
       }
       grid.forEach((row, a) => row.forEach((v, b) => {
         if (v && !hold.has(a + "," + b)) {
-          falls.push({ x: cx(a, b), y: cy(a), vx: rnd(-24, 24), vy: rnd(-30, 10), f: v, t: 0, ph: rnd(0, 6) });
+          falls.push({ x: cx(a, b), y: cy(a), vx: rnd(-24, 24), vy: rnd(-30, 10), f: v, t: 0, ph: rnd(0, 6), cost: shift >= COST_FROM });
           grid[a][b] = null; audio.glug(fell); fell++;
         }
       }));
@@ -314,7 +318,6 @@
       const got = popped * 10 + (fell && !cost ? 20 * fell * (1 + Math.floor(fell / 4)) : 0);
       score = Math.max(0, score + got - cost);
       notes.push({ x, y: y - 8, s: "+" + got, t: 0 });
-      if (cost) notes.push({ x, y: y + 6, s: "-" + cost, t: 0, bad: true });
       if (popped + fell >= 6) act(wh, "hop");
       if (fell >= 4) act(kf, "note");
       while (grid.length && !grid[grid.length - 1].some(Boolean)) grid.pop();
@@ -415,6 +418,12 @@
       b.vx *= 1 - 1.8 * dt;
       b.x = clamp(b.x + b.vx * dt + Math.sin(b.t * 5 + b.ph) * 0.25, VX0 + R, VX1 - R);
       b.y += b.vy * dt;
+      // what it costs shows where it goes over the line
+      if (b.cost && !b.crossed && b.y >= LINE) {
+        b.crossed = true;
+        notes.push({ x: b.x, y: LINE - 6, s: "-" + COST, t: 0, bad: true });
+        for (let k = 0; k < 4; k++) bits.push({ x: b.x, y: LINE, vx: rnd(-40, 40), vy: rnd(-60, -20), t: 0, life: rnd(0.3, 0.5), c: "#ff4b5c" });
+      }
     }
     falls = falls.filter(b => {
       if (b.y < VBOT - R) return true;
@@ -571,6 +580,12 @@
 
   function draw() {
     g.drawImage(bg, 0, 0);
+    // the sign's letters for the shifts passed, the newest flickering as it strikes
+    const lit = Math.min(SIGN.length, shift), since = clock - neonT;
+    for (let i = 0; i < lit; i++) {
+      if (i === lit - 1 && since < 0.8 && !(since > 0.45 || since % 0.15 < 0.06)) continue;
+      g.drawImage(neon, i * NEON, 0, NEON, NEON, SIGN[i][0], SIGN[i][1], NEON, NEON);
+    }
     // the lamp's light over the vat, not quite steady
     const flick = 0.22 + 0.03 * Math.sin(clock * 9) + 0.02 * Math.sin(clock * 23.1) - (Math.floor(clock * 6) % 37 === 0 ? 0.08 : 0);
     g.globalCompositeOperation = "lighter";
@@ -820,9 +835,9 @@
   addEventListener("resize", sayVolume);
   sayVolume();
 
-  Promise.all([fetch("assets/scene.json").then(r => r.json()), load("assets/sprites.png"), load("assets/bg.png")])
-    .then(([s, a, b]) => {
-      SC = s; atlas = a; bg = b;
+  Promise.all([fetch("assets/scene.json").then(r => r.json()), load("assets/sprites.png"), load("assets/bg.png"), load("assets/neon.png")])
+    .then(([s, a, b, n]) => {
+      SC = s; atlas = a; bg = b; neon = n;
       newVat(0);
       cur = nextFlavour(); nxt = nextFlavour();
       hud();
